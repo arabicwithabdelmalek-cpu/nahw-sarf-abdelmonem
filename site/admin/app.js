@@ -149,6 +149,16 @@ function init(){
    $('loginState').textContent='تم تسجيل الدخول. جارٍ فحص صلاحية الإدارة.';
    await enter();
  }));
+ $('forgotPassword').addEventListener('click',()=>execute(async()=>{
+   if(!db)throw new Error('قاعدة البيانات غير متصلة.');
+   const email=$('email').value.trim();
+   if(!email)throw new Error('اكتب بريدك الإلكتروني في الخانة الأولى ثم اضغط «نسيت كلمة المرور؟».');
+   const redirectTo=new URL('./reset.html',window.location.href).toString();
+   const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo});
+   if(error)throw error;
+   $('loginState').textContent='طلبت رابط الاستعادة. راجع بريدك الإلكتروني، ولو كان رابط Supabase يفتح localhost انسخه ثم افتح صفحة اختيار كلمة المرور أدناه والصقه هناك.';
+   $('resetPageLink').hidden=false;
+ }));
  $('signUpButton').addEventListener('click',()=>execute(async()=>{
    if(!db)throw new Error('قاعدة البيانات غير متصلة.');
    const email=$('email').value.trim(),password=$('password').value;
