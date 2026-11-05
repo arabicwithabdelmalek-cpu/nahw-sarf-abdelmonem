@@ -6,7 +6,7 @@ const db=(cfg.supabaseUrl&&cfg.supabasePublishableKey&&window.supabase)?window.s
 const state={user:null,courses:[],courseId:null,lessons:[],enrollments:[],payments:[],fee:0,announcements:[]};
 const e=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n};
 const n=v=>Number(v)||0;const money=v=>new Intl.NumberFormat('ar-EG',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n(v))+' ج.م';
-const today=()=>new Date().toLocaleDateString('en-CA');
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 const errorText=x=>x?.message||String(x||'خطأ غير متوقع');
 function alertMsg(message,err=false){const box=$('alert');box.textContent=message;box.hidden=false;box.classList.toggle('error',err);window.scrollTo({top:0,behavior:'smooth'});}
 async function execute(fn){try{await fn();}catch(err){console.error('Admin operation failed',err);alertMsg(errorText(err),true);}}
@@ -53,6 +53,27 @@ async function loadLessons(){const list=$('lessonsList');list.replaceChildren();
 async function saveLesson(ev){ev.preventDefault();let id=$('lessonId').value;const data={course_id:course(),position:n($('lessonPosition').value),lesson_date:$('lessonDate').value,subject:$('lessonSubject').value,title:$('lessonTitle').value.trim(),start_time:$('lessonTime').value||null,notes:$('lessonNotes').value.trim(),is_published:$('lessonPublished').checked};
  if(id)await one(db.from('lessons').update(data).eq('id',id));else await one(db.from('lessons').insert(data));resetLesson();await loadLessons();alertMsg('حُفظت المحاضرة.');}
 
+async function generateLessons(){
+ const id=course();
+ if(state.lessons.length)throw new Error('توجد محاضرات في هذه الدورة بالفعل. لن يتم استبدالها أو تكرارها تلقائيًا.');
+ const start=$('generateStart').value||$('courseStart').value||state.courses.find(c=>c.id===id)?.start_date;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(start||''))throw new Error('حدّد تاريخ بداية الجدول.');
+ const date=new Date(start+'T12:00:00');
+ if(Number.isNaN(date.getTime()))throw new Error('تاريخ البداية غير صحيح.');
+ const values=[];
+ for(let i=0;values.length<8&&i<35;i++){
+   if([3,6].includes(date.getDay())){
+     const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');
+     values.push({course_id:id,position:values.length+1,lesson_date:`${y}-${m}-${d}`,subject:'غير محدد',is_published:false});
+   }
+   date.setDate(date.getDate()+1);
+ }
+ if(values.length!==8)throw new Error('لم نتمكن من تجهيز جميع المواعيد.');
+ await one(db.from('lessons').insert(values));
+ await loadLessons();resetLesson();
+ alertMsg('تم إنشاء ٨ محاضرات غير منشورة. اختر نحو أو صرف وحدّد الساعة لكل محاضرة، ثم انشر ما تريد إظهاره للطلاب.');
+}
+
 async function loadStudents(){const list=$('studentsList');list.replaceChildren();state.enrollments=[];if(!state.courseId)return;
  state.enrollments=await one(db.from('enrollments').select('id,student_id,status,students(id,full_name,contact)').eq('course_id',state.courseId).order('created_at'));
  for(const ent of state.enrollments){const s=ent.students||{};
@@ -67,10 +88,9 @@ async function loadStudents(){const list=$('studentsList');list.replaceChildren(
 async function saveStudent(ev){ev.preventDefault();const name=$('studentName').value.trim(),contact=$('studentContact').value.trim(),oldId=$('studentId').value;if(!name)throw new Error('اكتب اسم الطالب.');course();
  if(oldId){await one(db.from('students').update({full_name:name,contact}).eq('id',oldId));}
  else {
-  const found=await one(db.from('students').select('id').eq('full_name',name).limit(1));
-  const studentId=found.length?found[0].id:(await one(db.from('students').insert({full_name:name,contact}).select('id').single())).id;
-  // An existing student can re-enrol in another course without duplicating their record.
-  await one(db.from('enrollments').upsert({course_id:state.courseId,student_id:studentId,status:'نشط'},{onConflict:'course_id,student_id'}));
+  // Never merge two different people merely because their names match.
+  const studentId=(await one(db.from('students').insert({full_name:name,contact}).select('id').single())).id;
+  await one(db.from('enrollments').insert({course_id:state.courseId,student_id:studentId,status:'نشط'}));
  }
  resetStudent();await loadRelated();alertMsg('تم حفظ بيانات الطالب.');
 }
@@ -78,11 +98,13 @@ async function loadFinance(){const summary=$('financeSummary'),list=$('paymentsL
  const data=await one(db.from('course_finances').select('total_fee').eq('course_id',state.courseId).maybeSingle());state.fee=n(data?.total_fee);$('totalFee').value=state.fee;
  const ids=state.enrollments.map(x=>x.id);
  if(ids.length)state.payments=await one(db.from('payments').select('*').in('enrollment_id',ids).order('paid_on',{ascending:false}));
- const active=state.enrollments.filter(x=>x.status==='نشط'),share=active.length?state.fee/active.length:0;
- const totalPaid=state.payments.filter(p=>active.some(x=>x.id===p.enrollment_id)).reduce((x,p)=>x+n(p.amount),0);
- [['إجمالي الدورة',money(state.fee)],['الطلاب النشطون',String(active.length)],['حصة الطالب',money(share)]].forEach(([label,value])=>{const c=e('div','finance-card');c.append(e('span','',label),e('strong','',value));summary.append(c)});
- record(list,'المدفوع من الطلاب النشطين',money(totalPaid),[]);
- for(const ent of active){const paid=state.payments.filter(p=>p.enrollment_id===ent.id).reduce((x,p)=>x+n(p.amount),0);
+ const active=state.enrollments.filter(x=>x.status==='نشط');
+ const totalCents=Math.round(state.fee*100),baseShare=active.length?Math.floor(totalCents/active.length):0,remainder=active.length?totalCents%active.length:0;
+ const shareFor=i=>(baseShare+(i<remainder?1:0))/100;
+ const totalPaid=state.payments.reduce((x,p)=>x+n(p.amount),0);
+ [['إجمالي الدورة',money(state.fee)],['الطلاب النشطون',String(active.length)],['حصة الطالب',active.length?money(baseShare/100)+(remainder?' + توزيع القروش':''):'—']].forEach(([label,value])=>{const c=e('div','finance-card');c.append(e('span','',label),e('strong','',value));summary.append(c)});
+ record(list,'إجمالي المدفوع من جميع الطلاب',money(totalPaid),[]);
+ for(const [i,ent] of active.entries()){const paid=state.payments.filter(p=>p.enrollment_id===ent.id).reduce((x,p)=>x+n(p.amount),0),share=shareFor(i);
   record(list,ent.students?.full_name||'طالب',`المطلوب: ${money(share)} • المدفوع: ${money(paid)} • المتبقي: ${money(Math.max(0,share-paid))}`,[]);
  }
  for(const p of state.payments){const ent=state.enrollments.find(x=>x.id===p.enrollment_id);
@@ -106,12 +128,14 @@ async function enter(){
  const {data:{user},error}=await db.auth.getUser();if(error||!user)return;
  const admin=await one(db.from('site_admins').select('user_id').eq('user_id',user.id).maybeSingle());
  if(!admin){$('loginState').textContent='الحساب مسجل، لكنه غير مُضاف إلى مسؤولي هذا البرنامج. لا توجد صلاحية لعرض البيانات.';return;}
- state.user=user;$('authPanel').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;$('userBadge').textContent=user.email||'المشرف';
+ state.user=user;$('alert').hidden=true;$('authPanel').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;$('userBadge').textContent=user.email||'المشرف';
  await loadCourses();await loadAnnouncements();
 }
 
 function init(){
  $('paymentDate').value=today();
+ $('generateStart').value=today();
+ $('generateLessons').addEventListener('click',()=>execute(generateLessons));
  document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>selectTab(button.dataset.tab)));
  $('activeCourseSelect').addEventListener('change',()=>execute(async()=>{state.courseId=$('activeCourseSelect').value;await loadRelated();}));
  [['courseForm',saveCourse],['lessonForm',saveLesson],['studentForm',saveStudent],['feeForm',saveFee],['paymentForm',savePayment],['announcementForm',saveAnnouncement]].forEach(([id,fn])=>$(id).addEventListener('submit',ev=>execute(()=>fn(ev))));
@@ -119,10 +143,19 @@ function init(){
  $('logout').addEventListener('click',()=>execute(async()=>{await db.auth.signOut();location.reload();}));
  $('loginForm').addEventListener('submit',ev=>execute(async()=>{
    ev.preventDefault();if(!db)throw new Error('أولًا اربط قاعدة البيانات عبر config.js.');
-   const email=$('email').value.trim();if(!email)throw new Error('اكتب البريد الإلكتروني.');
-   const redirect=new URL(location.pathname,location.origin).toString();
-   const {error}=await db.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:redirect}});if(error)throw error;
-   $('loginState').textContent='أرسلنا رابط الدخول إلى بريدك، إذا كان حسابك مسجّلًا في نظام المصادقة.';
+   const email=$('email').value.trim(),password=$('password').value;
+   if(!email||!password)throw new Error('اكتب البريد الإلكتروني وكلمة المرور.');
+   const {error}=await db.auth.signInWithPassword({email,password});if(error)throw error;
+   $('loginState').textContent='تم تسجيل الدخول. جارٍ فحص صلاحية الإدارة.';
+   await enter();
+ }));
+ $('signUpButton').addEventListener('click',()=>execute(async()=>{
+   if(!db)throw new Error('قاعدة البيانات غير متصلة.');
+   const email=$('email').value.trim(),password=$('password').value;
+   if(!email||password.length<8)throw new Error('اكتب بريدك الإلكتروني وكلمة مرور تتكون من ٨ أحرف على الأقل.');
+   const {error}=await db.auth.signUp({email,password,options:{emailRedirectTo:new URL('admin/',new URL('../',location.href)).toString()}});
+   if(error)throw error;
+   $('loginState').textContent='راجع بريدك لتأكيد الحساب، ثم ارجع إلى هذه الصفحة وسجّل الدخول. إنشاء حساب لا يعطي صلاحية الإدارة تلقائيًا؛ سيتم تفعيلها للحساب المعتمد بعد التحقق.';
  }));
  if(!db){$('loginState').textContent='لوحة الإدارة في مرحلة التأسيس. لا توجد بيانات أو صلاحيات مفتوحة قبل ربط المشروع.';return;}
  execute(enter);
