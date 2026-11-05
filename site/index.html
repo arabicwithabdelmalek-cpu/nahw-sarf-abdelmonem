@@ -98,7 +98,9 @@ body{font-size:14px} .site-topbar{position:sticky;top:0;z-index:50;background:rg
 @media(max-width:590px){.lesson-edit-meta{grid-template-columns:1fr;gap:7px}.date-item{gap:6px}.date-item .day{font-size:10px}.class-main .lesson-details{font-size:11px}.money-table tbody td:last-child{flex-wrap:wrap;justify-content:flex-end}.money-table tbody td:last-child::before{margin-inline-end:auto}}
 
 
-.publish-link{display:inline-block;padding:8px 14px;font-size:12px;font-weight:800;text-decoration:none;color:#34537e}</style></head><body><div class="site-topbar"><div class="site-inner">
+.publish-link{display:inline-block;padding:8px 14px;font-size:12px;font-weight:800;text-decoration:none;color:#34537e}
+.no-lessons{grid-column:1/-1;text-align:center;padding:24px 18px;border:1px dashed #cbd7e5;color:#63738a;border-radius:15px;background:#f8faff;font-size:14px}
+</style></head><body><div class="site-topbar"><div class="site-inner">
   <a href="#home" class="site-brand" id="goHome"><span class="brand-symbol">ن<span>ـ</span>ص</span><span><strong>محاضرات النحو والصرف</strong><small>مع الدكتور عبد المنعم</small></span></a>
   <div class="site-actions"><a href="#publicTimetable" class="publish-link">المحاضرات</a><a href="#publicAbout" class="publish-link">عن البرنامج</a></div>
 </div></div><main>
@@ -112,9 +114,9 @@ body{font-size:14px} .site-topbar{position:sticky;top:0;z-index:50;background:rg
   </div>
   <aside class="upcoming-card" aria-label="المحاضرة القادمة">
     <div class="upcoming-card-top"><span class="now-label"><span class="dot"></span> المحاضرة القادمة</span><span aria-hidden="true" class="upcoming-icon">↗</span></div>
-    <div id="upcomingDate" class="upcoming-bigdate">٧ نوفمبر ٢٠٢٦</div>
-    <div class="upcoming-details"><span id="upcomingSubject" class="course-chip">المادة لم تُحدَّد بعد</span><span id="upcomingDay">السبت</span><span id="upcomingTime"></span></div>
-    <div class="upcoming-card-bottom"><span id="upcomingNum">المحاضرة ١ من ٨</span><span id="heroRange">من ٧ نوفمبر إلى ٢ ديسمبر</span></div>
+    <div id="upcomingDate" class="upcoming-bigdate">لم تعلن المواعيد بعد</div>
+    <div class="upcoming-details"><span id="upcomingSubject" class="course-chip">المادة لم تُحدَّد بعد</span><span id="upcomingDay"></span><span id="upcomingTime"></span></div>
+    <div class="upcoming-card-bottom"><span id="upcomingNum">انتظر الإعلان عن الدورة</span><span id="heroRange">الجدول قيد الإعداد</span></div>
   </aside>
 </section>
 <section class="site-inner overview-block" aria-label="معلومات الدورة">
@@ -124,11 +126,11 @@ body{font-size:14px} .site-topbar{position:sticky;top:0;z-index:50;background:rg
 </section>
 <section id="noticeBox" class="site-inner notice-inline" hidden=""><div class="notice-inline-inner"><span class="notice-glyph">✳</span><div><strong>آخر تحديث من إدارة البرنامج</strong><p id="noticeText"></p></div></div></section>
 <section id="publicTimetable" class="public-schedule site-inner">
-  <div class="section-title"><div><span class="overline">المواعيد الدراسية</span><h2>جدول المحاضرات</h2><p id="publicRange">من ٧ نوفمبر ٢٠٢٦ إلى ٢ ديسمبر ٢٠٢٦ • السبت والأربعاء</p></div><div class="schedule-count">نموذج جدول · ٨ محاضرات</div></div>
-  <div class="schedule-summary"><div><b id="publicPastCount">٠</b><span>مواعيد مضت</span></div><div><b id="publicComingCount">٨</b><span>مواعيد قادمة</span></div><div class="summary-progress"><div class="summary-track"><span id="publicProgressBar" style="width: 0%;"></span></div><small>التقدّم الزمني للدورة بحسب التواريخ</small></div></div>
-  <div class="public-grid" id="publicDates"><article class="class-tile is-next"><div class="class-number">١</div><div class="class-main"><strong>السبت، ٧ نوفمبر ٢٠٢٦</strong><small>الموعد القادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article><article class="class-tile"><div class="class-number">٢</div><div class="class-main"><strong>الأربعاء، ١١ نوفمبر ٢٠٢٦</strong><small>موعد قادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article><article class="class-tile"><div class="class-number">٣</div><div class="class-main"><strong>السبت، ١٤ نوفمبر ٢٠٢٦</strong><small>موعد قادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article><article class="class-tile"><div class="class-number">٤</div><div class="class-main"><strong>الأربعاء، ١٨ نوفمبر ٢٠٢٦</strong><small>موعد قادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article><article class="class-tile"><div class="class-number">٥</div><div class="class-main"><strong>السبت، ٢١ نوفمبر ٢٠٢٦</strong><small>موعد قادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article><article class="class-tile"><div class="class-number">٦</div><div class="class-main"><strong>الأربعاء، ٢٥ نوفمبر ٢٠٢٦</strong><small>موعد قادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article><article class="class-tile"><div class="class-number">٧</div><div class="class-main"><strong>السبت، ٢٨ نوفمبر ٢٠٢٦</strong><small>موعد قادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article><article class="class-tile"><div class="class-number">٨</div><div class="class-main"><strong>الأربعاء، ٢ ديسمبر ٢٠٢٦</strong><small>موعد قادم</small><span class="lesson-details"></span></div><span class="class-tag unspecified">لم تُحدّد</span></article></div>
-  <p class="calendar-help">هذه مواعيد مبدئية للمعاينة ولم تعتمدها إدارة البرنامج بعد. يرجى الرجوع إلى الصفحة للاطلاع على المواعيد المعتمدة.</p>
+  <div class="section-title"><div><span class="overline">المواعيد الدراسية</span><h2>جدول المحاضرات</h2><p id="publicRange">سيظهر الجدول بعد اعتماده</p></div><div class="schedule-count">لم تُعلن دورة بعد</div></div>
+  <div class="schedule-summary"><div><b id="publicPastCount">٠</b><span>مواعيد مضت</span></div><div><b id="publicComingCount">٠</b><span>مواعيد قادمة</span></div><div class="summary-progress"><div class="summary-track"><span id="publicProgressBar" style="width: 0%;"></span></div><small>التقدّم الزمني للدورة بحسب التواريخ</small></div></div>
+  <div class="public-grid" id="publicDates"><p class="no-lessons">لم تعلن مواعيد المحاضرات بعد.</p></div>
+  <p class="calendar-help">لم تعلن إدارة البرنامج المواعيد بعد. عُد إلى الصفحة للاطلاع على التحديثات.</p>
 </section>
 <section id="publicAbout" class="about-v5"><div class="site-inner about-layout"><div><span class="overline">عن البرنامج</span><h2>رحلة واضحة،<br>ومواعيد منظمة.</h2></div><div class="about-body"><p>برنامج لمحاضرات النحو والصرف مع الدكتور عبد المنعم، يُنظَّم في دورات من ثماني محاضرات. يوضح الجدول تاريخ كل لقاء ومادته عند تحديدها.</p><div class="about-points"><span>01 <b>تابع الموعد</b></span><span>02 <b>اعرف المادة</b></span><span>03 <b>راجع الإعلانات</b></span></div></div></div></section>
 <footer class="public-footer"><div class="site-inner"><div><strong>محاضرات النحو والصرف</strong><span>مع الدكتور عبد المنعم</span></div><a href="#home">العودة لأعلى الصفحة ↑</a></div></footer>
-</main><script id="scheduleData" type="application/json">{"dates":[{"date":"2026-11-07","index":0,"subject":""},{"date":"2026-11-11","index":1,"subject":""},{"date":"2026-11-14","index":2,"subject":""},{"date":"2026-11-18","index":3,"subject":""},{"date":"2026-11-21","index":4,"subject":""},{"date":"2026-11-25","index":5,"subject":""},{"date":"2026-11-28","index":6,"subject":""},{"date":"2026-12-02","index":7,"subject":""}]}</script><script src="./config.js"></script><script src="./public.js" defer></script></body></html>
+</main><script id="scheduleData" type="application/json">{"dates":[]}</script><script src="./config.js"></script><script src="./public.js" defer></script></body></html>
