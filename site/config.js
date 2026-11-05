@@ -1,6 +1,5 @@
-// Public frontend config. Publishable key only; NEVER add a secret or service-role key.
-// Fill these AFTER creating a separate Supabase project for Nahw & Sarf.
+// Public browser settings: publishable key only. Never use the service-role/secret key here.
 window.NAHW_SARF_CONFIG = Object.freeze({
-  supabaseUrl: '',
-  supabasePublishableKey: ''
+  supabaseUrl: 'https://wiubduqntjuxshuuzvvk.supabase.co',
+  supabasePublishableKey: 'sb_publishable_LAnNiPhVWnKjjtnOqKFeTQ_PiRhgNle'
 });
