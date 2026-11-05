@@ -5,7 +5,7 @@
 - `site/`: الموقع العام + لوحة الإدارة الجديدة (باستخدام صلاحيات Supabase).
 - `site/config.js`: قيم عامة فارغة تملأ فقط بعد إنشاء قاعدة مستقلة.
 - `site/_headers`: رؤوس حماية Cloudflare Pages.
-- `supabase/migrations/20261105_initial_schema.sql`: تصميم قاعدة البيانات مع تفعيل RLS للجداول كلها.
+- `supabase/migrations/20261105040000_initial_schema.sql`: تصميم قاعدة البيانات مع تفعيل RLS للجداول كلها.
 - `docs/DEPLOYMENT.md`: دليل الانتقال إلى الاستضافة الجديدة والتأكد من الخصوصية.
 
 **التنبيه:** واجهة الموقع القديم الحالية على GitHub Pages لم تتغير؛ ملفات هذا المجلد مرحلة تطوير حتى إنشاء Cloudflare/Supabase مستقلين.
