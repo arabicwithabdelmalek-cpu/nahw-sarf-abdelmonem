@@ -19,7 +19,7 @@
     const tile=node('article','class-tile');
     const main=node('div','class-main');
     main.append(node('strong','',`${day(lesson.lesson_date)}، ${fmt(lesson.lesson_date)}`),node('small','',upcoming?'الموعد القادم':lesson.lesson_date<today()?'تاريخ سابق':'موعد قادم'));
-    const info=[lesson.start_time?`الساعة ${String(lesson.start_time).slice(0,5)}`:'',lesson.title||''].filter(Boolean).join(' • ');
+    const info=[lesson.start_time?`الساعة ${String(lesson.start_time).slice(0,5)}`:'',lesson.title||'',lesson.notes||''].filter(Boolean).join(' • ');
     main.append(node('span','lesson-details',info));
     const tag=node('span','class-tag '+(lesson.subject==='نحو'?'nahw':lesson.subject==='صرف'?'sarf':'unspecified'),lesson.subject==='غير محدد'?'لم تُحدّد':lesson.subject);
     tile.append(node('div','class-number',ar(index+1)),main,tag);
@@ -30,6 +30,7 @@
     state.lessons=lessons;state.live=live;
     const iso=today(),next=lessons.find(l=>l.lesson_date>=iso),past=lessons.filter(l=>l.lesson_date<iso).length;
     const grid=$('publicDates');grid.replaceChildren(...lessons.map((l,i)=>card(l,i,l===next)));
+    if(!lessons.length)grid.append(node('p','no-lessons','لم تعلن إدارة البرنامج مواعيد محاضرات بعد.'));
     $('publicPastCount').textContent=ar(past);
     $('publicComingCount').textContent=ar(lessons.length-past);
     $('publicProgressBar').style.width=lessons.length?`${past/lessons.length*100}%`:'0%';
@@ -40,6 +41,7 @@
     $('upcomingTime').textContent=next?[next.start_time?`الساعة ${next.start_time.slice(0,5)}`:'',next.title].filter(Boolean).join(' • '):'';
     if(lessons.length){$('publicRange').textContent=`من ${fmt(lessons[0].lesson_date)} إلى ${fmt(lessons[lessons.length-1].lesson_date)}`;}
     else {$('publicRange').textContent='لم تُعلن مواعيد بعد';}
+    const heroRange=$('heroRange');if(heroRange)heroRange.textContent=lessons.length?`من ${fmt(lessons[0].lesson_date)} إلى ${fmt(lessons[lessons.length-1].lesson_date)}`:'الجدول قيد الإعداد';
     if(live){
       courseCount.textContent=`الدورة الحالية · ${ar(lessons.length)} محاضرة`;
       banner.textContent='هذه مواعيد الدورة التي نشرتها إدارة البرنامج. يُرجى متابعة الصفحة لأي تحديث.';
@@ -71,4 +73,6 @@
   }
   paint(fallback);
   load();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
+  window.setInterval(()=>{if(!document.hidden)load();},120000);
 })();
