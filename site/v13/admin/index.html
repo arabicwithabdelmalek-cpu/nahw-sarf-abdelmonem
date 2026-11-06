@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-release="v13">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#f8f7f4">
+<title>إدارة المحاضرات | الدكتور عبد المنعم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../admin/style.css?v=v13-newpath">
+</head>
+<body>
+<header class="topbar">
+ <div class="shell topbar-inner">
+  <a class="brand" href="../" aria-label="الصفحة الرئيسية"><strong>النحو والصرف</strong><small>محاضرات الدكتور عبد المنعم</small></a>
+  <nav class="top-actions" aria-label="روابط الموقع">
+   <a href="../" class="back-home">عرض الموقع</a>
+   <button type="button" id="logout" class="outline" hidden>تسجيل الخروج</button>
+  </nav>
+ </div>
+</header>
+<main class="shell">
+ <div id="alert" class="notice" role="status" hidden></div>
+ <section id="bootPanel" class="auth-card auth-loading" role="status" aria-live="polite"><p>جارٍ فتح لوحة الإدارة…</p></section>
+ <section id="authPanel" class="auth-card" hidden>
+  <p class="eyebrow">إدارة محاضرات النحو والصرف</p>
+  <h1>تسجيل الدخول</h1>
+  <p class="subtle">استخدم حساب المسؤول لإدارة جدول المحاضرات والطلاب والمدفوعات.</p>
+  <form id="loginForm" class="form-grid login-fields">
+   <label>البريد الإلكتروني<input type="email" id="email" autocomplete="email" dir="ltr" placeholder="example@email.com" required></label>
+   <label>كلمة المرور<input type="password" id="password" autocomplete="current-password" minlength="8" dir="ltr" required></label>
+   <div class="actions"><button id="signInButton" type="submit" class="primary">دخول لوحة الإدارة</button><button id="forgotPassword" type="button" class="link-button">نسيت كلمة المرور؟</button><button id="signUpButton" type="button" hidden>إنشاء حساب</button></div>
+  </form>
+  <p id="loginState" class="hint" role="status" aria-live="polite"></p>
+  <p><a href="./reset.html" id="resetPageLink" hidden>فتح صفحة تغيير كلمة المرور</a></p>
+ </section>
+ <section id="workspace" hidden>
+  <div class="workspace-grid">
+   <aside class="sidebar" aria-label="أقسام الإدارة">
+    <div class="sidebar-heading"><small>لوحة الإدارة</small><strong>الدورة الدراسية</strong></div>
+    <nav class="tabs" aria-label="التنقل داخل الإدارة">
+     <button type="button" class="tab active" data-tab="lessons">المحاضرات</button>
+     <button type="button" class="tab" data-tab="students">الطلاب</button>
+     <button type="button" class="tab" data-tab="finance">المدفوعات</button>
+     <button type="button" class="tab" data-tab="courses">الدورات</button>
+     <button type="button" class="tab" data-tab="announcements">الإعلانات</button>
+    </nav>
+    <div class="sidebar-footer">التعديلات المحفوظة تظهر للطلاب عند نشرها.</div>
+   </aside>
+   <div class="content-area">
+    <div class="page-title">
+     <div><p class="eyebrow">مساحة المسؤول</p><h1>إدارة المحاضرات</h1></div>
+     <span class="user-badge" id="userBadge"></span>
+    </div>
+    <div class="course-picker">
+     <label for="activeCourseSelect">الدورة المعروضة</label>
+     <select id="activeCourseSelect" aria-label="اختر الدورة"></select>
+    </div>
+    <section class="panel" data-panel="lessons" hidden>
+     <div class="panel-heading"><div><h2>المحاضرات</h2><p>مواعيد الدورة ومادة كل محاضرة</p></div><button type="button" class="outline" id="newLesson">إضافة محاضرة</button></div>
+     <div class="schedule-generator" id="scheduleGenerator"><h3>إنشاء جدول للدورة</h3><p class="hint">٨ محاضرات يومي السبت والأربعاء، يمكنك مراجعتها قبل النشر.</p><div class="generator-fields"><label for="generateStart">تاريخ البداية</label><input type="date" id="generateStart"><button type="button" id="generateLessons" class="outline">إنشاء الجدول</button></div></div>
+     <form id="lessonForm" class="form-grid editor-form" hidden>
+      <input type="hidden" id="lessonId">
+      <h3 class="form-heading">بيانات المحاضرة</h3>
+      <label>رقم المحاضرة<input type="number" id="lessonPosition" min="1" max="60" value="1" required></label>
+      <label>التاريخ<input type="date" id="lessonDate" required></label>
+      <label>المادة<select id="lessonSubject"><option value="غير محدد">لم تُحدّد</option><option value="نحو">نحو</option><option value="صرف">صرف</option></select></label>
+      <label>الساعة<input type="time" id="lessonTime"></label>
+      <label class="wide">عنوان المحاضرة (اختياري)<input id="lessonTitle" maxlength="200"></label>
+      <label class="wide">ملاحظة للطلاب (اختياري)<input id="lessonNotes" maxlength="500"></label>
+      <label class="check wide"><input type="checkbox" id="lessonPublished"> إظهار المحاضرة للطلاب</label>
+      <div class="actions wide"><button type="submit">حفظ المحاضرة</button><button id="resetLesson" class="outline" type="button">إلغاء</button></div>
+     </form>
+     <div class="records lesson-records" id="lessonsList"></div>
+    </section>
+    <section class="panel" data-panel="students" hidden>
+     <div class="panel-heading"><div><h2>الطلاب</h2><p>الطلاب المسجلون في الدورة الحالية</p></div><button type="button" class="outline" id="newStudent">إضافة طالب</button></div>
+     <form class="form-grid editor-form" id="studentForm" hidden>
+      <input type="hidden" id="studentId">
+      <h3 class="form-heading">بيانات الطالب</h3>
+      <label>اسم الطالب<input id="studentName" maxlength="160" required></label>
+      <label>وسيلة التواصل (اختياري)<input id="studentContact" maxlength="200"></label>
+      <div class="actions wide"><button type="submit" id="studentSaveButton">حفظ الطالب</button><button type="button" id="studentCancelButton" class="outline">إلغاء</button></div>
+     </form>
+     <div class="records" id="studentsList"></div>
+    </section>
+    <section class="panel" data-panel="finance" hidden>
+     <div class="panel-heading"><div><h2>المدفوعات</h2><p>ملخص الاشتراكات والمبالغ المستحقة</p></div><button type="button" id="openPayment" class="primary">تسجيل دفعة</button></div>
+     <div class="financial-summary" id="financeSummary" aria-label="الملخص المالي"></div>
+     <div class="finance-settings"><span>يُقسم إجمالي تكلفة الدورة على الطلاب النشطين.</span><button type="button" id="openFee" class="text-button">تعديل تكلفة الدورة</button></div>
+     <form id="feeForm" class="form-grid editor-form" hidden>
+      <h3 class="form-heading">تكلفة الدورة</h3>
+      <label class="wide">إجمالي تكلفة الدورة بالجنيه<input type="number" id="totalFee" step="0.01" min="0" required value="0"></label>
+      <div class="actions wide"><button type="submit">حفظ التكلفة</button><button type="button" id="cancelFee" class="outline">إلغاء</button></div>
+     </form>
+     <div class="subheading"><h3>حالة الطلاب</h3><p>اضغط «تسجيل دفعة» أمام الطالب لإضافة ما دفعه.</p></div>
+     <div id="studentBalances" class="balances"></div>
+     <form id="paymentForm" class="form-grid editor-form payment-form" hidden>
+      <h3 class="form-heading" id="paymentFormTitle">تسجيل دفعة</h3>
+      <label>الطالب<select id="paymentStudent" required></select></label>
+      <label>المبلغ المدفوع بالجنيه<input id="paymentAmount" type="number" min="0.01" step="0.01" required></label>
+      <label>تاريخ الدفع<input id="paymentDate" type="date" required></label>
+      <label>ملاحظة (اختياري)<input id="paymentNotes" maxlength="500"></label>
+      <div class="actions wide"><button type="submit">حفظ الدفعة</button><button type="button" id="cancelPayment" class="outline">إلغاء</button></div>
+     </form>
+     <details class="history" id="paymentHistory">
+      <summary>سجل الدفعات <span id="paymentHistoryCount">٠</span></summary>
+      <div class="records" id="paymentsList"></div>
+     </details>
+    </section>
+    <section class="panel" data-panel="courses" hidden>
+     <div class="panel-heading"><div><h2>الدورات</h2><p>الدورات الدراسية المسجلة</p></div><button type="button" class="outline" id="newCourse">إضافة دورة</button></div>
+     <form id="courseForm" class="form-grid editor-form" hidden>
+      <input type="hidden" id="courseId">
+      <h3 class="form-heading">بيانات الدورة</h3>
+      <label>اسم الدورة<input id="courseTitle" required maxlength="160"></label>
+      <label>تاريخ البداية<input id="courseStart" type="date"></label>
+      <label class="wide">وصف الدورة (اختياري)<textarea id="courseDescription" rows="2"></textarea></label>
+      <label class="check"><input type="checkbox" id="coursePublished"> نشر الدورة للطلاب</label>
+      <label class="check"><input type="checkbox" id="courseActive"> الدورة الحالية</label>
+      <div class="actions wide"><button type="submit">حفظ الدورة</button><button id="resetCourse" type="button" class="outline">إلغاء</button></div>
+     </form>
+     <div id="coursesList" class="records"></div>
+    </section>
+    <section class="panel" data-panel="announcements" hidden>
+     <div class="panel-heading"><div><h2>الإعلانات</h2><p>تنبيهات تظهر للطلاب في الصفحة الرئيسية</p></div><button type="button" class="outline" id="newAnnouncement">إضافة إعلان</button></div>
+     <form id="announcementForm" class="form-grid editor-form" hidden>
+      <input type="hidden" id="announcementId">
+      <h3 class="form-heading">الإعلان</h3>
+      <label class="wide">نص الإعلان<textarea id="announcementContent" rows="3" required></textarea></label>
+      <label class="check wide"><input id="announcementPublished" type="checkbox"> نشر الإعلان على الموقع</label>
+      <div class="actions wide"><button type="submit">حفظ الإعلان</button><button type="button" id="resetAnnouncement" class="outline">إلغاء</button></div>
+     </form>
+     <div id="announcementsList" class="records"></div>
+    </section>
+   </div>
+  </div>
+ </section>
+</main>
+<script src="../../config.js?v=v13-newpath"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="../../admin/app.js?v=v13-newpath" defer></script>
+</body>
+</html>
