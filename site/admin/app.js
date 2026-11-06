@@ -13,7 +13,12 @@ async function execute(fn){try{await fn();}catch(err){console.error('Admin opera
 async function one(promise){const res=await promise;if(res.error)throw res.error;return res.data;}
 const course=()=>{if(!state.courseId)throw new Error('يجب إنشاء دورة واختيارها أولًا.');return state.courseId;};
 function record(parent,title,subtitle,actions=[]){let item=e('div','record'),left=e('div',''),right=e('div','record-actions');left.append(e('b','',title),e('small','',subtitle));for(const a of actions){let b=e('button','mini '+(a.danger?'danger':'outline'),a.label);b.type='button';b.addEventListener('click',()=>execute(a.action));right.append(b)}item.append(left,right);parent.append(item);}
-function selectTab(tab){document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);document.querySelectorAll('[data-tab]').forEach(p=>{p.classList.toggle('active',p.dataset.tab===tab);p.setAttribute('aria-selected',String(p.dataset.tab===tab))});}
+function selectTab(tab){
+ document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
+ document.querySelectorAll('[data-tab]').forEach(p=>{p.classList.toggle('active',p.dataset.tab===tab);p.setAttribute('aria-current',p.dataset.tab===tab?'page':'false')});
+ const names={lessons:'المحاضرات',students:'الطلاب',finance:'المدفوعات',courses:'الدورات',announcements:'الإعلانات'};
+ document.querySelector('.page-title h1').textContent=names[tab]||'لوحة الإدارة';
+}
 function resetCourse(){['courseId','courseTitle','courseStart','courseDescription'].forEach(k=>$(k).value='');$('coursePublished').checked=false;$('courseActive').checked=false;$('courseForm').hidden=true;}
 function resetLesson(){['lessonId','lessonDate','lessonTitle','lessonTime','lessonNotes'].forEach(k=>$(k).value='');$('lessonPosition').value=String(state.lessons.length+1);$('lessonSubject').value='غير محدد';$('lessonPublished').checked=false;$('lessonForm').hidden=true;}
 function resetAnnouncement(){ $('announcementId').value='';$('announcementContent').value='';$('announcementPublished').checked=false;$('announcementForm').hidden=true;}
@@ -95,25 +100,98 @@ async function saveStudent(ev){ev.preventDefault();const name=$('studentName').v
  }
  resetStudent();await loadRelated();alertMsg('تم حفظ بيانات الطالب.');
 }
-async function loadFinance(){const summary=$('financeSummary'),list=$('paymentsList');summary.replaceChildren();list.replaceChildren();state.payments=[];state.fee=0;if(!state.courseId)return;
- const data=await one(db.from('course_finances').select('total_fee').eq('course_id',state.courseId).maybeSingle());state.fee=n(data?.total_fee);$('totalFee').value=state.fee;
+const cents=v=>Math.round(n(v)*100);
+function showPaymentForm(enrollmentId='',amount=0){
+ if(!state.courseId)throw new Error('اختر دورة أولًا.');
+ const picker=$('paymentStudent');
+ if(!picker.options.length)throw new Error('أضف طالبًا نشطًا إلى الدورة أولًا.');
+ $('paymentForm').hidden=false;
+ $('paymentFormTitle').textContent='تسجيل دفعة';
+ if(enrollmentId && [...picker.options].some(o=>o.value===enrollmentId))picker.value=enrollmentId;
+ else picker.selectedIndex=0;
+ $('paymentAmount').value=amount>0?Number((amount/100).toFixed(2)).toFixed(2):'';
+ $('paymentDate').value=today();
+ $('paymentNotes').value='';
+ $('paymentForm').scrollIntoView({behavior:'smooth',block:'start'});
+ $('paymentAmount').focus({preventScroll:true});
+}
+async function loadFinance(){
+ const summary=$('financeSummary'),history=$('paymentsList'),balances=$('studentBalances');
+ summary.replaceChildren();history.replaceChildren();balances.replaceChildren();
+ state.payments=[];state.fee=0;
+ if(!state.courseId)return;
+ const data=await one(db.from('course_finances').select('total_fee').eq('course_id',state.courseId).maybeSingle());
+ state.fee=n(data?.total_fee);$('totalFee').value=state.fee;
  const ids=state.enrollments.map(x=>x.id);
  if(ids.length)state.payments=await one(db.from('payments').select('*').in('enrollment_id',ids).order('paid_on',{ascending:false}));
  const active=state.enrollments.filter(x=>x.status==='نشط');
- const totalCents=Math.round(state.fee*100),baseShare=active.length?Math.floor(totalCents/active.length):0,remainder=active.length?totalCents%active.length:0;
- const shareFor=i=>(baseShare+(i<remainder?1:0))/100;
- const totalPaid=state.payments.reduce((x,p)=>x+n(p.amount),0);
- [['إجمالي الدورة',money(state.fee)],['الطلاب النشطون',String(active.length)],['حصة الطالب',active.length?money(baseShare/100)+(remainder?' + توزيع القروش':''):'—']].forEach(([label,value])=>{const c=e('div','finance-card');c.append(e('span','',label),e('strong','',value));summary.append(c)});
- record(list,'إجمالي المدفوع من جميع الطلاب',money(totalPaid),[]);
- for(const [i,ent] of active.entries()){const paid=state.payments.filter(p=>p.enrollment_id===ent.id).reduce((x,p)=>x+n(p.amount),0),share=shareFor(i);
-  record(list,ent.students?.full_name||'طالب',`المطلوب: ${money(share)} • المدفوع: ${money(paid)} • المتبقي: ${money(Math.max(0,share-paid))}`,[]);
+ const totalCents=cents(state.fee);
+ const base=active.length?Math.floor(totalCents/active.length):0;
+ const remainder=active.length?totalCents%active.length:0;
+ const shareFor=i=>base+(i<remainder?1:0);
+ const paidFor=id=>state.payments.filter(p=>p.enrollment_id===id).reduce((v,p)=>v+cents(p.amount),0);
+ const collected=state.payments.reduce((v,p)=>v+cents(p.amount),0);
+ const outstanding=active.reduce((v,ent,i)=>v+Math.max(0,shareFor(i)-paidFor(ent.id)),0);
+ const shareLabel=!active.length?'—':remainder?money(base/100)+' – '+money((base+1)/100):money(base/100);
+ const stats=[
+  {label:'إجمالي الدورة',value:money(totalCents/100),className:''},
+  {label:'نصيب الطالب',value:shareLabel,className:''},
+  {label:'إجمالي المدفوع',value:money(collected/100),className:'earned'},
+  {label:'المتبقي',value:money(outstanding/100),className:'remaining'}
+ ];
+ for(const stat of stats){
+  const card=e('div','finance-card'+(stat.className?' '+stat.className:''));
+  card.append(e('span','',stat.label),e('strong','',stat.value));
+  summary.append(card);
  }
- for(const p of state.payments){const ent=state.enrollments.find(x=>x.id===p.enrollment_id);
-  record(list,`${ent?.students?.full_name||'طالب'} • ${money(p.amount)}`,`${p.paid_on} ${p.notes?'• '+p.notes:''}`,[{label:'حذف الدفعة',danger:true,action:async()=>{if(!confirm('حذف هذه الدفعة نهائيًا؟'))return;await one(db.from('payments').delete().eq('id',p.id));await loadFinance();}}]);
+ $('paymentHistoryCount').textContent=String(state.payments.length);
+ if(!active.length)balances.append(e('p','balance-empty','لا يوجد طلاب نشطون في هذه الدورة.'));
+ else{
+  for(const [i,ent] of active.entries()){
+   const share=shareFor(i),paid=paidFor(ent.id),due=Math.max(0,share-paid);
+   const full=totalCents>0&&due===0,part=paid>0&&due>0;
+   const row=e('article','balance-row'+(full?' paid':''));
+   const person=e('div','balance-person');
+   person.append(e('b','',ent.students?.full_name||'طالب'));
+   const label=e('span','balance-status '+(full?'paid':part?'part':''),totalCents===0?'لم تُحدّد التكلفة':full?'مدفوع بالكامل':part?'مدفوع جزئيًا':'لم يدفع');
+   person.append(label);
+   const details=e('div','balance-detail');
+   const amounts=e('div','balance-amounts');
+   const expected=e('span','','المطلوب: ');expected.append(e('b','',money(share/100)));
+   const actual=e('span','','المدفوع: ');actual.append(e('b','',money(paid/100)));
+   const rem=e('span','','المتبقي: ');rem.append(e('b','',money(due/100)));
+   amounts.append(expected,actual,rem);details.append(amounts);
+   const track=e('div','balance-track');const fill=e('span','');
+   fill.style.width=share>0?Math.min(100,Math.max(0,paid/share*100))+'%':'0%';
+   track.append(fill);details.append(track);
+   const action=e('div','balance-action');
+   const add=e('button','outline','تسجيل دفعة');add.type='button';
+   add.addEventListener('click',()=>execute(async()=>showPaymentForm(ent.id,due)));
+   action.append(add);row.append(person,details,action);balances.append(row);
+  }
+ }
+ if(!state.payments.length)history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
+ for(const p of state.payments){
+  const ent=state.enrollments.find(x=>x.id===p.enrollment_id);
+  record(history,(ent?.students?.full_name||'طالب')+' — '+money(p.amount),p.paid_on+(p.notes?' • '+p.notes:''),[{
+   label:'حذف',danger:true,action:async()=>{if(!confirm('هل تريد حذف هذه الدفعة؟'))return;await one(db.from('payments').delete().eq('id',p.id));await loadFinance();}
+  }]);
  }
 }
-async function saveFee(ev){ev.preventDefault();await one(db.from('course_finances').upsert({course_id:course(),total_fee:n($('totalFee').value)},{onConflict:'course_id'}));await loadFinance();alertMsg('تم حفظ تكلفة الدورة.');}
-async function savePayment(ev){ev.preventDefault();if(!$('paymentStudent').value)throw new Error('أضف طالبًا نشطًا أولًا.');await one(db.from('payments').insert({enrollment_id:$('paymentStudent').value,amount:n($('paymentAmount').value),paid_on:$('paymentDate').value,notes:$('paymentNotes').value.trim()}));$('paymentAmount').value='';$('paymentNotes').value='';await loadFinance();alertMsg('تم تسجيل الدفعة.');}
+async function saveFee(ev){
+ ev.preventDefault();
+ await one(db.from('course_finances').upsert({course_id:course(),total_fee:n($('totalFee').value)},{onConflict:'course_id'}));
+ $('feeForm').hidden=true;await loadFinance();alertMsg('تم تحديث تكلفة الدورة.');
+}
+async function savePayment(ev){
+ ev.preventDefault();
+ if(!$('paymentStudent').value)throw new Error('اختر طالبًا نشطًا أولًا.');
+ const amount=n($('paymentAmount').value);
+ if(amount<=0)throw new Error('أدخل مبلغًا أكبر من صفر.');
+ await one(db.from('payments').insert({enrollment_id:$('paymentStudent').value,amount,paid_on:$('paymentDate').value,notes:$('paymentNotes').value.trim()}));
+ $('paymentForm').hidden=true;$('paymentAmount').value='';$('paymentNotes').value='';
+ await loadFinance();alertMsg('تم حفظ الدفعة بنجاح.');
+}
 
 async function loadAnnouncements(){const list=$('announcementsList');list.replaceChildren();state.announcements=await one(db.from('announcements').select('*').order('created_at',{ascending:false}));
  for(const a of state.announcements)record(list,a.content,a.is_published?'منشور':'مخفي',[
@@ -137,6 +215,10 @@ function init(){
  $('paymentDate').value=today();
  $('generateStart').value=today();
  $('generateLessons').addEventListener('click',()=>execute(generateLessons));
+ $('openPayment').addEventListener('click',()=>execute(async()=>showPaymentForm()));
+ $('cancelPayment').addEventListener('click',()=>{$('paymentForm').hidden=true;});
+ $('openFee').addEventListener('click',()=>{$('feeForm').hidden=false;$('totalFee').focus();});
+ $('cancelFee').addEventListener('click',()=>{$('feeForm').hidden=true;});
  $('newCourse').addEventListener('click',()=>{resetCourse();$('courseForm').hidden=false;$('courseTitle').focus();});
  $('newLesson').addEventListener('click',()=>execute(async()=>{course();resetLesson();$('lessonForm').hidden=false;$('lessonDate').focus();}));
  $('newStudent').addEventListener('click',()=>execute(async()=>{course();resetStudent();$('studentForm').hidden=false;$('studentCancelButton').hidden=false;$('studentName').focus();}));
