@@ -80,16 +80,54 @@ async function generateLessons(){
  alertMsg('تم إنشاء ٨ محاضرات غير منشورة. اختر نحو أو صرف وحدّد الساعة لكل محاضرة، ثم انشر ما تريد إظهاره للطلاب.');
 }
 
-async function loadStudents(){const list=$('studentsList');list.replaceChildren();state.enrollments=[];if(!state.courseId)return;
- state.enrollments=await one(db.from('enrollments').select('id,student_id,status,students(id,full_name,contact)').eq('course_id',state.courseId).order('created_at'));
- for(const ent of state.enrollments){const s=ent.students||{};
-  record(list,s.full_name||'طالب',`${s.contact||'بدون وسيلة تواصل'} • ${ent.status}`, [
-   {label:'تعديل',action:async()=>{ $('studentId').value=s.id;$('studentName').value=s.full_name;$('studentContact').value=s.contact||'';$('studentSaveButton').textContent='حفظ التعديل';$('studentCancelButton').hidden=false;selectTab('students');$('studentForm').hidden=false;$('studentForm').scrollIntoView({behavior:'smooth',block:'start'});$('studentName').focus({preventScroll:true});}},
-   {label:ent.status==='نشط'?'إيقاف الاشتراك':'إعادة التنشيط',action:async()=>{await one(db.from('enrollments').update({status:ent.status==='نشط'?'متوقف':'نشط'}).eq('id',ent.id));await loadRelated();}}
+let studentsLoadVersion=0;
+async function loadStudents(){
+ const version=++studentsLoadVersion;
+ const courseId=state.courseId;
+ const list=$('studentsList');
+ const paymentStudent=$('paymentStudent');
+ if(!courseId){
+  state.enrollments=[];
+  list.replaceChildren();
+  paymentStudent.replaceChildren();
+  return;
+ }
+ const rows=await one(db.from('enrollments').select('id,student_id,status,students(id,full_name,contact)').eq('course_id',courseId).order('created_at'));
+ // Ignore a superseded response; asynchronous requests may finish out of order.
+ if(version!==studentsLoadVersion||state.courseId!==courseId)return;
+ // Keep exactly one enrollment entry per student on the current course.
+ const seen=new Set();
+ state.enrollments=rows.filter(ent=>{
+  const key=ent.student_id||ent.id;
+  if(seen.has(key))return false;
+  seen.add(key);
+  return true;
+ });
+ // Clear only when the latest request has completed, so overlapping loads can't append duplicate cards.
+ list.replaceChildren();
+ for(const ent of state.enrollments){const student=ent.students||{};
+  record(list,student.full_name||'طالب',`${student.contact||'بدون وسيلة تواصل'} • ${ent.status}`,[
+   {label:'تعديل',action:async()=>{
+    $('studentId').value=student.id;
+    $('studentName').value=student.full_name;
+    $('studentContact').value=student.contact||'';
+    $('studentSaveButton').textContent='حفظ التعديل';
+    $('studentCancelButton').hidden=false;
+    selectTab('students');
+    $('studentForm').hidden=false;
+    $('studentForm').scrollIntoView({behavior:'smooth',block:'start'});
+    $('studentName').focus({preventScroll:true});
+   }},
+   {label:ent.status==='نشط'?'إيقاف الاشتراك':'إعادة التنشيط',action:async()=>{
+    await one(db.from('enrollments').update({status:ent.status==='نشط'?'متوقف':'نشط'}).eq('id',ent.id));
+    await loadRelated();
+   }}
   ]);
  }
  if(!state.enrollments.length)list.append(e('p','subtle','لا يوجد طلاب مسجلون في هذه الدورة.'));
- const paymentStudent=$('paymentStudent');paymentStudent.replaceChildren();for(const ent of state.enrollments.filter(x=>x.status==='نشط'))paymentStudent.append(new Option(ent.students?.full_name||'طالب',ent.id));
+ paymentStudent.replaceChildren();
+ for(const ent of state.enrollments.filter(x=>x.status==='نشط'))
+  paymentStudent.append(new Option(ent.students?.full_name||'طالب',ent.id));
 }
 async function saveStudent(ev){ev.preventDefault();const name=$('studentName').value.trim(),contact=$('studentContact').value.trim(),oldId=$('studentId').value;if(!name)throw new Error('اكتب اسم الطالب.');course();
  if(oldId){await one(db.from('students').update({full_name:name,contact}).eq('id',oldId));}
@@ -288,7 +326,7 @@ function init(){
  }));
  if(!db){$('loginState').textContent='تعذّر الاتصال بخدمة تسجيل الدخول. حاول تحديث الصفحة.';return;}
  execute(enter);
- db.auth.onAuthStateChange(event=>{if(event==='SIGNED_IN'&&!state.user)setTimeout(()=>execute(enter),50);});
+ db.auth.onAuthStateChange(event=>{if(event==='SIGNED_IN'&&!state.user)setTimeout(()=>{if(!state.user)execute(enter);},50);});
 }
 init();
 })();
