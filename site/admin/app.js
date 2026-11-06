@@ -203,12 +203,39 @@ async function loadAnnouncements(){const list=$('announcementsList');list.replac
 async function saveAnnouncement(ev){ev.preventDefault();const id=$('announcementId').value,data={content:$('announcementContent').value.trim(),is_published:$('announcementPublished').checked};if(!data.content)throw new Error('اكتب الإعلان.');if(id)await one(db.from('announcements').update(data).eq('id',id));else await one(db.from('announcements').insert(data));resetAnnouncement();await loadAnnouncements();alertMsg('تم حفظ الإعلان.');}
 async function loadRelated(){await loadLessons();await loadStudents();await loadFinance();}
 async function enter(){
- if(!db){$('loginState').textContent='تعذّر الاتصال بخدمة تسجيل الدخول. حاول تحديث الصفحة.';return;}
- const {data:{user},error}=await db.auth.getUser();if(error||!user)return;
- const admin=await one(db.from('site_admins').select('user_id').eq('user_id',user.id).maybeSingle());
- if(!admin){$('loginState').textContent='الحساب مسجل، لكنه غير مُضاف إلى مسؤولي هذا البرنامج. لا توجد صلاحية لعرض البيانات.';return;}
- state.user=user;$('alert').hidden=true;$('authPanel').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;$('userBadge').textContent=user.email||'المشرف';
- await loadCourses();await loadAnnouncements();selectTab(state.courseId?'lessons':'courses');
+ const showLogin=()=>{
+  $('bootPanel').hidden=true;
+  $('authPanel').hidden=false;
+  $('workspace').hidden=true;
+  $('logout').hidden=true;
+ };
+ if(!db){
+  $('loginState').textContent='تعذّر الاتصال بخدمة تسجيل الدخول. حاول تحديث الصفحة.';
+  showLogin();return;
+ }
+ try{
+  const {data:{user},error}=await db.auth.getUser();
+  if(error||!user){showLogin();return;}
+  const admin=await one(db.from('site_admins').select('user_id').eq('user_id',user.id).maybeSingle());
+  if(!admin){
+   $('loginState').textContent='الحساب ليس لديه صلاحية إدارة البرنامج.';
+   showLogin();return;
+  }
+  state.user=user;
+  $('alert').hidden=true;
+  $('bootPanel').hidden=true;
+  $('authPanel').hidden=true;
+  $('workspace').hidden=false;
+  $('logout').hidden=false;
+  $('userBadge').textContent=user.email||'المشرف';
+  await loadCourses();
+  await loadAnnouncements();
+  selectTab(state.courseId?'lessons':'courses');
+ }catch(err){
+  state.user=null;
+  showLogin();
+  throw err;
+ }
 }
 
 function init(){
