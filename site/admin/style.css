@@ -132,3 +132,14 @@ h1,h2,h3,p{margin-top:0}
 /* Keep the initial authentication check visually neutral: show one stable screen. */
 .auth-loading{display:flex;align-items:center;justify-content:center;min-height:180px;text-align:center}
 .auth-loading p{color:var(--muted);font-size:13px;margin:0;font-weight:700}
+
+
+/* Reversible student removal from both the student list and finance cards. */
+.deleted-students{margin-top:22px;border-top:1px solid var(--border);padding-top:13px}
+.deleted-students summary{font-size:12px;font-weight:800;color:var(--muted);min-height:44px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none}
+.deleted-students summary::-webkit-details-marker{display:none}
+.deleted-students summary span{font-size:11px;padding:2px 9px;background:var(--soft);border-radius:8px}
+.deleted-students .records{padding-top:9px}
+.balance-action{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end}
+.balance-action button.danger{color:var(--danger);background:#fff9f7;border-color:#ead9d4}
+.balance-action button.danger:hover{background:#f8eeeb}
