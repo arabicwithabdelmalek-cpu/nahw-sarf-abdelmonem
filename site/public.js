@@ -28,12 +28,9 @@
   }
   function paint(lessons,live=false,course){
     state.lessons=lessons;state.live=live;
-    const iso=today(),next=lessons.find(l=>l.lesson_date>=iso),past=lessons.filter(l=>l.lesson_date<iso).length;
+    const iso=today(),next=lessons.find(l=>l.lesson_date>=iso);
     const grid=$('publicDates');grid.replaceChildren(...lessons.map((l,i)=>card(l,i,l===next)));
     if(!lessons.length)grid.append(node('p','no-lessons','لم تعلن إدارة البرنامج مواعيد محاضرات بعد.'));
-    $('publicPastCount').textContent=ar(past);
-    $('publicComingCount').textContent=ar(lessons.length-past);
-    $('publicProgressBar').style.width=lessons.length?`${past/lessons.length*100}%`:'0%';
     $('upcomingDate').textContent=next?fmt(next.lesson_date):'لا توجد محاضرات قادمة';
     $('upcomingSubject').textContent=next?(next.subject==='غير محدد'?'المادة لم تُحدَّد بعد':next.subject):'انتظر إعلان الدورة التالية';
     $('upcomingNum').textContent=next?`المحاضرة ${ar(lessons.indexOf(next)+1)} من ${ar(lessons.length)}`:'لا توجد مواعيد جديدة';
@@ -44,7 +41,7 @@
     const heroRange=$('heroRange');if(heroRange)heroRange.textContent=lessons.length?`من ${fmt(lessons[0].lesson_date)} إلى ${fmt(lessons[lessons.length-1].lesson_date)}`:'الجدول قيد الإعداد';
     if(live){
       courseCount.textContent=`الدورة الحالية · ${ar(lessons.length)} محاضرة`;
-      banner.textContent='هذه مواعيد الدورة التي نشرتها إدارة البرنامج. يُرجى متابعة الصفحة لأي تحديث.';
+      banner.textContent='تُحدَّث هذه المواعيد عند إعلان أي تغيير.';
       if(course?.title){document.title=`${course.title} — الدكتور عبد المنعم`;}
     }
   }
@@ -68,7 +65,7 @@
       else $('noticeBox').hidden=true;
     }catch(e){
       console.warn('Public data cannot be loaded; keeping last published HTML fallback.',e.message);
-      banner.textContent='تعذّر تحديث المواعيد الآن. المعروض نسخة احتياطية؛ يُرجى المحاولة لاحقًا.';
+      banner.textContent='تعذّر تحديث المواعيد الآن. حاول فتح الصفحة مرة أخرى لاحقًا.';
     }
   }
   paint(fallback);
