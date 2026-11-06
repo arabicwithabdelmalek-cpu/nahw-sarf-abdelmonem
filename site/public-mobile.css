@@ -1,0 +1,68 @@
+/* Readable, compact student-facing course timetable on phones. */
+@media(max-width:640px){
+  html{scroll-padding-top:76px}
+  .container{width:calc(100% - 28px)}
+  .site-header{position:sticky;top:0}
+  .header-inner{min-height:69px;gap:10px}
+  .brand{min-width:0;flex:1}
+  .brand strong{font-size:14px;line-height:1.55}
+  .brand span{font-size:10px}
+  .header-links{gap:0;flex:none}
+  .header-links a:first-child{display:none}
+  .header-links .admin-link{padding:8px 10px;font-size:11px;min-height:40px;display:flex;align-items:center;border-radius:9px}
+  .hero-wrap{padding:19px 0 5px}
+  .hero{display:grid;grid-template-columns:minmax(0,1fr);gap:17px;background:transparent;color:var(--ink);padding:6px 0 10px;border-radius:0}
+  .hero-copy{max-width:none}
+  .eyebrow{color:var(--wine);font-size:11px;margin-bottom:5px}
+  .hero h1{font-size:clamp(23px,6.2vw,30px);line-height:1.55;margin:0 0 3px;color:var(--ink);letter-spacing:0}
+  .hero-lead{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .hero-note{font-size:12px;color:var(--muted);margin:4px 0 15px;line-height:1.8}
+  .hero-cta{min-height:39px;padding:7px 15px;border:1px solid var(--rule);border-radius:9px;color:var(--deep);background:white;font-size:12px}
+  .hero-cta:hover{background:var(--soft)}
+  .upcoming{min-height:0;padding:16px 18px;gap:7px;background:#fff;border:1px solid var(--rule);color:var(--ink);border-radius:14px}
+  .upcoming-caption{color:var(--wine);font-weight:800;font-size:12px}
+  .upcoming-date{font-size:22px;margin:4px 0 6px;line-height:1.65;color:var(--ink)}
+  .upcoming-meta{color:var(--muted);gap:7px;font-size:12px}
+  .subject-pill{color:var(--deep);background:var(--soft);border:1px solid var(--rule);font-size:11px}
+  .upcoming-bottom{border-color:var(--rule);color:var(--muted);margin-top:9px;padding-top:10px}
+  .notice{margin-bottom:12px}
+  .schedule{padding:17px 0 40px}
+  .section-heading{align-items:flex-start;gap:8px;margin-bottom:13px}
+  .section-heading h2{font-size:21px}
+  .section-heading p{font-size:11px;line-height:1.6}
+  .course-marker{font-size:10px;padding:5px 8px;line-height:1.6}
+  .schedule-board{border-radius:12px}
+  .schedule-head{display:none}
+  .lecture{
+     grid-template-columns:32px minmax(0,1fr) minmax(66px,auto);
+     grid-template-rows:auto auto;
+     grid-template-areas:"num when subject" "num when time";
+     align-items:center;gap:2px 9px;
+     padding:13px 12px;min-height:81px;
+  }
+  .lecture .number{grid-area:num;align-self:center;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--soft);color:var(--wine);font-size:12px}
+  .lecture .when{grid-area:when;min-width:0;gap:2px}
+  .when strong{font-size:12px;line-height:1.8}
+  .when small,.when .lecture-notes{font-size:10px;line-height:1.7}
+  .lecture .topic{grid-area:subject;display:block;justify-self:end;align-self:end;font-size:12px;font-weight:800;white-space:nowrap}
+  .lecture .time{grid-area:time;display:block;justify-self:end;align-self:start;text-align:left;font-size:10px;color:var(--muted);white-space:nowrap}
+  .lecture .status{display:none}
+  .schedule-footnote{font-size:11px;margin-top:12px}
+  .footer{padding:20px 0}
+  .footer-inner{flex-wrap:wrap;gap:7px}
+  .footer p,.footer a{font-size:11px}
+}
+@media(max-width:375px){
+  .container{width:calc(100% - 22px)}
+  .header-inner{gap:7px}
+  .brand strong{font-size:12px}
+  .brand span{font-size:9px}
+  .header-links .admin-link{font-size:10px;padding:6px 8px}
+  .hero h1{font-size:23px}
+  .upcoming-date{font-size:20px}
+  .lecture{grid-template-columns:26px minmax(0,1fr) minmax(65px,auto);gap:2px 6px;padding:12px 9px}
+  .lecture .number{width:25px;height:27px;font-size:11px}
+  .when strong{font-size:11px}
+  .lecture .topic{font-size:11px}
+  .lecture .time{font-size:10px}
+}
