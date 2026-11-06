@@ -65,7 +65,7 @@ body { background:var(--motion-paper); }
     linear-gradient(120deg,#344247 0%,#324444 55%,#3b504a 100%);
   box-shadow:0 14px 36px rgba(42,63,58,.10);
 }
-.eyebrow,.upcoming-caption { color:#ebc98d; }
+.hero .eyebrow,.upcoming-caption { color:#ebc98d; }
 .upcoming {
   border-color:rgba(237,217,173,.28);
   background:linear-gradient(140deg,rgba(255,255,255,.10),rgba(255,255,255,.048));
