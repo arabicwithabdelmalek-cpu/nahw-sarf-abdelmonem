@@ -86,6 +86,10 @@
       <div class="actions wide"><button type="submit" id="studentSaveButton">حفظ الطالب</button><button type="button" id="studentCancelButton" class="outline">إلغاء</button></div>
      </form>
      <div class="records" id="studentsList"></div>
+     <details class="deleted-students" id="deletedStudentsBox" hidden>
+      <summary>الطلاب المحذوفون <span id="deletedStudentsCount">0</span></summary>
+      <div class="records" id="deletedStudentsList"></div>
+     </details>
     </section>
     <section class="panel" data-panel="finance" hidden>
      <div class="panel-heading"><div><h2>المدفوعات</h2><p>ملخص الاشتراكات والمبالغ المستحقة</p></div><button type="button" id="openPayment" class="primary">تسجيل دفعة</button></div>
