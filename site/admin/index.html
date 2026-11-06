@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./style.css?v=v12-refresh-20261106">
 </head>
 <body>
 <header class="topbar">
@@ -23,7 +23,8 @@
 </header>
 <main class="shell">
  <div id="alert" class="notice" role="status" hidden></div>
- <section id="authPanel" class="auth-card">
+ <section id="bootPanel" class="auth-card auth-loading" role="status" aria-live="polite"><p>جارٍ فتح لوحة الإدارة…</p></section>
+ <section id="authPanel" class="auth-card" hidden>
   <p class="eyebrow">إدارة محاضرات النحو والصرف</p>
   <h1>تسجيل الدخول</h1>
   <p class="subtle">استخدم حساب المسؤول لإدارة جدول المحاضرات والطلاب والمدفوعات.</p>
@@ -138,8 +139,8 @@
   </div>
  </section>
 </main>
-<script src="../config.js"></script>
+<script src="../config.js?v=v12-refresh-20261106"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="./app.js" defer></script>
+<script src="./app.js?v=v12-refresh-20261106" defer></script>
 </body>
 </html>
