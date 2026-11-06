@@ -99,6 +99,10 @@ body { background:var(--motion-paper); }
   .finance-card:hover { box-shadow:0 5px 14px rgba(43,78,61,.06);transform:translateY(-2px); }
 }
 button:active,.hero-cta:active { transform:scale(.985); }
+/* Login accent echoes the bronze call-to-action on the public home. */
+.auth-card #signInButton { background:#edc894;border-color:#edc894;color:#283d3b; }
+.auth-card #signInButton:hover { background:#f4d6aa;border-color:#f4d6aa;color:#203331; }
+
 /* Admin: a touch of warm brass and sage reinforces selection and payment state. */
 .sidebar { border-color:#dfe8df;box-shadow:0 4px 19px rgba(43,69,53,.04); }
 .sidebar-heading strong,.panel-heading h2 { color:#2b4642; }
