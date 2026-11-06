@@ -42,5 +42,22 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/v13/",
+      "permanent": false
+    },
+    {
+      "source": "/admin",
+      "destination": "/v13/admin/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/",
+      "destination": "/v13/admin/",
+      "permanent": false
+    }
   ]
 }
