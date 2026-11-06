@@ -14,10 +14,10 @@ async function one(promise){const res=await promise;if(res.error)throw res.error
 const course=()=>{if(!state.courseId)throw new Error('يجب إنشاء دورة واختيارها أولًا.');return state.courseId;};
 function record(parent,title,subtitle,actions=[]){let item=e('div','record'),left=e('div',''),right=e('div','record-actions');left.append(e('b','',title),e('small','',subtitle));for(const a of actions){let b=e('button','mini '+(a.danger?'danger':'outline'),a.label);b.type='button';b.addEventListener('click',()=>execute(a.action));right.append(b)}item.append(left,right);parent.append(item);}
 function selectTab(tab){document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);document.querySelectorAll('[data-tab]').forEach(p=>{p.classList.toggle('active',p.dataset.tab===tab);p.setAttribute('aria-selected',String(p.dataset.tab===tab))});}
-function resetCourse(){['courseId','courseTitle','courseStart','courseDescription'].forEach(k=>$(k).value='');$('coursePublished').checked=false;$('courseActive').checked=false;}
-function resetLesson(){['lessonId','lessonDate','lessonTitle','lessonTime','lessonNotes'].forEach(k=>$(k).value='');$('lessonPosition').value=String(state.lessons.length+1);$('lessonSubject').value='غير محدد';$('lessonPublished').checked=false;}
-function resetAnnouncement(){ $('announcementId').value='';$('announcementContent').value='';$('announcementPublished').checked=false;}
-function resetStudent(){ $('studentId').value='';$('studentName').value='';$('studentContact').value='';$('studentSaveButton').textContent='حفظ الطالب';$('studentCancelButton').hidden=true;}
+function resetCourse(){['courseId','courseTitle','courseStart','courseDescription'].forEach(k=>$(k).value='');$('coursePublished').checked=false;$('courseActive').checked=false;$('courseForm').hidden=true;}
+function resetLesson(){['lessonId','lessonDate','lessonTitle','lessonTime','lessonNotes'].forEach(k=>$(k).value='');$('lessonPosition').value=String(state.lessons.length+1);$('lessonSubject').value='غير محدد';$('lessonPublished').checked=false;$('lessonForm').hidden=true;}
+function resetAnnouncement(){ $('announcementId').value='';$('announcementContent').value='';$('announcementPublished').checked=false;$('announcementForm').hidden=true;}
+function resetStudent(){ $('studentId').value='';$('studentName').value='';$('studentContact').value='';$('studentSaveButton').textContent='حفظ الطالب';$('studentCancelButton').hidden=true;$('studentForm').hidden=true;}
 
 async function loadCourses(){
  state.courses=await one(db.from('courses').select('*').order('created_at',{ascending:false}));
@@ -26,7 +26,7 @@ async function loadCourses(){
  for(const c of state.courses){
    picker.append(new Option(c.title,c.id));
    record(list,c.title,[c.is_active?'الحالية':'غير نشطة',c.is_published?'منشورة':'غير منشورة',c.start_date||''].filter(Boolean).join(' • '),[
-    {label:'تعديل',action:async()=>{$('courseId').value=c.id;$('courseTitle').value=c.title;$('courseStart').value=c.start_date||'';$('courseDescription').value=c.description||'';$('coursePublished').checked=c.is_published;$('courseActive').checked=c.is_active;selectTab('courses');}},
+    {label:'تعديل',action:async()=>{$('courseId').value=c.id;$('courseTitle').value=c.title;$('courseStart').value=c.start_date||'';$('courseDescription').value=c.description||'';$('coursePublished').checked=c.is_published;$('courseActive').checked=c.is_active;selectTab('courses');$('courseForm').hidden=false;$('courseForm').scrollIntoView({behavior:'smooth',block:'start'});$('courseTitle').focus({preventScroll:true});}},
     {label:'إدارة المحاضرات',action:async()=>{state.courseId=c.id;picker.value=c.id;await loadRelated();selectTab('lessons');}}
    ]);
  }
@@ -46,7 +46,7 @@ async function loadLessons(){const list=$('lessonsList');list.replaceChildren();
  state.lessons=await one(db.from('lessons').select('*').eq('course_id',state.courseId).order('position'));
  $('scheduleGenerator').hidden=state.lessons.length>0;
  for(const l of state.lessons){record(list,`المحاضرة ${l.position} — ${l.subject}`,`${l.lesson_date}${l.start_time?' • '+l.start_time.slice(0,5):''}${l.title?' • '+l.title:''} • ${l.is_published?'منشورة':'مخفية'}`, [
-  {label:'تعديل',action:async()=>{ $('lessonId').value=l.id;$('lessonPosition').value=l.position;$('lessonDate').value=l.lesson_date;$('lessonSubject').value=l.subject;$('lessonTitle').value=l.title||'';$('lessonTime').value=l.start_time?.slice(0,5)||'';$('lessonNotes').value=l.notes||'';$('lessonPublished').checked=l.is_published;$('lessonForm').scrollIntoView({behavior:'smooth',block:'start'});$('lessonDate').focus({preventScroll:true});}},
+  {label:'تعديل',action:async()=>{ $('lessonId').value=l.id;$('lessonPosition').value=l.position;$('lessonDate').value=l.lesson_date;$('lessonSubject').value=l.subject;$('lessonTitle').value=l.title||'';$('lessonTime').value=l.start_time?.slice(0,5)||'';$('lessonNotes').value=l.notes||'';$('lessonPublished').checked=l.is_published;$('lessonForm').hidden=false;$('lessonForm').scrollIntoView({behavior:'smooth',block:'start'});$('lessonDate').focus({preventScroll:true});}},
   {label:'حذف',danger:true,action:async()=>{if(!confirm('هل تريد حذف المحاضرة نهائيًا؟'))return;await one(db.from('lessons').delete().eq('id',l.id));await loadLessons();alertMsg('تم حذف المحاضرة.');}}
  ]);}
  if(!state.lessons.length)list.append(e('p','subtle','لا توجد محاضرات مسجلة لهذه الدورة.'));
@@ -79,7 +79,7 @@ async function loadStudents(){const list=$('studentsList');list.replaceChildren(
  state.enrollments=await one(db.from('enrollments').select('id,student_id,status,students(id,full_name,contact)').eq('course_id',state.courseId).order('created_at'));
  for(const ent of state.enrollments){const s=ent.students||{};
   record(list,s.full_name||'طالب',`${s.contact||'بدون وسيلة تواصل'} • ${ent.status}`, [
-   {label:'تعديل',action:async()=>{ $('studentId').value=s.id;$('studentName').value=s.full_name;$('studentContact').value=s.contact||'';$('studentSaveButton').textContent='حفظ التعديل';$('studentCancelButton').hidden=false;selectTab('students');$('studentForm').scrollIntoView({behavior:'smooth',block:'start'});$('studentName').focus({preventScroll:true});}},
+   {label:'تعديل',action:async()=>{ $('studentId').value=s.id;$('studentName').value=s.full_name;$('studentContact').value=s.contact||'';$('studentSaveButton').textContent='حفظ التعديل';$('studentCancelButton').hidden=false;selectTab('students');$('studentForm').hidden=false;$('studentForm').scrollIntoView({behavior:'smooth',block:'start'});$('studentName').focus({preventScroll:true});}},
    {label:ent.status==='نشط'?'إيقاف الاشتراك':'إعادة التنشيط',action:async()=>{await one(db.from('enrollments').update({status:ent.status==='نشط'?'متوقف':'نشط'}).eq('id',ent.id));await loadRelated();}}
   ]);
  }
@@ -117,7 +117,7 @@ async function savePayment(ev){ev.preventDefault();if(!$('paymentStudent').value
 
 async function loadAnnouncements(){const list=$('announcementsList');list.replaceChildren();state.announcements=await one(db.from('announcements').select('*').order('created_at',{ascending:false}));
  for(const a of state.announcements)record(list,a.content,a.is_published?'منشور':'مخفي',[
- {label:'تعديل',action:async()=>{$('announcementId').value=a.id;$('announcementContent').value=a.content;$('announcementPublished').checked=a.is_published;}},
+ {label:'تعديل',action:async()=>{$('announcementId').value=a.id;$('announcementContent').value=a.content;$('announcementPublished').checked=a.is_published;$('announcementForm').hidden=false;$('announcementForm').scrollIntoView({behavior:'smooth',block:'start'});$('announcementContent').focus({preventScroll:true});}},
  {label:'حذف',danger:true,action:async()=>{if(!confirm('حذف الإعلان نهائيًا؟'))return;await one(db.from('announcements').delete().eq('id',a.id));await loadAnnouncements();}}
  ]);
  if(!state.announcements.length)list.append(e('p','subtle','لا توجد إعلانات بعد.'));
@@ -137,6 +137,10 @@ function init(){
  $('paymentDate').value=today();
  $('generateStart').value=today();
  $('generateLessons').addEventListener('click',()=>execute(generateLessons));
+ $('newCourse').addEventListener('click',()=>{resetCourse();$('courseForm').hidden=false;$('courseTitle').focus();});
+ $('newLesson').addEventListener('click',()=>execute(async()=>{course();resetLesson();$('lessonForm').hidden=false;$('lessonDate').focus();}));
+ $('newStudent').addEventListener('click',()=>execute(async()=>{course();resetStudent();$('studentForm').hidden=false;$('studentCancelButton').hidden=false;$('studentName').focus();}));
+ $('newAnnouncement').addEventListener('click',()=>{resetAnnouncement();$('announcementForm').hidden=false;$('announcementContent').focus();});
  document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>selectTab(button.dataset.tab)));
  $('activeCourseSelect').addEventListener('change',()=>execute(async()=>{state.courseId=$('activeCourseSelect').value;await loadRelated();}));
  [['courseForm',saveCourse],['lessonForm',saveLesson],['studentForm',saveStudent],['feeForm',saveFee],['paymentForm',savePayment],['announcementForm',saveAnnouncement]].forEach(([id,fn])=>$(id).addEventListener('submit',ev=>execute(()=>fn(ev))));
