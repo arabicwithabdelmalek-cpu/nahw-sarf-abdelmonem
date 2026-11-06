@@ -61,7 +61,7 @@ async function refresh(){
   if(!current.lessons.length)$('publicDates').replaceChildren(el('p','no-lessons','تعذّر تحميل المواعيد الآن. حدّث الصفحة وحاول مرة أخرى.'));
  }
 }
-refresh();
+refresh().finally(()=>{document.documentElement.classList.remove('app-loading');});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
 window.setInterval(()=>{if(!document.hidden)refresh();},180000);
 })();
