@@ -17,7 +17,7 @@ function selectTab(tab){document.querySelectorAll('[data-panel]').forEach(p=>p.h
 function resetCourse(){['courseId','courseTitle','courseStart','courseDescription'].forEach(k=>$(k).value='');$('coursePublished').checked=false;$('courseActive').checked=false;}
 function resetLesson(){['lessonId','lessonDate','lessonTitle','lessonTime','lessonNotes'].forEach(k=>$(k).value='');$('lessonPosition').value=String(state.lessons.length+1);$('lessonSubject').value='غير محدد';$('lessonPublished').checked=false;}
 function resetAnnouncement(){ $('announcementId').value='';$('announcementContent').value='';$('announcementPublished').checked=false;}
-function resetStudent(){ $('studentId').value='';$('studentName').value='';$('studentContact').value='';}
+function resetStudent(){ $('studentId').value='';$('studentName').value='';$('studentContact').value='';$('studentSaveButton').textContent='حفظ الطالب';$('studentCancelButton').hidden=true;}
 
 async function loadCourses(){
  state.courses=await one(db.from('courses').select('*').order('created_at',{ascending:false}));
@@ -44,8 +44,9 @@ async function saveCourse(ev){ev.preventDefault();const id=$('courseId').value,t
 }
 async function loadLessons(){const list=$('lessonsList');list.replaceChildren();state.lessons=[];if(!state.courseId)return;
  state.lessons=await one(db.from('lessons').select('*').eq('course_id',state.courseId).order('position'));
+ $('scheduleGenerator').hidden=state.lessons.length>0;
  for(const l of state.lessons){record(list,`المحاضرة ${l.position} — ${l.subject}`,`${l.lesson_date}${l.start_time?' • '+l.start_time.slice(0,5):''}${l.title?' • '+l.title:''} • ${l.is_published?'منشورة':'مخفية'}`, [
-  {label:'تعديل',action:async()=>{ $('lessonId').value=l.id;$('lessonPosition').value=l.position;$('lessonDate').value=l.lesson_date;$('lessonSubject').value=l.subject;$('lessonTitle').value=l.title||'';$('lessonTime').value=l.start_time?.slice(0,5)||'';$('lessonNotes').value=l.notes||'';$('lessonPublished').checked=l.is_published;}},
+  {label:'تعديل',action:async()=>{ $('lessonId').value=l.id;$('lessonPosition').value=l.position;$('lessonDate').value=l.lesson_date;$('lessonSubject').value=l.subject;$('lessonTitle').value=l.title||'';$('lessonTime').value=l.start_time?.slice(0,5)||'';$('lessonNotes').value=l.notes||'';$('lessonPublished').checked=l.is_published;$('lessonForm').scrollIntoView({behavior:'smooth',block:'start'});$('lessonDate').focus({preventScroll:true});}},
   {label:'حذف',danger:true,action:async()=>{if(!confirm('هل تريد حذف المحاضرة نهائيًا؟'))return;await one(db.from('lessons').delete().eq('id',l.id));await loadLessons();alertMsg('تم حذف المحاضرة.');}}
  ]);}
  if(!state.lessons.length)list.append(e('p','subtle','لا توجد محاضرات مسجلة لهذه الدورة.'));
@@ -78,7 +79,7 @@ async function loadStudents(){const list=$('studentsList');list.replaceChildren(
  state.enrollments=await one(db.from('enrollments').select('id,student_id,status,students(id,full_name,contact)').eq('course_id',state.courseId).order('created_at'));
  for(const ent of state.enrollments){const s=ent.students||{};
   record(list,s.full_name||'طالب',`${s.contact||'بدون وسيلة تواصل'} • ${ent.status}`, [
-   {label:'تعديل',action:async()=>{ $('studentId').value=s.id;$('studentName').value=s.full_name;$('studentContact').value=s.contact;selectTab('students');}},
+   {label:'تعديل',action:async()=>{ $('studentId').value=s.id;$('studentName').value=s.full_name;$('studentContact').value=s.contact||'';$('studentSaveButton').textContent='حفظ التعديل';$('studentCancelButton').hidden=false;selectTab('students');$('studentForm').scrollIntoView({behavior:'smooth',block:'start'});$('studentName').focus({preventScroll:true});}},
    {label:ent.status==='نشط'?'إيقاف الاشتراك':'إعادة التنشيط',action:async()=>{await one(db.from('enrollments').update({status:ent.status==='نشط'?'متوقف':'نشط'}).eq('id',ent.id));await loadRelated();}}
   ]);
  }
@@ -129,7 +130,7 @@ async function enter(){
  const admin=await one(db.from('site_admins').select('user_id').eq('user_id',user.id).maybeSingle());
  if(!admin){$('loginState').textContent='الحساب مسجل، لكنه غير مُضاف إلى مسؤولي هذا البرنامج. لا توجد صلاحية لعرض البيانات.';return;}
  state.user=user;$('alert').hidden=true;$('authPanel').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;$('userBadge').textContent=user.email||'المشرف';
- await loadCourses();await loadAnnouncements();
+ await loadCourses();await loadAnnouncements();selectTab(state.courseId?'lessons':'courses');
 }
 
 function init(){
@@ -139,7 +140,7 @@ function init(){
  document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>selectTab(button.dataset.tab)));
  $('activeCourseSelect').addEventListener('change',()=>execute(async()=>{state.courseId=$('activeCourseSelect').value;await loadRelated();}));
  [['courseForm',saveCourse],['lessonForm',saveLesson],['studentForm',saveStudent],['feeForm',saveFee],['paymentForm',savePayment],['announcementForm',saveAnnouncement]].forEach(([id,fn])=>$(id).addEventListener('submit',ev=>execute(()=>fn(ev))));
- $('resetCourse').addEventListener('click',resetCourse);$('resetLesson').addEventListener('click',resetLesson);$('resetAnnouncement').addEventListener('click',resetAnnouncement);
+ $('resetCourse').addEventListener('click',resetCourse);$('resetLesson').addEventListener('click',resetLesson);$('resetAnnouncement').addEventListener('click',resetAnnouncement);$('studentCancelButton').addEventListener('click',resetStudent);
  $('logout').addEventListener('click',()=>execute(async()=>{await db.auth.signOut();location.reload();}));
  $('loginForm').addEventListener('submit',ev=>execute(async()=>{
    ev.preventDefault();if(!db)throw new Error('أولًا اربط قاعدة البيانات عبر config.js.');
