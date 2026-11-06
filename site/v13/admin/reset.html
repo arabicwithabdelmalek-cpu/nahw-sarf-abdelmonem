@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-release="v13">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>تعيين كلمة المرور | محاضرات النحو والصرف</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--ink:#293033;--blue:#343c40;--muted:#70777a;--border:#e4e5df;--bg:#f7f6f2}
+*{box-sizing:border-box}body{font-family:Cairo,system-ui,sans-serif;color:var(--ink);background:var(--bg);margin:0;min-height:100dvh}
+header{background:#fff;border-bottom:1px solid var(--border);padding:16px max(5vw,20px)}
+header a{color:var(--ink);text-decoration:none;font-weight:800}
+main{padding:50px 18px;display:flex;justify-content:center}
+.card{width:min(100%,530px);background:#fff;border:1px solid var(--border);box-shadow:0 20px 60px #29303310;border-radius:22px;padding:clamp(22px,5vw,42px)}
+h1{font-size:clamp(22px,4vw,29px);margin:0 0 10px}
+p{line-height:1.9;color:var(--muted);font-size:14px}
+label{display:block;font-weight:700;margin:16px 0 8px;font-size:14px}
+input,textarea{font-family:inherit;border:1px solid #dadbd5;border-radius:11px;padding:13px;width:100%;font-size:15px;outline-color:var(--blue);background:#fff}
+textarea{min-height:96px;font-size:12px;direction:ltr}
+button,.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;background:var(--blue);color:#fff;padding:13px 18px;border:0;text-decoration:none;font:700 14px Cairo,sans-serif;cursor:pointer}
+button:disabled{opacity:.55;cursor:progress}
+button.secondary{background:#f1eee7;color:var(--blue)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+[hidden]{display:none!important}
+.notice{background:#f4f2ec;color:#343c40;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.9}
+.notice.bad{background:#fff0ec;color:#983824}
+.small{font-size:12px}
+</style>
+</head>
+<body>
+<header><a href="../../">محاضرات النحو والصرف — الدكتور عبد المنعم</a></header>
+<main><section class="card">
+<h1>اختيار كلمة مرور جديدة</h1>
+<p>هنأكّد رابط الاستعادة أولًا، وبعدها تختار كلمة المرور بنفسك. ما تبعتش كلمة المرور لأي شخص.</p>
+<div id="status" class="notice" role="status" aria-live="polite">جارٍ التحقق من رابط الاستعادة…</div>
+
+<form id="passwordForm" hidden>
+<label for="password1">كلمة المرور الجديدة</label>
+<input id="password1" type="password" autocomplete="new-password" minlength="12" maxlength="128" required placeholder="١٢ حرفًا على الأقل" dir="ltr">
+<label for="password2">تأكيد كلمة المرور</label>
+<input id="password2" type="password" autocomplete="new-password" minlength="12" maxlength="128" required placeholder="أعد كتابة كلمة المرور" dir="ltr">
+<div class="row"><button type="submit" id="savePassword">حفظ كلمة المرور الجديدة</button></div>
+</form>
+
+<div id="manual" hidden>
+<p>لو رابط Supabase اللي وصلك فتح صفحة خطأ، انسخ عنوان الرابط من البريد والصقه هنا؛ هنتحقق منه داخل الصفحة من غير ما ترسله إلى المحادثة.</p>
+<label for="sourceLink">رابط الاستعادة من البريد</label>
+<textarea id="sourceLink" spellcheck="false" autocomplete="off" placeholder="الصق رابط Supabase هنا"></textarea>
+<div class="row"><button id="useLink" type="button" class="secondary">التحقق من الرابط</button></div>
+</div>
+<div class="row"><a href="./" class="button">العودة لتسجيل الدخول</a></div>
+<p class="small">الرابط مؤقت ويُستخدم مرة واحدة. لا تشارك الرابط لأنه يسمح بتعيين كلمة مرور حسابك.</p>
+</section></main>
+
+<script src="../../config.js?v=v13-newpath"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const cfg=window.NAHW_SARF_CONFIG||{};
+const db=cfg.supabaseUrl&&cfg.supabasePublishableKey&&window.supabase
+ ? window.supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:{persistSession:true,detectSessionInUrl:true,autoRefreshToken:true}})
+ : null;
+let verified=false;
+function state(message,bad=false){$('status').textContent=message;$('status').classList.toggle('bad',bad)}
+function extract(text){
+ const raw=String(text||'').trim(); if(!raw)return null;
+ let token='',type='';
+ if(raw.startsWith('https://')){
+  const u=new URL(raw);
+  const authBase=new URL(cfg.supabaseUrl);
+  if(u.origin!==authBase.origin||u.pathname!=='/auth/v1/verify')throw new Error('الرابط ليس من مشروع Supabase الخاص بالموقع.');
+  token=u.searchParams.get('token')||u.searchParams.get('token_hash')||'';
+  type=u.searchParams.get('type')||'';
+ }else{
+  const q=new URLSearchParams(raw.replace(/^#/,''));
+  token=q.get('token_hash')||q.get('token')||'';
+  type=q.get('type')||'';
+ }
+ if(type!=='recovery'||!(/^[0-9a-f]{40,128}$/i).test(token))throw new Error('رابط الاستعادة غير صالح أو لم يتم نسخه كاملًا.');
+ return token;
+}
+async function verify(value){
+ if(!db)throw new Error('الموقع غير متصل بقاعدة البيانات.');
+ const token=extract(value);
+ if(!token)throw new Error('الصق رابط الاستعادة الذي وصلك في البريد.');
+ state('جارٍ التحقق من صلاحية رابط الاستعادة…');
+ const {data,error}=await db.auth.verifyOtp({token_hash:token,type:'recovery'});
+ if(error)throw error;
+ if(!data?.session)throw new Error('تعذّر تأكيد جلسة الاستعادة.');
+ history.replaceState(null,'',location.pathname);
+ verified=true;
+ $('manual').hidden=true;
+ $('passwordForm').hidden=false;
+ state('تم التحقق من بريدك. اختَر الآن كلمة مرور جديدة لا تقل عن ١٢ حرفًا.');
+ $('password1').focus();
+}
+$('useLink').addEventListener('click',async()=>{
+ try{await verify($('sourceLink').value)}catch(e){state('لم ينجح الرابط: '+e.message,true)}
+});
+$('passwordForm').addEventListener('submit',async ev=>{
+ ev.preventDefault();
+ if(!verified)return state('يجب التحقق من رابط الاستعادة أولًا.',true);
+ const p=$('password1').value,p2=$('password2').value;
+ if(p.length<12||p.length>128)return state('كلمة المرور يجب أن تكون بين ١٢ و١٢٨ حرفًا.',true);
+ if(p!==p2)return state('كلمتا المرور غير متطابقتين.',true);
+ $('savePassword').disabled=true;
+ try{
+  const {error}=await db.auth.updateUser({password:p});
+  if(error)throw error;
+  $('passwordForm').hidden=true;
+  $('password1').value='';$('password2').value='';
+  verified=false;
+  state('تم تغيير كلمة المرور بنجاح. اضغط «العودة لتسجيل الدخول» واستخدم كلمة المرور الجديدة.');
+  await db.auth.signOut();
+ }catch(e){state('تعذّر حفظ كلمة المرور: '+e.message,true)}
+ finally{$('savePassword').disabled=false}
+});
+const hash=location.hash.replace(/^#/,'');
+if(hash&&hash.includes('token_hash=')){
+ const q=new URLSearchParams(hash);
+ if(q.get('type')==='recovery'&&q.get('token_hash')){
+  verify(hash).catch(e=>{history.replaceState(null,'',location.pathname);$('manual').hidden=false;state('تعذّر استخدام الرابط: '+e.message,true)});
+ }else{$('manual').hidden=false;state('الرابط غير مناسب لاستعادة كلمة المرور.',true)}
+}else{$('manual').hidden=false;state('انسخ رابط الاستعادة من البريد والصقه هنا، أو افتح رابط الاستعادة المباشر الذي وصل إليك.')}
+})();
+</script>
+</body></html>
