@@ -125,7 +125,7 @@ async function loadAnnouncements(){const list=$('announcementsList');list.replac
 async function saveAnnouncement(ev){ev.preventDefault();const id=$('announcementId').value,data={content:$('announcementContent').value.trim(),is_published:$('announcementPublished').checked};if(!data.content)throw new Error('اكتب الإعلان.');if(id)await one(db.from('announcements').update(data).eq('id',id));else await one(db.from('announcements').insert(data));resetAnnouncement();await loadAnnouncements();alertMsg('تم حفظ الإعلان.');}
 async function loadRelated(){await loadLessons();await loadStudents();await loadFinance();}
 async function enter(){
- if(!db){$('loginState').textContent='لم يُربط هذا الموقع بقاعدة بيانات مستقلة بعد. يلزم إعداد ملف config.js بالمفتاح العام فقط.';return;}
+ if(!db){$('loginState').textContent='تعذّر الاتصال بخدمة تسجيل الدخول. حاول تحديث الصفحة.';return;}
  const {data:{user},error}=await db.auth.getUser();if(error||!user)return;
  const admin=await one(db.from('site_admins').select('user_id').eq('user_id',user.id).maybeSingle());
  if(!admin){$('loginState').textContent='الحساب مسجل، لكنه غير مُضاف إلى مسؤولي هذا البرنامج. لا توجد صلاحية لعرض البيانات.';return;}
@@ -161,7 +161,7 @@ function init(){
    const redirectTo=new URL('./reset.html',window.location.href).toString();
    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo});
    if(error)throw error;
-   $('loginState').textContent='طلبت رابط الاستعادة. راجع بريدك الإلكتروني، ولو كان رابط Supabase يفتح localhost انسخه ثم افتح صفحة اختيار كلمة المرور أدناه والصقه هناك.';
+   $('loginState').textContent='أرسلنا رابط استعادة كلمة المرور إلى بريدك. إذا تعذّر فتحه، انسخه والصقه في صفحة اختيار كلمة المرور.';
    $('resetPageLink').hidden=false;
  }));
  $('signUpButton').addEventListener('click',()=>execute(async()=>{
@@ -172,7 +172,7 @@ function init(){
    if(error)throw error;
    $('loginState').textContent='راجع بريدك لتأكيد الحساب، ثم ارجع إلى هذه الصفحة وسجّل الدخول. إنشاء حساب لا يعطي صلاحية الإدارة تلقائيًا؛ سيتم تفعيلها للحساب المعتمد بعد التحقق.';
  }));
- if(!db){$('loginState').textContent='لوحة الإدارة في مرحلة التأسيس. لا توجد بيانات أو صلاحيات مفتوحة قبل ربط المشروع.';return;}
+ if(!db){$('loginState').textContent='تعذّر الاتصال بخدمة تسجيل الدخول. حاول تحديث الصفحة.';return;}
  execute(enter);
  db.auth.onAuthStateChange(event=>{if(event==='SIGNED_IN'&&!state.user)setTimeout(()=>execute(enter),50);});
 }
