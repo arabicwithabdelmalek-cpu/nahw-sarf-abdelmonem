@@ -100,9 +100,19 @@ body{font-size:14px} .site-topbar{position:sticky;top:0;z-index:50;background:rg
 
 .publish-link{display:inline-block;padding:8px 14px;font-size:12px;font-weight:800;text-decoration:none;color:#34537e}
 .no-lessons{grid-column:1/-1;text-align:center;padding:24px 18px;border:1px dashed #cbd7e5;color:#63738a;border-radius:15px;background:#f8faff;font-size:14px}
+
+/* Linked public website and protected administration entry. */
+.site-actions{align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.site-actions .admin-entry{display:inline-flex;align-items:center;justify-content:center;border:1px solid #cbd8eb;background:#edf3fc;color:#294771;text-decoration:none;border-radius:11px;font-size:12px;font-weight:800;padding:9px 15px;margin-inline-start:5px;white-space:nowrap;transition:background .16s,border-color .16s}
+.site-actions .admin-entry:hover{background:#dfeafb;border-color:#aec4e2}
+.site-actions .admin-entry:focus-visible{outline:3px solid #6988b8;outline-offset:3px}
+.public-footer .footer-links{display:flex;flex-wrap:wrap;align-items:center;gap:18px}
+.public-footer .footer-admin-link{color:#d4e4ff;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:650px){.site-topbar .site-inner{flex-wrap:wrap;gap:6px;padding-top:10px;padding-bottom:10px}.site-actions{width:100%;justify-content:space-between;gap:4px}.site-actions .publish-link{font-size:11px;padding:6px 7px}.site-actions .admin-entry{margin-inline-start:0;font-size:11px;padding:7px 10px}}
+@media(max-width:390px){.site-actions .publish-link{font-size:10px}.site-actions .admin-entry{font-size:10px}.public-footer .site-inner{flex-wrap:wrap}}
 </style></head><body><div class="site-topbar"><div class="site-inner">
   <a href="#home" class="site-brand" id="goHome"><span class="brand-symbol">ن<span>ـ</span>ص</span><span><strong>محاضرات النحو والصرف</strong><small>مع الدكتور عبد المنعم</small></span></a>
-  <div class="site-actions"><a href="#publicTimetable" class="publish-link">المحاضرات</a><a href="#publicAbout" class="publish-link">عن البرنامج</a></div>
+  <nav class="site-actions" aria-label="التنقل الرئيسي"><a href="#publicTimetable" class="publish-link">المحاضرات</a><a href="#publicAbout" class="publish-link">عن البرنامج</a><a href="./admin/" class="admin-entry" aria-label="دخول إدارة الموقع">دخول الإدارة</a></nav>
 </div></div><main>
 <section id="home" class="home-intro site-inner">
   <div class="home-copy">
@@ -132,5 +142,5 @@ body{font-size:14px} .site-topbar{position:sticky;top:0;z-index:50;background:rg
   <p class="calendar-help">لم تعلن إدارة البرنامج المواعيد بعد. عُد إلى الصفحة للاطلاع على التحديثات.</p>
 </section>
 <section id="publicAbout" class="about-v5"><div class="site-inner about-layout"><div><span class="overline">عن البرنامج</span><h2>رحلة واضحة،<br>ومواعيد منظمة.</h2></div><div class="about-body"><p>برنامج لمحاضرات النحو والصرف مع الدكتور عبد المنعم، يُنظَّم في دورات من ثماني محاضرات. يوضح الجدول تاريخ كل لقاء ومادته عند تحديدها.</p><div class="about-points"><span>01 <b>تابع الموعد</b></span><span>02 <b>اعرف المادة</b></span><span>03 <b>راجع الإعلانات</b></span></div></div></div></section>
-<footer class="public-footer"><div class="site-inner"><div><strong>محاضرات النحو والصرف</strong><span>مع الدكتور عبد المنعم</span></div><a href="#home">العودة لأعلى الصفحة ↑</a></div></footer>
+<footer class="public-footer"><div class="site-inner"><div><strong>محاضرات النحو والصرف</strong><span>مع الدكتور عبد المنعم</span></div><div class="footer-links"><a href="#home">العودة لأعلى الصفحة ↑</a><a href="./admin/" class="footer-admin-link">دخول الإدارة</a></div></div></footer>
 </main><script id="scheduleData" type="application/json">{"dates":[]}</script><script src="./config.js"></script><script src="./public.js" defer></script></body></html>
