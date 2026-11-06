@@ -8,7 +8,7 @@ const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[+d]);
 const parse=s=>new Date(s+'T12:00:00');
 const fmt=s=>{const d=parse(s);return ar(d.getDate())+' '+months[d.getMonth()]+' '+ar(d.getFullYear())};
 const day=s=>weekdays[parse(s).getDay()];
-const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const cairoToday=()=>{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const pick=t=>parts.find(p=>p.type===t).value;return pick('year')+'-'+pick('month')+'-'+pick('day');};
 const el=(tag,cls,text)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=text;return x;};
 const mark=(value,classes)=>el('span',classes,value);
 const displayedSubject=s=>s==='غير محدد'||!s?'لم تُحدّد':s;
