@@ -38,7 +38,6 @@
     $('upcomingTime').textContent=next?[next.start_time?`الساعة ${next.start_time.slice(0,5)}`:'',next.title].filter(Boolean).join(' • '):'';
     if(lessons.length){$('publicRange').textContent=`من ${fmt(lessons[0].lesson_date)} إلى ${fmt(lessons[lessons.length-1].lesson_date)}`;}
     else {$('publicRange').textContent='لم تُعلن مواعيد بعد';}
-    const heroRange=$('heroRange');if(heroRange)heroRange.textContent=lessons.length?`من ${fmt(lessons[0].lesson_date)} إلى ${fmt(lessons[lessons.length-1].lesson_date)}`:'الجدول قيد الإعداد';
     if(live){
       courseCount.textContent=`الدورة الحالية · ${ar(lessons.length)} محاضرة`;
       banner.textContent='تُحدَّث هذه المواعيد عند إعلان أي تغيير.';
