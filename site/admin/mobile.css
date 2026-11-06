@@ -1,0 +1,131 @@
+/* Mobile-first refinements for the existing administration; desktop remains unchanged. */
+@media (max-width: 860px) {
+  html { scroll-padding-top: 82px; }
+  #workspace { padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px)); }
+  .workspace-grid { display:block; padding-top:12px; }
+  .sidebar {
+    position:fixed; top:auto; right:0; left:0; bottom:0; z-index:55;
+    padding:8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+    margin:0; border:0; border-top:1px solid var(--border); border-radius:18px 18px 0 0;
+    background:rgba(255,255,255,.98); box-shadow:0 -8px 28px rgba(29,37,36,.08);
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  }
+  .sidebar-heading,.sidebar-footer{display:none}
+  .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:0;margin:0;border:0;overflow:visible;scrollbar-width:auto}
+  .tabs button,.tabs button.active{
+    min-width:0;min-height:52px;padding:7px 3px;border:0;border-radius:11px;
+    display:flex;justify-content:center;align-items:center;text-align:center;
+    white-space:normal;font-size:11px;font-weight:700;line-height:1.55;
+    flex:none;touch-action:manipulation;
+  }
+  .tabs button{background:transparent;color:#697176}
+  .tabs button:hover{background:#f1f2ef;color:var(--ink);border:0}
+  .tabs button.active,.tabs button.active:hover{background:var(--deep);color:#fff;border:0;font-weight:800}
+  .shell{width:min(100% - 30px,1240px)}
+  .page-title{display:none}
+  .course-picker{margin:0 0 14px;padding:11px 14px;display:grid;grid-template-columns:minmax(0,90px) minmax(0,1fr);gap:9px;align-items:center}
+  .course-picker label{font-size:12px;color:var(--muted)}
+  .course-picker select{max-width:none;min-width:0}
+  .panel{padding:19px;border-radius:15px}
+  .panel-heading{margin-bottom:16px}
+  .panel-heading h2{font-size:20px}
+  .panel-heading p{font-size:12px}
+  .panel-heading button{min-height:43px;flex-shrink:0}
+  .editor-form{scroll-margin-top:105px;scroll-margin-bottom:115px}
+  .auth-card{margin:40px auto 30px}
+  .record-actions button{min-height:42px}
+  .balance-row{grid-template-columns:minmax(0,1fr);gap:11px}
+  .balance-action{grid-column:auto;justify-self:stretch}
+  .balance-action button{min-height:42px;width:100%;font-size:12px}
+  .finance-settings{margin-bottom:17px}
+  .finance-card strong{font-size:18px}
+  .history summary{min-height:47px}
+}
+@media (max-width: 620px) {
+  html { scroll-padding-top:72px; }
+  body{overflow-x:clip}
+  .shell{width:calc(100% - 24px)}
+  .topbar-inner{min-height:66px;padding:8px 0;flex-wrap:nowrap;align-items:center;gap:10px}
+  .topbar .brand{min-width:0;flex:1}
+  .brand strong{font-size:14px;line-height:1.35;overflow-wrap:normal}
+  .brand small{font-size:10px;line-height:1.55}
+  .top-actions{flex:none;gap:5px}
+  .top-actions .back-home,.top-actions button{font-size:10px;padding:6px 9px;min-height:40px;border-radius:9px;white-space:nowrap}
+  .notice{font-size:12px;margin-top:12px;padding:12px}
+  .auth-card{max-width:none;width:100%;margin:25px auto 22px;padding:27px 21px;border-radius:15px}
+  .auth-card h1{font-size:24px}
+  .auth-card>.subtle{font-size:12px}
+  .auth-card .login-fields{gap:16px}
+  .auth-card #signInButton{min-height:48px;font-size:13px}
+  .workspace-grid{padding-top:13px}
+  .course-picker{grid-template-columns:1fr;gap:5px;padding:10px 12px;margin-bottom:12px;border-radius:10px}
+  .course-picker label{font-size:11px}
+  .course-picker select{min-height:43px}
+  .panel{padding:16px 13px 18px;border-radius:13px;min-width:0}
+  .panel-heading{gap:10px;margin-bottom:16px}
+  .panel-heading h2{font-size:18px;line-height:1.5}
+  .panel-heading p{font-size:11px;line-height:1.65}
+  .panel-heading button{min-height:41px;max-width:52%;padding:7px 12px;font-size:11px;white-space:normal;text-align:center}
+  .form-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+  .form-grid .wide,.form-grid label.wide,.form-heading{grid-column:1/-1}
+  .form-grid label{font-size:12px}
+  .form-grid input:not([type=checkbox]),.form-grid select,.form-grid textarea,.course-picker select,.generator-fields input{
+    font-size:16px; min-height:47px; padding:10px 12px; max-width:100%;
+  }
+  .form-grid input[type=date],.form-grid input[type=time]{direction:ltr;text-align:right}
+  .editor-form{padding:16px 13px;margin:5px 0 19px;border-radius:11px}
+  .form-heading{font-size:15px}
+  .editor-form .actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto);gap:8px}
+  .editor-form .actions button{min-height:45px;font-size:12px}
+  .record{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:13px;border-radius:11px}
+  .record b{font-size:13px;line-height:1.8}
+  .record small{font-size:11px}
+  .record-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+  .record-actions button{min-height:41px;font-size:11px;width:100%;border-radius:8px}
+  .record-actions button:only-child{grid-column:1/2}
+  .schedule-generator{padding:15px;margin-bottom:16px}
+  .schedule-generator h3{font-size:13px}
+  .generator-fields{display:grid;grid-template-columns:1fr;gap:9px}
+  .generator-fields input,.generator-fields button{min-width:0;width:100%;min-height:44px}
+  .financial-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:15px}
+  .finance-card{min-height:96px;padding:13px 12px}
+  .finance-card span{font-size:11px}
+  .finance-card strong{font-size:clamp(14px,4.3vw,19px);line-height:1.7;overflow-wrap:anywhere}
+  .finance-settings{display:flex;align-items:start;flex-direction:column;gap:4px;padding-bottom:14px}
+  .finance-settings .text-button{padding-right:0;font-size:12px;min-height:41px}
+  .subheading{display:block;margin-bottom:12px}
+  .subheading h3{font-size:15px}
+  .subheading p{font-size:11px}
+  .balances{gap:10px}
+  .balance-row{display:grid;grid-template-columns:1fr;gap:11px;padding:14px;border-radius:12px}
+  .balance-person{display:flex;align-items:start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .balance-person b{font-size:13px;line-height:1.7;max-width:100%}
+  .balance-status{margin-top:0;white-space:nowrap;font-size:10px}
+  .balance-amounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .balance-amounts>span{display:flex;flex-direction:column;gap:1px;min-width:0;font-size:10px}
+  .balance-amounts b{font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+  .balance-track{margin-top:11px;height:6px}
+  .balance-action{grid-column:auto;width:100%}
+  .balance-action button{width:100%;min-height:43px;font-size:12px}
+  .history{margin-top:17px}
+  .history summary{font-size:12px;min-height:48px}
+  #workspace{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+}
+@media (max-width:385px) {
+  .tabs{gap:2px}
+  .tabs button,.tabs button.active{font-size:10px;padding:7px 1px;min-height:49px;border-radius:9px}
+  .topbar .brand strong{font-size:12px}
+  .topbar .brand small{font-size:9px}
+  .top-actions .back-home,.top-actions button{font-size:10px;padding:5px 7px}
+  .panel-heading h2{font-size:17px}
+  .panel-heading button{font-size:10px;padding:6px 8px}
+  .balance-amounts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .balance-amounts>span:last-child{grid-column:1/-1;padding-top:3px;border-top:1px solid var(--border)}
+  .financial-summary{gap:7px}
+  .finance-card{padding:10px;min-height:87px}
+  .finance-card strong{font-size:14px}
+  .auth-card{padding:23px 16px}
+}
+@media (prefers-reduced-motion: reduce) {
+ .tabs button{transition:none}
+}
