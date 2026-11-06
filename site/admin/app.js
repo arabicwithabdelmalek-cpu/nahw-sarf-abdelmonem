@@ -250,7 +250,12 @@ function init(){
  $('newLesson').addEventListener('click',()=>execute(async()=>{course();resetLesson();$('lessonForm').hidden=false;$('lessonDate').focus();}));
  $('newStudent').addEventListener('click',()=>execute(async()=>{course();resetStudent();$('studentForm').hidden=false;$('studentCancelButton').hidden=false;$('studentName').focus();}));
  $('newAnnouncement').addEventListener('click',()=>{resetAnnouncement();$('announcementForm').hidden=false;$('announcementContent').focus();});
- document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>selectTab(button.dataset.tab)));
+ document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{
+  selectTab(button.dataset.tab);
+  if(window.matchMedia('(max-width:860px)').matches){
+   window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  }
+ }));
  $('activeCourseSelect').addEventListener('change',()=>execute(async()=>{state.courseId=$('activeCourseSelect').value;await loadRelated();}));
  [['courseForm',saveCourse],['lessonForm',saveLesson],['studentForm',saveStudent],['feeForm',saveFee],['paymentForm',savePayment],['announcementForm',saveAnnouncement]].forEach(([id,fn])=>$(id).addEventListener('submit',ev=>execute(()=>fn(ev))));
  $('resetCourse').addEventListener('click',resetCourse);$('resetLesson').addEventListener('click',resetLesson);$('resetAnnouncement').addEventListener('click',resetAnnouncement);$('studentCancelButton').addEventListener('click',resetStudent);
