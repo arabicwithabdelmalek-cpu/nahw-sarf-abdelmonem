@@ -1,8 +1,8 @@
 :root{
   color-scheme:light;
-  --bg:#f8fafc;--white:#fff;--ink:#223449;--muted:#637588;
-  --accent:#294e65;--accent-hover:#203e51;--soft:#edf3f7;
-  --line:#e1e8ee;--input:#ccd9e2;--danger:#a74942;
+  --bg:#faf9f6;--white:#fff;--ink:#26332d;--muted:#69746d;
+  --accent:#29584e;--accent-hover:#1e443c;--soft:#eef2eb;
+  --line:#e4e7df;--input:#d2dcd2;--danger:#9f5448;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -12,12 +12,12 @@ button,input,select,textarea{font:inherit}
 button{display:inline-flex;justify-content:center;align-items:center;min-height:43px;padding:9px 17px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:10px;cursor:pointer;font-size:13px;font-weight:800;transition:background .16s}
 button:hover{background:var(--accent-hover)}
 button:disabled{opacity:.52;cursor:not-allowed}
-button.outline{background:#fff;color:var(--accent);border-color:#cbd9e3}
+button.outline{background:#fff;color:var(--accent);border-color:#d1dbd2}
 button.outline:hover{background:var(--soft)}
-button.danger{color:var(--danger);background:#fff7f6;border-color:#efd7d3}
+button.danger{color:var(--danger);background:#fff6f2;border-color:#efd7d3}
 button.danger:hover{background:#ffefec}
 button.mini{font-size:12px;min-height:34px;padding:5px 12px;border-radius:8px}
-a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #a2bbcb;outline-offset:3px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #aec5b5;outline-offset:3px}
 h1,h2,h3,p{margin-top:0}
 h1{font-size:clamp(23px,3vw,29px);font-weight:800;margin-bottom:7px;line-height:1.65}
 h2{font-size:21px;margin-bottom:5px}
@@ -31,10 +31,10 @@ h2{font-size:21px;margin-bottom:5px}
 .topbar nav{display:flex;align-items:center;gap:10px}
 .topbar a{font-size:12px;font-weight:800;color:var(--accent);text-decoration:none}
 .topbar nav .back-home{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);padding:8px 13px;min-height:39px;border-radius:9px;background:var(--soft);white-space:nowrap}
-.topbar nav .back-home:hover{background:#e3edf4}
+.topbar nav .back-home:hover{background:#e7eee4}
 .topbar nav button{font-size:11px;min-height:39px;padding:7px 12px}
 main.shell{padding-bottom:65px}
-.notice{border:1px solid #cddfd9;background:#f2f8f5;color:#2b6151;border-radius:12px;padding:12px 17px;margin-top:20px;font-size:13px;font-weight:700}
+.notice{border:1px solid #d1e0d3;background:#f2f7f0;color:#356249;border-radius:12px;padding:12px 17px;margin-top:20px;font-size:13px;font-weight:700}
 .notice.error{border-color:#edd4d0;background:#fff4f2;color:#984138}
 .auth-card{max-width:460px;margin:70px auto 30px;background:#fff;border:1px solid var(--line);border-radius:17px;padding:clamp(24px,4vw,37px)}
 .eyebrow{color:var(--accent);font-size:11px;font-weight:800;margin-bottom:8px}
@@ -64,9 +64,9 @@ main.shell{padding-bottom:65px}
 .form-grid label{min-width:0;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
 .form-grid label.wide,.form-grid .wide{grid-column:1/-1}
 .form-grid input:not([type=checkbox]),.form-grid select,.form-grid textarea,.course-picker select,.generator-fields input{
-  width:100%;min-height:45px;border:1px solid var(--input);border-radius:9px;background:#fff;color:var(--ink);font-size:14px;padding:9px 12px;outline-color:#9ab9c9
+  width:100%;min-height:45px;border:1px solid var(--input);border-radius:9px;background:#fff;color:var(--ink);font-size:14px;padding:9px 12px;outline-color:#8fab96
 }
-.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{border-color:#779aaf}
+.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{border-color:#7da58b}
 .form-grid textarea{resize:vertical;min-height:88px}
 .form-grid label.check{flex-direction:row;align-items:center;gap:9px;font-size:12px;font-weight:600}
 .form-grid input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;flex-shrink:0}
@@ -77,14 +77,14 @@ main.shell{padding-bottom:65px}
 .record b{font-size:13px;display:block;font-weight:800;overflow-wrap:anywhere}
 .record small{display:block;font-size:11px;color:var(--muted);line-height:1.8;margin-top:3px}
 .record-actions{display:flex;gap:7px;flex-wrap:wrap}
-.schedule-generator{background:var(--soft);border:1px solid #dce6ec;border-radius:12px;padding:16px 18px;margin-bottom:22px}
+.schedule-generator{background:var(--soft);border:1px solid #dce6dc;border-radius:12px;padding:16px 18px;margin-bottom:22px}
 .schedule-generator h3{font-size:15px;margin:0 0 3px}
 .schedule-generator .hint{margin:0 0 11px}
 .generator-fields{display:flex;flex-wrap:wrap;align-items:end;gap:12px}
 .generator-fields label{font-size:12px;font-weight:700}
 .generator-fields input{width:auto;min-width:180px}
 .financial-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0}
-.finance-card{padding:16px;border:1px solid var(--line);border-radius:11px;background:#f7fafc}
+.finance-card{padding:16px;border:1px solid var(--line);border-radius:11px;background:#f7f9f5}
 .finance-card span{display:block;color:var(--muted);font-size:12px}
 .finance-card strong{display:block;margin-top:4px;font-size:21px;font-weight:800}
 #lessonForm,#studentForm,#courseForm{scroll-margin-top:125px}
@@ -111,7 +111,7 @@ main.shell{padding-bottom:65px}
   .topbar nav .back-home,.topbar nav button{font-size:10px;padding:6px 8px;min-height:36px}
   .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:0;gap:7px}
   .tabs button{border:1px solid var(--line);border-radius:9px;padding:8px 5px;min-height:40px;font-size:11px;background:#fff}
-  .tabs button.active{border:1px solid #b1c8d6;background:var(--soft)}
+  .tabs button.active{border:1px solid #b0c9b5;background:var(--soft)}
   .auth-card{margin-top:34px}
   .financial-summary{grid-template-columns:1fr}
   .generator-fields{align-items:stretch;flex-direction:column}
@@ -120,3 +120,51 @@ main.shell{padding-bottom:65px}
 }
 @media(max-width:350px){.topbar-content{flex-wrap:wrap;padding-block:10px}.topbar nav{margin-right:auto}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* Clean academic identity shared with the public pages */
+.brand-home{display:block;text-decoration:none;color:var(--ink);padding-right:15px;border-right:3px solid #b99568}
+.brand-home strong{font-size:16px;font-weight:800;line-height:1.5}
+.brand-home small{font-size:12px;color:#7b8479}
+.brand-section{display:inline-flex;align-items:center;font-size:12px;color:#907855;font-weight:800;border:1px solid #eae2d4;border-radius:8px;background:#f9f6ef;padding:4px 11px}
+.topbar .back-home{background:#f3f6f0;border-color:#dce6dc;color:#29584e}
+.topbar nav .back-home:hover{background:#e9f0e7}
+.auth-card{box-shadow:0 12px 40px #304d3510;border-color:#e4e7df}
+.auth-card .eyebrow{color:#8a7054}
+.page-title{padding:26px 0 18px}
+.page-title h1{font-size:26px}
+.page-title .user-badge{background:#f3f5ef;border-color:#e1e7dc;color:#69746d}
+.tabs{gap:13px}
+.tabs button{color:#68776d}
+.tabs button.active{color:#29584e;border-bottom-color:#29584e}
+.course-picker{background:#f6f7f2;border-color:#e3e8df;padding:10px 17px}
+.course-picker label{color:#506459}
+.panel{box-shadow:0 7px 26px rgba(45,65,47,.025)}
+.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.panel-heading h2{margin:0}
+.panel-heading button{min-height:37px;padding:7px 13px;border-radius:8px;font-size:12px}
+.panel-heading p{flex-basis:100%;margin:0}
+.panel-heading:has(button){border-bottom:0;padding-bottom:5px;margin-bottom:7px}
+.editor-form{padding:20px;background:#fafbf8;border:1px solid #e4e9df;border-radius:12px;margin:14px 0 24px}
+.editor-form .actions{padding-top:7px}
+#lessonsList .record,#studentsList .record,#announcementsList .record,#coursesList .record{background:#fff}
+.record b{color:#2d4137}
+.record:hover{border-color:#d4ded3}
+.record-actions button{border-radius:8px}
+.schedule-generator{background:#f3f6f0}
+.financial-summary .finance-card{background:#f5f7f1}
+.finance-card strong{color:#294e43}
+@media(max-width:650px){
+  .brand-home{padding-right:10px}
+  .brand-home strong{font-size:13px}
+  .brand-home small{font-size:10px}
+  .brand-section{font-size:10px;padding:3px 8px}
+  .page-title h1{font-size:23px}
+  .panel-heading{gap:8px}
+  .panel-heading button{font-size:11px}
+  .tabs{display:flex;gap:3px;border-bottom:1px solid var(--line)}
+  .tabs button{background:transparent;border:0;border-bottom:3px solid transparent;border-radius:0;min-width:max-content;padding:9px 11px;font-size:12px}
+  .tabs button.active{background:transparent;border:0;border-bottom:3px solid var(--accent);color:var(--accent)}
+  .editor-form{padding:15px;margin:10px 0 18px}
+}
+@media(max-width:380px){.topbar-content{flex-wrap:wrap;padding:9px 0}.topbar nav{margin-right:auto}}
