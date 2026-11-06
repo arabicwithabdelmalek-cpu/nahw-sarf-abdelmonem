@@ -1,0 +1,159 @@
+/* Visual polish v17: warm brass + muted teal; short, accessible motion.
+   Shared by the student timetable and secure administration.
+   No animation is required for any interaction to work. */
+
+:root {
+  --motion-brass:#c6a06c;
+  --motion-teal:#3e7468;
+  --motion-teal-soft:#eaf4ef;
+  --motion-ink:#2c4343;
+  --motion-paper:#fbfaf6;
+  --motion-line:#e1e6df;
+  --motion-ease:cubic-bezier(.22,1,.36,1);
+}
+@keyframes gentle-enter {
+  from { opacity:0; transform:translateY(11px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes quiet-appear {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes small-scale {
+  from { opacity:.2; transform:scale(.97); }
+  to { opacity:1; transform:scale(1); }
+}
+@keyframes loading-breathe {
+  0%,100% { opacity:.55; }
+  50% { opacity:1; }
+}
+@media (prefers-reduced-motion:no-preference) {
+  html:not(.app-loading) .hero-copy > * { animation:gentle-enter .63s var(--motion-ease) both; }
+  html:not(.app-loading) .hero-copy > :nth-child(2) { animation-delay:.06s; }
+  html:not(.app-loading) .hero-copy > :nth-child(3) { animation-delay:.12s; }
+  html:not(.app-loading) .hero-copy > :nth-child(4) { animation-delay:.17s; }
+  html:not(.app-loading) .hero-copy > :nth-child(5) { animation-delay:.22s; }
+  html:not(.app-loading) .upcoming { animation:small-scale .7s var(--motion-ease) .12s both; }
+  html:not(.app-loading) .schedule > .section-heading { animation:gentle-enter .52s var(--motion-ease) both; }
+  html:not(.app-loading) .lecture.intro-row { animation:gentle-enter .48s var(--motion-ease) both; }
+  html:not(.app-loading) .lecture.intro-row:nth-child(2) { animation-delay:.045s; }
+  html:not(.app-loading) .lecture.intro-row:nth-child(3) { animation-delay:.09s; }
+  html:not(.app-loading) .lecture.intro-row:nth-child(4) { animation-delay:.135s; }
+  html:not(.app-loading) .lecture.intro-row:nth-child(5) { animation-delay:.18s; }
+  html:not(.app-loading) .lecture.intro-row:nth-child(6) { animation-delay:.225s; }
+  html:not(.app-loading) .lecture.intro-row:nth-child(7) { animation-delay:.27s; }
+  html:not(.app-loading) .lecture.intro-row:nth-child(8) { animation-delay:.315s; }
+  .auth-card:not(.auth-loading) { animation:gentle-enter .5s var(--motion-ease) both; }
+  #workspace:not([hidden]) .content-area { animation:quiet-appear .32s ease both; }
+  .panel:not([hidden]) { animation:gentle-enter .33s var(--motion-ease) both; }
+  .editor-form:not([hidden]) { animation:gentle-enter .28s var(--motion-ease) both; }
+  .notice:not([hidden]) { animation:gentle-enter .36s var(--motion-ease) both; }
+  .app-loader span, .auth-loading p { animation:loading-breathe 1.5s ease-in-out infinite; }
+}
+/* More vivid paper, subtle warm/cool accents; no new decorative objects. */
+body { background:var(--motion-paper); }
+.site-header,.topbar { background:#fffefa; border-bottom-color:var(--motion-line); }
+.header-links .admin-link,.top-actions .back-home {
+  background:#edf5f0; color:#2a6253; border-color:#d6e7da;
+}
+.header-links .admin-link:hover,.top-actions .back-home:hover {
+  background:#e3f0e7; color:#215447;
+}
+.hero {
+  background:
+    radial-gradient(ellipse at 10% 8%,rgba(214,170,102,.19),transparent 49%),
+    linear-gradient(120deg,#344247 0%,#324444 55%,#3b504a 100%);
+  box-shadow:0 14px 36px rgba(42,63,58,.10);
+}
+.eyebrow,.upcoming-caption { color:#ebc98d; }
+.upcoming {
+  border-color:rgba(237,217,173,.28);
+  background:linear-gradient(140deg,rgba(255,255,255,.10),rgba(255,255,255,.048));
+}
+.hero-cta { background:#edc894; color:#283d3b; }
+.hero-cta:hover { background:#f4d6aa; color:#203331; }
+.subject-pill { background:rgba(220,193,134,.18);border-color:rgba(238,218,171,.3); }
+.course-marker { background:#eaf4ee; color:#326a5c; }
+.schedule-board { border-color:#e2e8e0;box-shadow:0 5px 20px rgba(45,74,57,.035); }
+.lecture { border-bottom-color:#e7ece5; }
+.lecture.is-next { background:#f3f8f1;box-shadow:inset -3px 0 0 #bda06c; }
+.topic.nahw,.topic.sarf {
+  display:inline-flex;justify-content:center;align-items:center;
+  justify-self:start;padding:4px 11px;border-radius:8px;line-height:1.6;font-weight:800;
+}
+.topic.nahw { color:#316557;background:#e9f4ed; }
+.topic.sarf { color:#85613c;background:#fbf1e0; }
+.number { color:#6d8173; }
+.footer a { color:#397467; }
+.notice { border-right-color:var(--motion-brass); }
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  a,button { transition:background-color .22s ease,color .22s ease,border-color .22s ease,box-shadow .22s ease,transform .22s var(--motion-ease); }
+  .hero-cta:hover,.header-links .admin-link:hover,.top-actions .back-home:hover { transform:translateY(-2px); }
+  .lecture { transition:background-color .22s ease,box-shadow .22s ease; }
+  .lecture:hover { background:#f5f9f4;box-shadow:inset -3px 0 0 #a3bcae; }
+  button:not(:disabled):not(.tab):hover { transform:translateY(-1px); }
+  .record,.balance-row,.finance-card {
+    transition:border-color .22s ease,box-shadow .22s ease,transform .22s var(--motion-ease);
+  }
+  .record:hover,.balance-row:hover { border-color:#cbdcd0;box-shadow:0 6px 18px rgba(43,78,61,.06);transform:translateY(-2px); }
+  .finance-card:hover { box-shadow:0 5px 14px rgba(43,78,61,.06);transform:translateY(-2px); }
+}
+button:active,.hero-cta:active { transform:scale(.985); }
+/* Admin: a touch of warm brass and sage reinforces selection and payment state. */
+.sidebar { border-color:#dfe8df;box-shadow:0 4px 19px rgba(43,69,53,.04); }
+.sidebar-heading strong,.panel-heading h2 { color:#2b4642; }
+.tabs button.active { background:#e8f4ed;color:#2b6658; }
+.tabs button:hover { background:#eef6f0;color:#275d50; }
+.course-picker { background:#fcfefb;border-color:#dde9e0; }
+.panel { border-color:#e1e8df;box-shadow:0 6px 21px rgba(42,66,54,.03); }
+.panel-heading button.outline,.record-actions button:not(.danger) {
+  border-color:#d5e5d7;background:#f0f7f1;color:#2e6c59;
+}
+.panel-heading button.outline:hover,.record-actions button:not(.danger):hover { background:#e4f2e7; }
+button:not(.outline):not(.danger):not(.tab):not(.link-button):not(.text-button) {
+  background:#344f49;border-color:#344f49;
+}
+button:not(.outline):not(.danger):not(.tab):not(.link-button):not(.text-button):hover {
+  background:#2a6153;border-color:#2a6153;
+}
+.finance-card { background:#fcfdf9;border-color:#e0e9df; }
+.finance-card.earned { background:#e9f6ed;border-color:#cfe7d7; }
+.finance-card.remaining { background:#fff5e6;border-color:#efdfbf; }
+.finance-card.earned strong { color:#287054; }
+.finance-card.remaining strong { color:#916134; }
+.balance-row { border-color:#e1e9df; }
+.balance-track span { background:#af9362;transition:width .5s var(--motion-ease); }
+.balance-row.paid .balance-track span { background:#4a9275; }
+.balance-status.paid { background:#e3f4e9;color:#2e7957; }
+.balance-action button:not(.danger) { background:#eaf5ee;color:#286451;border-color:#d0e7d6; }
+.balance-action button:not(.danger):hover { background:#dfefe5; }
+.deleted-students summary:hover { color:#366d56; }
+@media(max-width:860px) {
+  .tabs button.active,.tabs button.active:hover {
+    background:#346b5d;color:#fff;border-color:#346b5d;
+    box-shadow:0 3px 10px rgba(46,107,85,.13);
+  }
+}
+@media(max-width:640px) {
+  /* Public mobile keeps its airy light hero while adding a warm next-lesson accent. */
+  .hero { background:transparent;box-shadow:none; }
+  .hero .eyebrow { color:#8e6d3e; }
+  .upcoming {
+    background:linear-gradient(135deg,#f5faf4,#fffdf7);
+    border:1px solid #dce8da;box-shadow:0 7px 24px rgba(43,82,56,.055);
+    border-right:3px solid #c7a16f;
+  }
+  .upcoming-caption { color:#3b7862; }
+  .subject-pill { background:#e7f2e8;border-color:#d4e7d8;color:#2c6959; }
+  .hero-cta { background:#e7f2e8;border-color:#d0e3d6;color:#2a6658; }
+  .hero-cta:hover { background:#d9ebdd; }
+  .lecture.is-next { box-shadow:inset -3px 0 0 #bda06c; }
+  .topic.nahw,.topic.sarf { justify-self:end;padding:3px 8px;font-size:11px; }
+  .record:hover,.balance-row:hover { transform:none;box-shadow:none; }
+}
+@media(prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto!important; }
+  *,*::before,*::after { animation:none!important;transition:none!important;scroll-behavior:auto!important; }
+  button:active { transform:none!important; }
+  .lecture,.record,.balance-row,.finance-card { transform:none!important; }
+}
