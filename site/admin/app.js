@@ -81,21 +81,39 @@ async function generateLessons(){
 }
 
 let studentsLoadVersion=0;
+async function archiveStudentEnrollment(ent){
+ const student=ent.students||{};
+ const name=student.full_name||'هذا الطالب';
+ if(ent.deleted_at)throw new Error('الطالب محذوف بالفعل.');
+ const answer=window.confirm('هل تريد حذف «'+name+'» من قائمة الطلاب والمدفوعات في هذه الدورة؟\n\nستظل الدفعات السابقة محفوظة في سجل المدفوعات، ويمكنك استعادة الطالب لاحقًا.');
+ if(!answer)return;
+ const changed=await one(db.from('enrollments').update({deleted_at:new Date().toISOString()}).eq('id',ent.id).eq('course_id',course()).is('deleted_at',null).select('id'));
+ if(!changed?.length)throw new Error('تعذّر حذف الطالب. أعد تحميل الصفحة وحاول مرة أخرى.');
+ resetStudent();
+ await loadRelated();
+ alertMsg('تم حذف «'+name+'» من قوائم الدورة، مع الاحتفاظ بكل الدفعات السابقة.');
+}
+async function restoreStudentEnrollment(ent){
+ const student=ent.students||{};
+ const changed=await one(db.from('enrollments').update({deleted_at:null}).eq('id',ent.id).eq('course_id',course()).select('id'));
+ if(!changed?.length)throw new Error('تعذّرت استعادة الطالب.');
+ await loadRelated();
+ alertMsg('تمت استعادة «'+(student.full_name||'الطالب')+'» إلى قائمة الطلاب.');
+}
 async function loadStudents(){
  const version=++studentsLoadVersion;
  const courseId=state.courseId;
- const list=$('studentsList');
+ const list=$('studentsList'),archivedList=$('deletedStudentsList');
+ const archivedBox=$('deletedStudentsBox');
  const paymentStudent=$('paymentStudent');
  if(!courseId){
   state.enrollments=[];
-  list.replaceChildren();
-  paymentStudent.replaceChildren();
+  list.replaceChildren();archivedList.replaceChildren();
+  archivedBox.hidden=true;paymentStudent.replaceChildren();
   return;
  }
- const rows=await one(db.from('enrollments').select('id,student_id,status,students(id,full_name,contact)').eq('course_id',courseId).order('created_at'));
- // Ignore a superseded response; asynchronous requests may finish out of order.
+ const rows=await one(db.from('enrollments').select('id,student_id,status,deleted_at,students(id,full_name,contact)').eq('course_id',courseId).order('created_at'));
  if(version!==studentsLoadVersion||state.courseId!==courseId)return;
- // Keep exactly one enrollment entry per student on the current course.
  const seen=new Set();
  state.enrollments=rows.filter(ent=>{
   const key=ent.student_id||ent.id;
@@ -103,9 +121,11 @@ async function loadStudents(){
   seen.add(key);
   return true;
  });
- // Clear only when the latest request has completed, so overlapping loads can't append duplicate cards.
+ const visible=state.enrollments.filter(ent=>!ent.deleted_at);
+ const archived=state.enrollments.filter(ent=>Boolean(ent.deleted_at));
  list.replaceChildren();
- for(const ent of state.enrollments){const student=ent.students||{};
+ for(const ent of visible){
+  const student=ent.students||{};
   record(list,student.full_name||'طالب',`${student.contact||'بدون وسيلة تواصل'} • ${ent.status}`,[
    {label:'تعديل',action:async()=>{
     $('studentId').value=student.id;
@@ -121,12 +141,22 @@ async function loadStudents(){
    {label:ent.status==='نشط'?'إيقاف الاشتراك':'إعادة التنشيط',action:async()=>{
     await one(db.from('enrollments').update({status:ent.status==='نشط'?'متوقف':'نشط'}).eq('id',ent.id));
     await loadRelated();
-   }}
+   }},
+   {label:'حذف الطالب',danger:true,action:async()=>archiveStudentEnrollment(ent)}
   ]);
  }
- if(!state.enrollments.length)list.append(e('p','subtle','لا يوجد طلاب مسجلون في هذه الدورة.'));
+ if(!visible.length)list.append(e('p','subtle','لا يوجد طلاب في هذه الدورة.'));
+ archivedList.replaceChildren();
+ archivedBox.hidden=!archived.length;
+ $('deletedStudentsCount').textContent=String(archived.length);
+ for(const ent of archived){
+  const student=ent.students||{};
+  record(archivedList,student.full_name||'طالب','محذوف من قوائم الدورة • محفوظ في السجل المالي',[
+   {label:'استعادة',action:async()=>restoreStudentEnrollment(ent)}
+  ]);
+ }
  paymentStudent.replaceChildren();
- for(const ent of state.enrollments.filter(x=>x.status==='نشط'))
+ for(const ent of visible.filter(x=>x.status==='نشط'))
   paymentStudent.append(new Option(ent.students?.full_name||'طالب',ent.id));
 }
 async function saveStudent(ev){ev.preventDefault();const name=$('studentName').value.trim(),contact=$('studentContact').value.trim(),oldId=$('studentId').value;if(!name)throw new Error('اكتب اسم الطالب.');course();
@@ -162,7 +192,7 @@ async function loadFinance(){
  state.fee=n(data?.total_fee);$('totalFee').value=state.fee;
  const ids=state.enrollments.map(x=>x.id);
  if(ids.length)state.payments=await one(db.from('payments').select('*').in('enrollment_id',ids).order('paid_on',{ascending:false}));
- const active=state.enrollments.filter(x=>x.status==='نشط');
+ const active=state.enrollments.filter(x=>x.status==='نشط'&&!x.deleted_at);
  const totalCents=cents(state.fee);
  const base=active.length?Math.floor(totalCents/active.length):0;
  const remainder=active.length?totalCents%active.length:0;
@@ -205,7 +235,9 @@ async function loadFinance(){
    const action=e('div','balance-action');
    const add=e('button','outline','تسجيل دفعة');add.type='button';
    add.addEventListener('click',()=>execute(async()=>showPaymentForm(ent.id,due)));
-   action.append(add);row.append(person,details,action);balances.append(row);
+   const remove=e('button','danger','حذف الطالب');remove.type='button';
+   remove.addEventListener('click',()=>execute(()=>archiveStudentEnrollment(ent)));
+   action.append(add,remove);row.append(person,details,action);balances.append(row);
   }
  }
  if(!state.payments.length)history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
