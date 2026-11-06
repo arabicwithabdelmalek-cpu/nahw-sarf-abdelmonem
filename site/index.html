@@ -1,163 +1,126 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="مواعيد محاضرات النحو والصرف مع الدكتور عبد المنعم، وموضوعات المحاضرات وآخر التحديثات.">
-  <meta name="theme-color" content="#faf9f6">
-  <title>محاضرات النحو والصرف — الدكتور عبد المنعم</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-  :root{color-scheme:light;--bg:#faf9f6;--white:#fff;--ink:#26332d;--sub:#69746d;--primary:#29584e;--primary-hover:#1e443c;--line:#e4e7df;--soft:#eef2eb;--green:#ba9264;--radius:15px}
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:Cairo,Tahoma,Arial,sans-serif;line-height:1.8;-webkit-font-smoothing:antialiased}
-  a{color:inherit}button,a{-webkit-tap-highlight-color:transparent}
-  a:focus-visible{outline:3px solid #9ab3c4;outline-offset:4px;border-radius:5px}
-  [hidden]{display:none!important}
-  .container{max-width:1080px;margin:0 auto;padding-inline:26px}
-  .site-header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}
-  .header-content{display:flex;justify-content:space-between;align-items:center;min-height:78px;gap:22px}
-  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:0}
-  .brand-mark{width:45px;height:45px;display:grid;place-items:center;flex-shrink:0;background:var(--primary);border-radius:12px;color:#fff;font-size:16px;font-weight:800}
-  .brand-text strong{font-size:15px;line-height:1.5;display:block;font-weight:800}
-  .brand-text small{font-size:11px;display:block;color:var(--sub)}
-  .site-nav{display:flex;gap:8px;align-items:center}
-  .nav-link{padding:8px 13px;text-decoration:none;color:#526579;font-size:12px;font-weight:700;white-space:nowrap;border-radius:9px}
-  .nav-link:hover{background:var(--soft);color:var(--ink)}
-  .nav-login{background:var(--soft);color:var(--primary);border:1px solid #d7e4d9}
-  .nav-login:hover{background:#e2eae2}
-  .hero{padding-block:68px 62px}
-  .hero-grid{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(290px,.84fr);gap:62px;align-items:center}
-  .eyebrow{margin:0 0 13px;color:var(--primary);font-size:12px;font-weight:800;letter-spacing:.01em}
-  h1{font-size:clamp(31px,3.7vw,44px);font-weight:800;letter-spacing:-.7px;line-height:1.65;margin:0 0 15px}
-  .hero-description{font-size:15px;color:var(--sub);margin:0 0 26px;max-width:510px}
-  .primary-link{display:inline-flex;align-items:center;justify-content:center;min-height:45px;padding:9px 21px;background:var(--primary);color:white;text-decoration:none;border-radius:10px;font-size:13px;font-weight:800}
-  .primary-link:hover{background:var(--primary-hover)}
-  .hero-hint{margin:14px 0 0;color:var(--sub);font-size:12px}
-  .next-card{padding:26px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 7px 28px rgba(35,57,76,.035);min-height:240px}
-  .next-label{display:flex;gap:9px;align-items:center;font-size:13px;font-weight:800;color:var(--ink);margin:0 0 17px}
-  .next-label:before{content:"";width:8px;height:8px;background:var(--green);border-radius:50%}
-  .next-date{font-weight:800;font-size:clamp(22px,2.5vw,27px);line-height:1.7}
-  .next-meta{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:11px 0;color:var(--sub);font-size:12px}
-  .next-chip{display:inline-block;background:var(--soft);color:var(--primary);font-weight:800;padding:4px 11px;border-radius:8px}
-  .next-bottom{border-top:1px solid var(--line);margin-top:20px;padding-top:13px;display:flex;justify-content:space-between;gap:9px;flex-wrap:wrap;color:var(--sub);font-size:11px}
-  .notice{margin-block:0 30px}
-  .notice-inner{border:1px solid #d9e5d9;border-right:3px solid var(--primary);border-radius:12px;padding:16px 20px;background:#f3f6ef}
-  .notice-inner strong{font-size:14px}
-  .notice-inner p{font-size:13px;color:var(--ink);margin:3px 0 0;white-space:pre-wrap}
-  .schedule{padding-block:38px 65px;scroll-margin-top:112px}
-  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}
-  .section-head h2,.about h2{font-weight:800;font-size:clamp(23px,2.5vw,28px);margin:0;line-height:1.65}
-  .section-head p{margin:3px 0 0;color:var(--sub);font-size:13px}
-  .schedule-count{font-size:12px;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 12px;color:var(--sub);white-space:nowrap}
-  .summary{display:flex;align-items:center;gap:24px;flex-wrap:wrap;color:var(--sub);font-size:12px;margin-bottom:20px}
-  .summary span b{font-size:16px;font-weight:800;color:var(--ink);margin-left:5px}
-  .summary-track{width:125px;height:5px;background:#e4e9e1;border-radius:9px;overflow:hidden}
-  .summary-track span{display:block;height:100%;background:#859e8b;border-radius:inherit;transition:width .25s}
-  .public-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .class-tile{display:flex;align-items:flex-start;gap:14px;border:1px solid var(--line);background:white;border-radius:13px;padding:18px;min-height:103px}
-  .class-tile.is-next{border-color:#a4b9a6;background:#f7f9f5}
-  .class-tile.is-past{opacity:.75}
-  .class-number{background:var(--soft);width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--primary);font-size:13px;font-weight:800;flex-shrink:0}
-  .class-main{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
-  .class-main strong{font-size:14px;font-weight:800;line-height:1.7}
-  .class-main small{font-size:11px;color:var(--sub)}
-  .lesson-details{font-size:12px;color:var(--sub);line-height:1.7;overflow-wrap:anywhere}
-  .lesson-details:empty{display:none}
-  .class-tag{flex-shrink:0;border:1px solid #dfe7dd;border-radius:7px;padding:3px 8px;color:var(--sub);font-size:11px;font-weight:700;white-space:nowrap}
-  .class-tag.nahw{color:#275f56;border-color:#cfe5d5;background:#f5faf6}
-  .class-tag.sarf{color:#7d6650;border-color:#e8ddce;background:#f8f6f2}
-  .calendar-help{margin:17px 0 0;font-size:12px;color:var(--sub)}
-  .no-lessons{grid-column:1/-1;padding:40px;text-align:center;border:1px dashed #ced9cc;border-radius:13px;color:var(--sub);background:#fff}
-  .about{padding-block:36px 43px;border-top:1px solid var(--line);scroll-margin-top:112px}
-  .about-layout{display:flex;align-items:start;justify-content:space-between;gap:55px}
-  .about h2{font-size:22px;white-space:nowrap}
-  .about p{font-size:13px;color:var(--sub);max-width:610px;margin:0;line-height:2}
-  .footer{border-top:1px solid var(--line);background:white}
-  .footer-content{min-height:83px;display:flex;justify-content:space-between;align-items:center;gap:18px}
-  .footer strong{display:block;font-size:12px;font-weight:800}
-  .footer small{display:block;font-size:11px;color:var(--sub)}
-  .footer-links{display:flex;align-items:center;gap:20px}
-  .footer a{font-size:12px;font-weight:700;text-decoration:none;color:var(--primary)}
-  .footer a:hover{text-decoration:underline}
-  @media(max-width:850px){.hero-grid{gap:25px;grid-template-columns:minmax(0,1fr) minmax(280px,.94fr)}.container{padding-inline:20px}.hero{padding-block:45px}.class-tile{padding:15px}.class-main strong{font-size:13px}}
-  @media(max-width:640px){.header-content{flex-wrap:wrap;padding-block:10px;gap:8px}.site-nav{width:100%;gap:4px;justify-content:space-between}.nav-link{font-size:11px;padding:7px 9px}.brand-text strong{font-size:13px}.brand-mark{width:37px;height:37px;font-size:14px}.hero{padding-block:37px 29px}.hero-grid{grid-template-columns:1fr;gap:23px}.hero h1{font-size:30px}.hero-description{font-size:13px}.next-card{min-height:0;padding:21px}.schedule{padding-block:35px 49px}.section-head{align-items:start;flex-direction:column;gap:10px}.public-grid{grid-template-columns:1fr}.summary{gap:12px 18px}.class-tile{min-height:88px}.about-layout{display:block}.about h2{margin-bottom:11px}.footer-content{flex-wrap:wrap;padding-block:17px}.footer-links{gap:16px}}
-  @media(max-width:360px){.container{padding-inline:13px}.nav-link{font-size:10px;padding:6px}.class-tile{gap:9px;padding:12px}.class-main strong{font-size:12px}.class-tag{font-size:10px;padding:2px 5px}}
-  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
-
-  /* Calm academic identity: no decorative logo or redundant widgets. */
-  .site-header{background:rgba(255,255,255,.97)}
-  .brand{padding-right:16px;border-right:3px solid #b99568;gap:0}
-  .brand-text strong{font-size:17px;letter-spacing:0;font-weight:800;color:var(--ink)}
-  .brand-text small{font-size:12px;color:#7b8479}
-  .hero{padding-block:75px 62px}
-  .hero-grid{gap:60px}
-  .eyebrow{color:#8a7054;font-size:12px}
-  h1{letter-spacing:0}
-  .next-card{box-shadow:0 8px 35px #334a3510;border-color:#e2e7dd}
-  .next-chip{background:#eef2eb;color:#315d51}
-  .nav-login{background:#f0f4ee}
-  .nav-login:hover{background:#e6ede3}
-  .schedule{padding-top:30px}
-  .section-head{margin-bottom:24px}
-  .class-tile.is-next{box-shadow:0 4px 14px #304e3b0b}
-  @media(max-width:640px){.hero{padding-block:38px 30px}.hero-grid{gap:24px}.brand{padding-right:10px}.brand-text strong{font-size:14px}.brand-text small{font-size:11px}.site-nav{justify-content:flex-end}.nav-link{font-size:12px}.hero h1{font-size:30px}}
-
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="الجدول الدراسي لمحاضرات النحو والصرف مع الدكتور عبد المنعم.">
+<meta name="theme-color" content="#f8f7f4">
+<title>محاضرات النحو والصرف | الدكتور عبد المنعم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#f8f7f4;--surface:#fff;--ink:#2c2830;--muted:#786f77;--deep:#433140;--deep-hover:#352632;--wine:#745166;--rose:#b78b76;--rule:#eae5e5;--soft:#f2eef0;--green:#457465;--radius:16px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:"Cairo",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;line-height:1.85;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}button{font:inherit}a:focus-visible{outline:3px solid #bc9ca9;outline-offset:4px;border-radius:6px}[hidden]{display:none!important}
+.container{width:min(1110px,calc(100% - 48px));margin:0 auto}
+.site-header{background:#fff;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:20}
+.header-inner{min-height:84px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;flex-direction:column;gap:0;min-width:0}
+.brand strong{font-size:19px;line-height:1.45;letter-spacing:-.3px;font-weight:800}
+.brand span{font-size:12px;color:var(--muted)}
+.header-links{display:flex;gap:11px;align-items:center}
+.header-links a{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;white-space:nowrap}
+.header-links a:hover{background:#f6f4f4}
+.header-links .admin-link{border:1px solid #e2d9dd;background:#f6f2f4;color:var(--deep)}
+.header-links .admin-link:hover{background:#eee8ec}
+.hero-wrap{padding:48px 0 35px}
+.hero{display:grid;grid-template-columns:1fr minmax(320px,.75fr);gap:34px;align-items:stretch;background:var(--deep);color:#fff;border-radius:23px;padding:clamp(26px,4.8vw,56px);position:relative;overflow:hidden}
+.hero-copy{display:flex;flex-direction:column;justify-content:center;max-width:570px}
+.eyebrow{color:#dfc4b9;font-weight:800;font-size:12px;margin:0 0 15px}
+h1{font-size:clamp(29px,3.7vw,43px);line-height:1.65;margin:0 0 11px;letter-spacing:-.45px;font-weight:800}
+.hero-lead{font-size:16px;line-height:1.9;color:#e9e0e6;margin:0 0 23px}
+.hero-note{font-size:13px;color:#dfd5dc;margin:0 0 28px;max-width:470px}
+.hero-cta{display:inline-flex;align-self:flex-start;justify-content:center;align-items:center;background:#fff;color:var(--deep);border-radius:10px;font-size:13px;font-weight:800;padding:10px 21px;min-height:47px}
+.hero-cta:hover{background:#f0ebef}
+.upcoming{background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.18);border-radius:17px;padding:27px 28px;display:flex;flex-direction:column;justify-content:space-between;min-height:235px}
+.upcoming-caption{font-size:13px;font-weight:700;color:#dfc4b9}
+.upcoming-date{font-size:clamp(22px,2.8vw,31px);font-weight:800;line-height:1.65;margin:10px 0 14px}
+.upcoming-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:#f1e9ed}
+.subject-pill{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.12);padding:4px 11px;border-radius:8px;font-size:12px;font-weight:700}
+.upcoming-bottom{border-top:1px solid rgba(255,255,255,.17);padding-top:13px;margin-top:22px;color:#dbcfd7;font-size:12px}
+.notice{background:#fff;border:1px solid var(--rule);border-right:3px solid var(--rose);border-radius:13px;padding:16px 19px;margin-bottom:27px}
+.notice b{font-size:13px;display:block}.notice p{font-size:13px;color:var(--muted);margin:1px 0 0;white-space:pre-wrap}
+.schedule{padding:19px 0 63px;scroll-margin-top:110px}
+.section-heading{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:22px}
+.section-heading h2{font-size:27px;line-height:1.6;margin:0;font-weight:800}
+.section-heading p{font-size:13px;color:var(--muted);margin:2px 0 0}
+.course-marker{color:var(--wine);background:var(--soft);font-size:12px;font-weight:700;border-radius:9px;padding:8px 14px;white-space:nowrap}
+.schedule-board{border:1px solid var(--rule);border-radius:18px;background:var(--surface);overflow:hidden}
+.schedule-head,.lecture{display:grid;grid-template-columns:75px minmax(0,1.65fr) minmax(90px,.8fr) minmax(105px,.8fr) minmax(88px,.8fr);align-items:center;gap:14px}
+.schedule-head{background:#faf8f8;border-bottom:1px solid var(--rule);padding:15px 22px;font-size:11px;font-weight:700;color:var(--muted)}
+.lecture{padding:18px 22px;min-height:86px;border-bottom:1px solid var(--rule)}
+.lecture:last-child{border-bottom:0}
+.lecture.is-next{background:#fcf9fa}
+.number{font-weight:800;color:#a78f9d;font-size:13px}
+.when{display:flex;flex-direction:column;gap:2px;min-width:0}
+.when strong{font-size:14px;font-weight:800;line-height:1.65}
+.when small,.lecture-notes{font-size:11px;color:var(--muted);line-height:1.6}
+.when .lecture-notes{display:block;overflow-wrap:anywhere}
+.topic{font-size:13px;font-weight:700}
+.topic.nahw{color:#78506b}.topic.sarf{color:#846147}.topic.undefined{color:var(--muted)}
+.time,.status{font-size:12px;color:var(--muted)}
+.status.next{color:#7c526c;font-weight:800}
+.status.past{color:#928991}
+.no-lessons{padding:42px 24px;color:var(--muted);font-size:14px;text-align:center}
+.schedule-footnote{margin:16px 0 0;color:var(--muted);font-size:12px}
+.footer{padding:27px 0;border-top:1px solid var(--rule);background:#fff}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;gap:15px}
+.footer p{margin:0;font-size:12px;color:var(--muted)}
+.footer a{color:var(--wine);font-size:12px;font-weight:700}
+@media(max-width:850px){.hero{grid-template-columns:1fr;gap:26px;padding:35px}.upcoming{min-height:175px;gap:8px}.schedule-head,.lecture{grid-template-columns:40px minmax(0,1.5fr) minmax(80px,.8fr) minmax(95px,.65fr)}.schedule-head span:last-child,.lecture .status{display:none}}
+@media(max-width:620px){.container{width:min(100% - 28px,1110px)}.header-inner{min-height:74px;gap:8px}.brand strong{font-size:15px}.brand span{font-size:10px}.header-links{gap:2px}.header-links a{font-size:11px;padding:7px 9px}.header-links a:first-child{display:none}.hero-wrap{padding:18px 0 17px}.hero{padding:27px 22px;border-radius:17px;gap:25px}.eyebrow{font-size:11px;margin-bottom:8px}h1{font-size:29px}.hero-lead{font-size:14px;margin-bottom:6px}.hero-note{font-size:12px;margin-bottom:18px}.upcoming{padding:20px;border-radius:12px}.upcoming-date{font-size:24px}.schedule{padding:19px 0 41px}.section-heading{align-items:flex-start}.section-heading h2{font-size:22px}.section-heading p{font-size:12px}.course-marker{font-size:10px;padding:6px 9px}.schedule-head{display:none}.lecture{grid-template-columns:28px minmax(0,1fr) auto;gap:8px;padding:15px 13px;min-height:75px}.lecture .time{display:none}.lecture .status{display:none}.lecture .topic{font-size:12px}.when strong{font-size:12px}.footer-inner{flex-wrap:wrap}}
+@media(max-width:365px){.brand strong{font-size:13px}.brand span{font-size:9px}.header-links a{font-size:10px;padding:6px}.lecture{grid-template-columns:23px minmax(0,1fr) auto;padding:13px 10px;gap:6px}.topic{max-width:75px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-content">
-      <a href="#home" class="brand" aria-label="محاضرات النحو والصرف — الصفحة الرئيسية">
-        <span class="brand-text"><strong>محاضرات النحو والصرف</strong><small>مع الدكتور عبد المنعم</small></span>
-      </a>
-      <nav class="site-nav" aria-label="القائمة الرئيسية">
-        <a class="nav-link" href="#publicTimetable">جدول المحاضرات</a>
-        <a class="nav-link nav-login" href="./admin/">دخول الإدارة</a>
-      </nav>
+<header class="site-header">
+ <div class="container header-inner">
+   <a class="brand" href="./" aria-label="العودة إلى أعلى الصفحة"><strong>محاضرات النحو والصرف</strong><span>مع الدكتور عبد المنعم</span></a>
+   <nav class="header-links" aria-label="التنقل"><a href="#publicTimetable">جدول المحاضرات</a><a href="./admin/" class="admin-link">دخول الإدارة</a></nav>
+ </div>
+</header>
+<main>
+ <div class="hero-wrap">
+  <div class="container">
+   <section class="hero" aria-labelledby="heroTitle">
+    <div class="hero-copy">
+     <p class="eyebrow">الدورة الحالية</p>
+     <h1 id="heroTitle">محاضرات النحو والصرف</h1>
+     <p class="hero-lead">مع الدكتور عبد المنعم</p>
+     <p class="hero-note">يمكنك الاطلاع على مواعيد المحاضرات وموضوعاتها من الجدول التالي.</p>
+     <a class="hero-cta" href="#publicTimetable">عرض الجدول</a>
     </div>
-  </header>
-  <main>
-    <section class="hero" id="home" aria-label="مقدمة البرنامج">
-      <div class="container hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">الدورة الحالية</p>
-          <h1>مواعيد محاضرات<br>النحو والصرف</h1>
-          <p class="hero-description">تجد هنا مواعيد محاضرات الدكتور عبد المنعم، وموضوع كل محاضرة، وأي تعديل يطرأ على الجدول.</p>
-          <a class="primary-link" href="#publicTimetable">عرض جدول المحاضرات</a>
-        </div>
-        <aside class="next-card" aria-label="المحاضرة القادمة">
-          <p class="next-label">المحاضرة القادمة</p>
-          <div class="next-date" id="upcomingDate">جارٍ تحميل الموعد…</div>
-          <div class="next-meta"><span class="next-chip" id="upcomingSubject">المادة لم تُحدّد</span><span id="upcomingDay"></span><span id="upcomingTime"></span></div>
-          <div class="next-bottom"><span id="upcomingNum">—</span></div>
-        </aside>
-      </div>
-    </section>
-    <section id="noticeBox" class="notice container" hidden aria-label="إعلان مهم">
-      <div class="notice-inner"><strong>إعلان من إدارة البرنامج</strong><p id="noticeText"></p></div>
-    </section>
-    <section class="schedule container" id="publicTimetable" aria-labelledby="scheduleHeading">
-      <div class="section-head">
-        <div><h2 id="scheduleHeading">جدول المحاضرات</h2><p id="publicRange">جارٍ تحميل المواعيد…</p></div>
-        <span class="schedule-count">الدورة الحالية</span>
-      </div>
-      <div class="public-grid" id="publicDates" aria-live="polite"></div>
-      <p class="calendar-help">تُحدَّث هذه المواعيد عند إعلان أي تغيير.</p>
-    </section>
-
-  </main>
-  <footer class="footer">
-    <div class="container footer-content">
-      <div><strong>محاضرات النحو والصرف</strong><small>مع الدكتور عبد المنعم</small></div>
-      <div class="footer-links"><a href="#home">العودة لأعلى الصفحة</a></div>
-    </div>
-  </footer>
-  <script id="scheduleData" type="application/json">{"dates":[]}</script>
-  <script src="./config.js"></script>
-  <script src="./public.js" defer></script>
+    <aside class="upcoming" aria-label="المحاضرة القادمة">
+     <div>
+      <div class="upcoming-caption">المحاضرة القادمة</div>
+      <div class="upcoming-date" id="upcomingDate">جارٍ تحميل المواعيد…</div>
+      <div class="upcoming-meta"><span class="subject-pill" id="upcomingSubject">—</span><span id="upcomingDay"></span><span id="upcomingTime"></span></div>
+     </div>
+     <div class="upcoming-bottom" id="upcomingNum">الدورة الحالية</div>
+    </aside>
+   </section>
+  </div>
+ </div>
+ <section id="noticeBox" class="notice container" hidden>
+  <b>تنبيه</b><p id="noticeText"></p>
+ </section>
+ <section class="schedule container" id="publicTimetable" aria-labelledby="scheduleTitle">
+  <div class="section-heading">
+   <div><h2 id="scheduleTitle">جدول المحاضرات</h2><p id="publicRange">جارٍ تحميل الجدول…</p></div>
+   <span class="course-marker">السبت والأربعاء</span>
+  </div>
+  <div class="schedule-board">
+   <div class="schedule-head" aria-hidden="true"><span>رقم</span><span>الموعد</span><span>المادة</span><span>الساعة</span><span>الحالة</span></div>
+   <div id="publicDates" aria-live="polite"><p class="no-lessons">جارٍ تحميل مواعيد المحاضرات…</p></div>
+  </div>
+  <p class="schedule-footnote">يُحدّث الجدول عند تغيير المواعيد أو موضوعات المحاضرات.</p>
+ </section>
+</main>
+<footer class="footer"><div class="container footer-inner"><p>محاضرات النحو والصرف — الدكتور عبد المنعم</p><a href="./admin/">الإدارة</a></div></footer>
+<script src="./config.js"></script>
+<script src="./public.js" defer></script>
 </body>
 </html>
