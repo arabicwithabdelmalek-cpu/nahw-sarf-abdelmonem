@@ -1,74 +1,67 @@
 (()=>{
-  'use strict';
-  const $ = id => document.getElementById(id);
-  const ar = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[Number(d)]);
-  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-  const dateObj = s => new Date(s+'T12:00:00');
-  const fmt = s => {const d=dateObj(s);return `${ar(d.getDate())} ${months[d.getMonth()]} ${ar(d.getFullYear())}`};
-  const day = s => days[dateObj(s).getDay()];
-  const today = () => {let d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
-  const node = (tag, cls, content) => {const el=document.createElement(tag);if(cls)el.className=cls;if(content!=null)el.textContent=content;return el};
-  const config=window.NAHW_SARF_CONFIG||{};
-  const fallback = JSON.parse($('scheduleData').textContent).dates.map(d=>({id:null,position:d.index+1,lesson_date:d.date,subject:d.subject||'غير محدد',title:'',start_time:null,notes:'',is_published:true}));
-  const banner = document.querySelector('.calendar-help');
-  const courseCount = document.querySelector('.schedule-count');
-  const state={lessons:fallback, live:false};
-
-  function card(lesson,index,upcoming){
-    const tile=node('article','class-tile');
-    const main=node('div','class-main');
-    main.append(node('strong','',`${day(lesson.lesson_date)}، ${fmt(lesson.lesson_date)}`),node('small','',upcoming?'الموعد القادم':lesson.lesson_date<today()?'تاريخ سابق':'موعد قادم'));
-    const info=[lesson.start_time?`الساعة ${String(lesson.start_time).slice(0,5)}`:'',lesson.title||'',lesson.notes||''].filter(Boolean).join(' • ');
-    main.append(node('span','lesson-details',info));
-    const tag=node('span','class-tag '+(lesson.subject==='نحو'?'nahw':lesson.subject==='صرف'?'sarf':'unspecified'),lesson.subject==='غير محدد'?'لم تُحدّد':lesson.subject);
-    tile.append(node('div','class-number',ar(index+1)),main,tag);
-    tile.classList.toggle('is-next',!!upcoming);tile.classList.toggle('is-past',lesson.lesson_date<today());
-    return tile;
-  }
-  function paint(lessons,live=false,course){
-    state.lessons=lessons;state.live=live;
-    const iso=today(),next=lessons.find(l=>l.lesson_date>=iso);
-    const grid=$('publicDates');grid.replaceChildren(...lessons.map((l,i)=>card(l,i,l===next)));
-    if(!lessons.length)grid.append(node('p','no-lessons','لم تعلن إدارة البرنامج مواعيد محاضرات بعد.'));
-    $('upcomingDate').textContent=next?fmt(next.lesson_date):'لا توجد محاضرات قادمة';
-    $('upcomingSubject').textContent=next?(next.subject==='غير محدد'?'المادة لم تُحدَّد بعد':next.subject):'انتظر إعلان الدورة التالية';
-    $('upcomingNum').textContent=next?`المحاضرة ${ar(lessons.indexOf(next)+1)} من ${ar(lessons.length)}`:'لا توجد مواعيد جديدة';
-    $('upcomingDay').textContent=next?day(next.lesson_date):'';
-    $('upcomingTime').textContent=next?[next.start_time?`الساعة ${next.start_time.slice(0,5)}`:'',next.title].filter(Boolean).join(' • '):'';
-    if(lessons.length){$('publicRange').textContent=`من ${fmt(lessons[0].lesson_date)} إلى ${fmt(lessons[lessons.length-1].lesson_date)}`;}
-    else {$('publicRange').textContent='لم تُعلن مواعيد بعد';}
-    if(live){
-      courseCount.textContent=`الدورة الحالية · ${ar(lessons.length)} محاضرة`;
-      banner.textContent='تُحدَّث هذه المواعيد عند إعلان أي تغيير.';
-      if(course?.title){document.title=`${course.title} — الدكتور عبد المنعم`;}
-    }
-  }
-
-  async function api(path){
-    const url=config.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+path;
-    const response=await fetch(url,{headers:{'apikey':config.supabasePublishableKey,'Accept':'application/json'},cache:'no-store'});
-    if(!response.ok)throw new Error(`Public schedule unavailable (${response.status})`);
-    return response.json();
-  }
-  async function load(){
-    if(!/^https:\/\/[^\s]+\.supabase\.co$/.test(config.supabaseUrl||'') || !config.supabasePublishableKey)return;
-    try{
-      const courses=await api('courses?select=id,title&is_active=eq.true&is_published=eq.true&limit=1');
-      if(!courses.length){paint([],true);return;}
-      const course=courses[0];
-      const lessonList=await api(`lessons?select=id,position,lesson_date,subject,title,start_time,notes&course_id=eq.${encodeURIComponent(course.id)}&is_published=eq.true&order=position.asc`);
-      paint(lessonList,true,course);
-      const announcements=await api('announcements?select=content&is_published=eq.true&order=created_at.desc&limit=1');
-      if(announcements?.[0]?.content){$('noticeBox').hidden=false;$('noticeText').textContent=announcements[0].content;}
-      else $('noticeBox').hidden=true;
-    }catch(e){
-      console.warn('Public data cannot be loaded; keeping last published HTML fallback.',e.message);
-      banner.textContent='تعذّر تحديث المواعيد الآن. حاول فتح الصفحة مرة أخرى لاحقًا.';
-    }
-  }
-  paint(fallback);
-  load();
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
-  window.setInterval(()=>{if(!document.hidden)load();},120000);
+'use strict';
+const $=id=>document.getElementById(id);
+const cfg=window.NAHW_SARF_CONFIG||{};
+const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const weekdays=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[+d]);
+const parse=s=>new Date(s+'T12:00:00');
+const fmt=s=>{const d=parse(s);return ar(d.getDate())+' '+months[d.getMonth()]+' '+ar(d.getFullYear())};
+const day=s=>weekdays[parse(s).getDay()];
+const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const el=(tag,cls,text)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=text;return x;};
+const mark=(value,classes)=>el('span',classes,value);
+const displayedSubject=s=>s==='غير محدد'||!s?'لم تُحدّد':s;
+const current={lessons:[]};
+function render(items){
+ const lessons=[...items].sort((a,b)=>a.position-b.position);
+ current.lessons=lessons;
+ const today=cairoToday();
+ const next=lessons.find(l=>l.lesson_date>=today);
+ const board=$('publicDates');board.replaceChildren();
+ if(!lessons.length)board.append(el('p','no-lessons','لم تُعلن مواعيد المحاضرات بعد.'));
+ lessons.forEach((l,i)=>{
+  const row=el('article','lecture'+(l===next?' is-next':''));
+  const number=el('span','number',ar(l.position||i+1));
+  const when=el('div','when');
+  when.append(el('strong','',day(l.lesson_date)+'، '+fmt(l.lesson_date)));
+  if(l.title)when.append(el('small','',l.title));
+  if(l.notes)when.append(el('small','lecture-notes',l.notes));
+  const subject=el('span','topic '+(l.subject==='نحو'?'nahw':l.subject==='صرف'?'sarf':'undefined'),displayedSubject(l.subject));
+  const time=el('span','time',l.start_time?'الساعة '+String(l.start_time).slice(0,5):'لم تُحدّد');
+  const status=el('span','status'+(l===next?' next':l.lesson_date<today?' past':''),l===next?'القادمة':l.lesson_date<today?'انتهت':'قادمة');
+  row.append(number,when,subject,time,status);board.append(row);
+ });
+ $('upcomingDate').textContent=next?fmt(next.lesson_date):'لا توجد محاضرات قادمة';
+ $('upcomingSubject').textContent=next?displayedSubject(next.subject):'—';
+ $('upcomingDay').textContent=next?day(next.lesson_date):'';
+ $('upcomingTime').textContent=next&&next.start_time?'الساعة '+String(next.start_time).slice(0,5):'';
+ $('upcomingNum').textContent=next?'المحاضرة '+ar(next.position||lessons.indexOf(next)+1)+' من '+ar(lessons.length):'تابع الموقع لمعرفة مواعيد الدورة القادمة';
+ $('publicRange').textContent=lessons.length?fmt(lessons[0].lesson_date)+' — '+fmt(lessons[lessons.length-1].lesson_date):'ستظهر المواعيد بعد اعتمادها';
+}
+async function get(path){
+ const url=cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+path;
+ const response=await fetch(url,{headers:{apikey:cfg.supabasePublishableKey,Accept:'application/json'},cache:'no-store'});
+ if(!response.ok)throw new Error('خطأ الاتصال '+response.status);
+ return response.json();
+}
+async function refresh(){
+ if(!/^https:\/\/[\w-]+\.supabase\.co$/.test(cfg.supabaseUrl||'')||!cfg.supabasePublishableKey){$('publicDates').replaceChildren(el('p','no-lessons','تعذّر الاتصال بالجدول.'));return;}
+ try{
+  const courses=await get('courses?select=id,title&is_active=eq.true&is_published=eq.true&limit=1');
+  if(!courses.length){render([]);$('noticeBox').hidden=true;return;}
+  const course=courses[0];
+  const lessons=await get('lessons?select=id,position,lesson_date,subject,title,start_time,notes&course_id=eq.'+encodeURIComponent(course.id)+'&is_published=eq.true&order=position.asc');
+  render(lessons);
+  const announcements=await get('announcements?select=content&is_published=eq.true&order=created_at.desc&limit=1');
+  if(announcements[0]?.content){$('noticeText').textContent=announcements[0].content;$('noticeBox').hidden=false;}
+  else $('noticeBox').hidden=true;
+ }catch(e){
+  console.warn('Could not refresh timetable',e);
+  if(!current.lessons.length)$('publicDates').replaceChildren(el('p','no-lessons','تعذّر تحميل المواعيد الآن. حدّث الصفحة وحاول مرة أخرى.'));
+ }
+}
+refresh();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
+window.setInterval(()=>{if(!document.hidden)refresh();},180000);
 })();
