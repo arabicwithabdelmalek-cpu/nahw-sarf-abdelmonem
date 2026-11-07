@@ -531,13 +531,20 @@ function renderGroupedStudentPayments(history,payments,enrollments,active,shareF
   dueCell.dataset.label='المتبقي';
   const actions=e('td','student-ledger-actions');
   actions.dataset.label='الإجراءات';
-  const recordBtn=e('button','outline ledger-history-btn','سجل الدفعات');
-  recordBtn.type='button';recordBtn.addEventListener('click',()=>openPaymentDetails(ent,records,isActive));
-  actions.append(recordBtn);
   if(isActive){
    const add=e('button','primary ledger-add-btn','إضافة دفعة');
    add.type='button';add.addEventListener('click',()=>execute(async()=>showPaymentForm(ent.id)));
-   actions.insertBefore(add,recordBtn);
+   actions.append(add);
+  }else{
+   const emptySlot=e('span','student-ledger-action-placeholder');
+   emptySlot.setAttribute('aria-hidden','true');
+   actions.append(emptySlot);
+  }
+  // No empty history action: students who never paid only need «إضافة دفعة».
+  if(records.length){
+   const recordBtn=e('button','outline ledger-history-btn','سجل الدفعات');
+   recordBtn.type='button';recordBtn.addEventListener('click',()=>openPaymentDetails(ent,records,isActive));
+   actions.append(recordBtn);
   }
   tr.append(person,expectedCell,paidCell,dueCell,actions);tbody.append(tr);
   rows.push({name:fullName,tr});
