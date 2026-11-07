@@ -188,3 +188,238 @@
 @media(prefers-reduced-motion:reduce){
  .payment-detail-dialog{scroll-behavior:auto}
 }
+
+
+/* v35 - Refinement requested after reviewing the live ledger screenshot.
+   A compact, deliberate visual rhythm; no changes to the payment model. */
+#paymentHistory.payment-ledger.history{
+ margin-top:22px;
+}
+#paymentHistory .payment-ledger-heading{
+ margin-bottom:12px;
+}
+#paymentHistory .payment-group-list{
+ border-color:#d9e3e6;
+ border-radius:13px;
+ box-shadow:0 2px 8px rgba(35,56,64,.035);
+}
+#paymentHistory .payment-ledger-toolbar{
+ padding:12px 16px;
+ min-height:66px;
+ gap:14px;
+ background:#f8fafb;
+ border-bottom:1px solid #e3eaed;
+}
+#paymentHistory .payment-ledger-search{
+ width:min(100%,300px);
+ min-width:0;
+ height:42px;
+ min-height:42px;
+ padding:8px 14px;
+ font-size:13px;
+ border-radius:10px;
+ color:#293e47;
+ border-color:#c7d6dc;
+ box-shadow:0 1px 2px rgba(33,53,61,.025);
+ transition:border-color .16s,box-shadow .16s;
+}
+#paymentHistory .payment-ledger-search::placeholder{color:#72838b;opacity:1}
+#paymentHistory .payment-ledger-hint{
+ font-size:11px;
+ font-weight:600;
+ color:#71828b;
+ line-height:1.7;
+}
+#paymentHistory .student-ledger-table{
+ table-layout:fixed;
+ width:100%;
+ border-spacing:0;
+ min-width:720px;
+ font-size:13px;
+ line-height:1.6;
+}
+#paymentHistory .student-ledger-table thead th{
+ height:47px;
+ background:#f1f5f6;
+ color:#3c5360;
+ font-size:12px;
+ font-weight:800;
+ padding:10px 16px;
+ border-bottom-color:#dce5e8;
+}
+#paymentHistory .student-ledger-table thead th:nth-child(1){width:29%}
+#paymentHistory .student-ledger-table thead th:nth-child(2){width:14%}
+#paymentHistory .student-ledger-table thead th:nth-child(3){width:14%}
+#paymentHistory .student-ledger-table thead th:nth-child(4){width:14%}
+#paymentHistory .student-ledger-table thead th:nth-child(5){width:29%}
+#paymentHistory .student-ledger-table tbody tr{
+ height:76px;
+}
+#paymentHistory .student-ledger-table td{
+ padding:10px 16px;
+ border-bottom:1px solid #edf0f1;
+ overflow:hidden;
+}
+#paymentHistory .student-ledger-table tbody tr:nth-child(even){background:#fbfcfc}
+#paymentHistory .student-ledger-table tbody tr:hover{background:#f6f9f9}
+#paymentHistory .student-ledger-name strong{
+ color:#243943;
+ font-size:14px;
+ line-height:1.5;
+ font-weight:800;
+}
+#paymentHistory .student-ledger-name small{
+ display:inline-flex;
+ align-items:center;
+ max-width:100%;
+ border-radius:6px;
+ margin-top:3px;
+ padding:1px 7px;
+ background:#f0f4f5;
+ color:#60747e;
+ font-size:10.5px;
+ font-weight:700;
+ line-height:1.6;
+}
+#paymentHistory .student-ledger-row.is-settled .student-ledger-name small{
+ color:#326d57;
+ background:#eaf3ee;
+}
+#paymentHistory .student-ledger-expected{
+ color:#3d5561;
+ font-size:13px;
+ font-weight:750;
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+#paymentHistory .student-ledger-paid{
+ color:#256d54;
+ font-size:15px;
+ font-weight:850;
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+#paymentHistory .student-ledger-due{
+ color:#a84f42;
+ font-size:15px;
+ font-weight:800;
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+#paymentHistory .student-ledger-due.is-zero{
+ color:#3b8063;
+}
+#paymentHistory .student-ledger-actions{
+ display:flex;
+ flex-wrap:nowrap;
+ align-items:center;
+ justify-content:flex-start;
+ gap:7px;
+ padding-block:12px;
+ white-space:normal;
+}
+#paymentHistory .student-ledger-actions button{
+ appearance:none;
+ margin:0;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:4px;
+ white-space:nowrap;
+ text-align:center;
+ box-shadow:none;
+ font-size:11.5px;
+ font-weight:800;
+ line-height:1.45;
+ padding:7px 11px;
+ min-height:38px;
+ border-radius:8px;
+ transition:background .14s,border-color .14s,transform .14s;
+}
+#paymentHistory .student-ledger-actions button:active{transform:translateY(1px)}
+#paymentHistory .student-ledger-actions .ledger-add-btn{
+ color:#fff;
+ background:#31444c;
+ border:1px solid #31444c;
+}
+#paymentHistory .student-ledger-actions .ledger-add-btn:hover{
+ color:#fff;
+ background:#425962;
+ border-color:#425962;
+}
+#paymentHistory .student-ledger-actions .ledger-history-btn{
+ color:#405a66;
+ background:#fff;
+ border:1px solid #d4dfe3;
+}
+#paymentHistory .student-ledger-actions .ledger-history-btn:hover{
+ background:#edf3f5;
+ border-color:#bbcdd5;
+}
+#paymentHistory .student-ledger-actions button:focus-visible{
+ outline:3px solid #b1cbd1;
+ outline-offset:2px;
+}
+
+/* The receipt dialog shares the same quieter button geometry. */
+.payment-detail-dialog{border-radius:14px}
+.payment-detail-record{border-radius:9px}
+.payment-detail-record-actions button,
+.payment-detail-footer button{border-radius:8px}
+@media(max-width:1120px) and (min-width:741px){
+ #paymentHistory .student-ledger-table{min-width:690px}
+ #paymentHistory .student-ledger-table td,
+ #paymentHistory .student-ledger-table thead th{padding-inline:11px}
+ #paymentHistory .student-ledger-actions{gap:5px}
+ #paymentHistory .student-ledger-actions button{
+  font-size:11px;padding-inline:8px;
+ }
+}
+@media(max-width:740px){
+ #paymentHistory .payment-ledger-toolbar{padding:10px 12px;min-height:0}
+ #paymentHistory .payment-ledger-search{width:100%;max-width:none}
+ #paymentHistory .payment-ledger-hint{font-size:10.5px}
+ #paymentHistory .student-ledger-scroll{overflow:visible}
+ #paymentHistory .student-ledger-table{
+  table-layout:auto;display:block;min-width:0;width:100%;
+ }
+ #paymentHistory .student-ledger-table tbody{
+  display:block;padding:5px 9px;
+ }
+ #paymentHistory .student-ledger-table tbody tr{
+  display:grid;height:auto;min-height:0;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-areas:"name name name" "expected paid due" "actions actions actions";
+  gap:12px 7px;
+  margin:7px 0;
+  padding:13px 12px;
+  border-color:#dfe7ea;
+  border-radius:10px;
+ }
+ #paymentHistory .student-ledger-table td{
+  display:block;min-width:0;width:auto;padding:0;border:0;overflow:visible;
+ }
+ #paymentHistory .student-ledger-name{
+  padding-bottom:9px!important;
+  border-bottom:1px solid #e9eff1!important;
+ }
+ #paymentHistory .student-ledger-name small{padding:1px 6px}
+ #paymentHistory .student-ledger-expected,
+ #paymentHistory .student-ledger-paid,
+ #paymentHistory .student-ledger-due{
+  white-space:normal;overflow-wrap:anywhere;font-size:13px;
+ }
+ #paymentHistory .student-ledger-actions{
+  display:flex;grid-area:actions;
+  gap:8px;padding:0;margin-top:2px;
+ }
+ #paymentHistory .student-ledger-actions button{
+  min-height:42px;flex:1;padding:9px 6px;font-size:11px;
+ }
+}
+@media(max-width:390px){
+ #paymentHistory .payment-ledger-heading h3{font-size:16px}
+ #paymentHistory .student-ledger-table tbody{padding-inline:6px}
+ #paymentHistory .student-ledger-table tbody tr{padding:11px 9px}
+ #paymentHistory .student-ledger-actions button{font-size:10.5px}
+}
