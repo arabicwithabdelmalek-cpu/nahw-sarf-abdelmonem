@@ -425,8 +425,9 @@ function groupPaymentsByStudent(payments,enrollments){
 }
 function renderGroupedStudentPayments(history,payments,enrollments){
  const groups=groupPaymentsByStudent(payments,enrollments);
- $('paymentHistoryCount').textContent=groups.length?
-  groups.length+' طلاب • '+payments.length+' دفعات':'٠';
+ const peopleLabel=groups.length===1?'طالب واحد':groups.length===2?'طالبان':groups.length+' طلاب';
+ const receiptsLabel=payments.length===1?'دفعة واحدة':payments.length===2?'دفعتان':payments.length+' دفعات';
+ $('paymentHistoryCount').textContent=groups.length?peopleLabel+' • '+receiptsLabel:'٠';
  history.replaceChildren();
  if(!groups.length){
   history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
