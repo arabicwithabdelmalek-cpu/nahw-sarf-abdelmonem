@@ -490,6 +490,9 @@ async function performEnter(){
 
 function init(){
  $('paymentDate').value=today();
+ $('teacherPayoutDate').value=today();
+ $('newTeacherPayout').addEventListener('click',()=>execute(async()=>openTeacherPayoutForm()));
+ $('teacherPayoutCancel').addEventListener('click',resetTeacherPayoutForm);
  $('generateStart').value=today();
  $('generateLessons').addEventListener('click',()=>execute(generateLessons));
  $('openPayment').addEventListener('click',()=>execute(async()=>showPaymentForm()));
@@ -507,7 +510,7 @@ function init(){
   }
  }));
  $('activeCourseSelect').addEventListener('change',()=>execute(async()=>{state.courseId=$('activeCourseSelect').value;await loadRelated();}));
- [['courseForm',saveCourse],['lessonForm',saveLesson],['studentForm',saveStudent],['feeForm',saveFee],['paymentForm',savePayment],['announcementForm',saveAnnouncement]].forEach(([id,fn])=>$(id).addEventListener('submit',ev=>execute(()=>fn(ev))));
+ [['courseForm',saveCourse],['lessonForm',saveLesson],['studentForm',saveStudent],['feeForm',saveFee],['paymentForm',savePayment],['teacherPayoutForm',saveTeacherPayout],['announcementForm',saveAnnouncement]].forEach(([id,fn])=>$(id).addEventListener('submit',ev=>execute(()=>fn(ev))));
  $('resetCourse').addEventListener('click',resetCourse);$('resetLesson').addEventListener('click',resetLesson);$('resetAnnouncement').addEventListener('click',resetAnnouncement);$('studentCancelButton').addEventListener('click',resetStudent);
  $('logout').addEventListener('click',()=>execute(async()=>{await db.auth.signOut();location.reload();}));
  $('loginForm').addEventListener('submit',ev=>execute(async()=>{
