@@ -1,0 +1,142 @@
+/* Preview-only color directions for Nahw/Sarf.
+   The normal URL retains the currently approved original colors.
+   All changes below affect presentation only: no layout, motion, or behavior. */
+
+html[data-theme-preview="warm"]{
+  --bg:#f8f3eb;--paper:#ffffff;--surface:#ffffff;
+  --ink:#332e29;--muted:#776e64;--deep:#483b32;--deep-hover:#342a23;
+  --wine:#816442;--rose:#ad8660;--rule:#e8e0d5;--border:#e8e0d5;
+  --soft:#f3eae0;--green:#567363;--good:#4c7460;--amber:#986d42;
+  --refine-line:#e8e0d5;--refine-surface:#fdf9f2;--refine-taupe:#b59168;
+}
+html[data-theme-preview="olive"]{
+  --bg:#f5f6f0;--paper:#fff;--surface:#fff;
+  --ink:#2e3832;--muted:#687168;--deep:#37493d;--deep-hover:#283b30;
+  --wine:#65704b;--rose:#a28e68;--rule:#e1e7dd;--border:#e1e7dd;
+  --soft:#ecf0e7;--green:#597765;--good:#49745d;--amber:#957344;
+  --refine-line:#e1e7dd;--refine-surface:#fafcf7;--refine-taupe:#9c9f78;
+}
+html[data-theme-preview="graphite"]{
+  --bg:#f5f6f6;--paper:#fff;--surface:#fff;
+  --ink:#2b3439;--muted:#707981;--deep:#303d45;--deep-hover:#26323a;
+  --wine:#816955;--rose:#ae8e6f;--rule:#e1e5e7;--border:#e1e5e7;
+  --soft:#eceeef;--green:#60786c;--good:#4c7565;--amber:#99704d;
+  --refine-line:#e1e5e7;--refine-surface:#fafbfa;--refine-taupe:#ad9174;
+}
+html[data-theme-preview] body{background:var(--bg);color:var(--ink)}
+html[data-theme-preview] .site-header,html[data-theme-preview] .topbar{
+ background:#fff;border-bottom-color:var(--border)
+}
+html[data-theme-preview] .footer{background:#fff;border-top-color:var(--border)}
+html[data-theme-preview] .hero{
+ background:var(--deep);color:#fff
+}
+html[data-theme-preview] .hero .eyebrow,html[data-theme-preview] .upcoming-caption{color:#e8cfab}
+html[data-theme-preview] .hero-cta{background:#fff;color:var(--deep)}
+html[data-theme-preview] .hero-cta:hover{background:var(--soft);color:var(--deep)}
+html[data-theme-preview] .header-links .admin-link,
+html[data-theme-preview] .top-actions .back-home{
+ color:var(--deep);background:var(--soft);border-color:var(--border)
+}
+html[data-theme-preview] .header-links .admin-link:hover,
+html[data-theme-preview] .top-actions .back-home:hover{background:var(--bg)}
+html[data-theme-preview] .schedule-board{border-color:var(--border)}
+html[data-theme-preview] .schedule-head{background:var(--bg);border-color:var(--border)}
+html[data-theme-preview] .lecture{border-color:var(--border)}
+html[data-theme-preview] .lecture.is-next{background:var(--bg);box-shadow:inset -3px 0 0 var(--rose)}
+html[data-theme-preview] .number{color:var(--wine)}
+html[data-theme-preview] .topic.nahw,html[data-theme-preview] .topic.sarf{color:var(--wine)}
+html[data-theme-preview] .course-marker{
+ color:var(--wine);background:var(--soft);border-color:var(--border)
+}
+html[data-theme-preview] .notice{border-color:var(--border);border-right-color:var(--rose)}
+html[data-theme-preview] .footer a{color:var(--wine)}
+html[data-theme-preview] button:not(.outline):not(.danger):not(.link-button):not(.text-button) {
+ background:var(--deep);border-color:var(--deep);color:#fff
+}
+html[data-theme-preview] button:not(.outline):not(.danger):not(.link-button):not(.text-button):hover{
+ background:var(--deep-hover);border-color:var(--deep-hover)
+}
+html[data-theme-preview] button.outline:not(.danger){
+ color:var(--deep);background:#fff;border-color:var(--border)
+}
+html[data-theme-preview] button.outline:not(.danger):hover{background:var(--soft)}
+html[data-theme-preview] button.link-button,
+html[data-theme-preview] button.text-button{color:var(--wine)}
+html[data-theme-preview] .tabs button.active,
+html[data-theme-preview] .tabs button.active:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+html[data-theme-preview] .panel,html[data-theme-preview] .sidebar,
+html[data-theme-preview] .auth-card,html[data-theme-preview] .course-picker{
+ border-color:var(--border)
+}
+html[data-theme-preview] .record,html[data-theme-preview] .balance-row{border-color:var(--border)}
+html[data-theme-preview] .finance-card,
+html[data-theme-preview] .teacher-payout-metric{
+ background:var(--bg);border-color:var(--border)
+}
+html[data-theme-preview] .finance-card.earned,
+html[data-theme-preview] .teacher-payout-metric.paid{
+ background:#f0f6ee;border-color:#d7e6d6
+}
+html[data-theme-preview] .finance-card.remaining,
+html[data-theme-preview] .teacher-payout-metric.due{
+ background:#faf4e9;border-color:#e8dece
+}
+html[data-theme-preview] .balance-track span{background:var(--rose)}
+html[data-theme-preview] .balance-row.paid .balance-track span{background:var(--good)}
+html[data-theme-preview] .teacher-payout-head h3,
+html[data-theme-preview] .panel-heading h2,
+html[data-theme-preview] .sidebar-heading strong{color:var(--deep)}
+html[data-theme-preview] .teacher-payout-status,
+html[data-theme-preview] .teacher-payout-metric span{color:var(--muted)}
+html[data-theme-preview] .teacher-payout-metric strong{color:var(--ink)}
+html[data-theme-preview] .teacher-payout-metric.paid strong{color:var(--good)}
+html[data-theme-preview] .teacher-payout-metric.due strong{color:var(--wine)}
+html[data-theme-preview] .balance-action button:not(.danger){
+ color:var(--deep);background:var(--soft);border-color:var(--border)
+}
+@media(max-width:860px){
+ html[data-theme-preview] .sidebar{background:rgba(255,255,255,.97);border-top-color:var(--border)}
+ html[data-theme-preview] .tabs button:not(.active){color:var(--muted);background:transparent;border-color:transparent}
+ html[data-theme-preview] .tabs button.active,
+ html[data-theme-preview] .tabs button.active:hover{
+  background:var(--deep);color:#fff;box-shadow:none
+ }
+ html[data-theme-preview] .course-picker{background:#fff}
+}
+@media(max-width:640px){
+ html[data-theme-preview] .hero{background:transparent;color:var(--ink)}
+ html[data-theme-preview] .hero h1{color:var(--ink)}
+ html[data-theme-preview] .hero .eyebrow{
+  background:var(--soft);color:var(--wine);border-color:var(--border)
+ }
+ html[data-theme-preview] .hero .eyebrow::before{background:var(--rose)}
+ html[data-theme-preview] .hero-lead,html[data-theme-preview] .hero-note{color:var(--muted)}
+ html[data-theme-preview] .hero-cta{
+  background:#fff;color:var(--deep);border-color:var(--border)
+ }
+ html[data-theme-preview] .upcoming{
+  background:#fff;color:var(--ink);
+  border-color:var(--border);border-right-color:var(--rose)
+ }
+ html[data-theme-preview] .upcoming-caption{color:var(--wine)}
+ html[data-theme-preview] .upcoming-date{color:var(--ink)}
+ html[data-theme-preview] .upcoming-meta,html[data-theme-preview] .upcoming-bottom{color:var(--muted)}
+ html[data-theme-preview] .subject-pill{background:var(--soft);color:var(--wine);border-color:var(--border)}
+ html[data-theme-preview] .schedule-board{background:transparent}
+ html[data-theme-preview] .lecture{
+  background:#fff;border-color:var(--border);box-shadow:0 3px 12px rgba(45,39,32,.025)
+ }
+ html[data-theme-preview] .lecture.is-next{
+  background:#fffdf9;border-color:var(--rose);box-shadow:none
+ }
+ html[data-theme-preview] .lecture .number{
+  background:var(--soft);border-color:var(--border);color:var(--wine)
+ }
+ html[data-theme-preview] .lecture .when .date-short{color:var(--ink)}
+ html[data-theme-preview] .lecture .topic{
+  background:var(--soft);border-color:var(--border);color:var(--wine)
+ }
+ html[data-theme-preview] .lecture .time{color:var(--muted)}
+ html[data-theme-preview] .course-marker{background:var(--soft)}
+}
