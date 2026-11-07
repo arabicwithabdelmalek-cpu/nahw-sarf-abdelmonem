@@ -24,19 +24,37 @@ function resetLesson(){['lessonId','lessonDate','lessonTitle','lessonTime','less
 function resetAnnouncement(){ $('announcementId').value='';$('announcementContent').value='';$('announcementPublished').checked=false;$('announcementForm').hidden=true;}
 function resetStudent(){ $('studentId').value='';$('studentName').value='';$('studentContact').value='';$('studentSaveButton').textContent='حفظ الطالب';$('studentCancelButton').hidden=true;$('studentForm').hidden=true;}
 
+let coursesLoadVersion=0;
 async function loadCourses(){
- state.courses=await one(db.from('courses').select('*').order('created_at',{ascending:false}));
- const list=$('coursesList');list.replaceChildren();
- const picker=$('activeCourseSelect');picker.replaceChildren();
- for(const c of state.courses){
-   picker.append(new Option(c.title,c.id));
-   record(list,c.title,[c.is_active?'الحالية':'غير نشطة',c.is_published?'منشورة':'غير منشورة',c.start_date||''].filter(Boolean).join(' • '),[
-    {label:'تعديل',action:async()=>{$('courseId').value=c.id;$('courseTitle').value=c.title;$('courseStart').value=c.start_date||'';$('courseDescription').value=c.description||'';$('coursePublished').checked=c.is_published;$('courseActive').checked=c.is_active;selectTab('courses');$('courseForm').hidden=false;$('courseForm').scrollIntoView({behavior:'smooth',block:'start'});$('courseTitle').focus({preventScroll:true});}},
-    {label:'إدارة المحاضرات',action:async()=>{state.courseId=c.id;picker.value=c.id;await loadRelated();selectTab('lessons');}}
-   ]);
+ const version=++coursesLoadVersion;
+ const courses=await one(db.from('courses').select('*').order('created_at',{ascending:false}));
+ if(version!==coursesLoadVersion)return;
+ state.courses=courses;
+ const list=$('coursesList'),picker=$('activeCourseSelect');
+ // Replace the rendered list after the request resolves, never append to an old render.
+ list.replaceChildren();
+ picker.replaceChildren();
+ for(const c of courses){
+  picker.append(new Option(c.title,c.id));
+  record(list,c.title,[c.is_active?'الحالية':'غير نشطة',c.is_published?'منشورة':'غير منشورة',c.start_date||''].filter(Boolean).join(' • '),[
+   {label:'تعديل',action:async()=>{
+    $('courseId').value=c.id;$('courseTitle').value=c.title;
+    $('courseStart').value=c.start_date||'';
+    $('courseDescription').value=c.description||'';
+    $('coursePublished').checked=c.is_published;
+    $('courseActive').checked=c.is_active;
+    selectTab('courses');$('courseForm').hidden=false;
+    $('courseForm').scrollIntoView({behavior:'smooth',block:'start'});
+    $('courseTitle').focus({preventScroll:true});
+   }},
+   {label:'إدارة المحاضرات',action:async()=>{
+    state.courseId=c.id;picker.value=c.id;
+    await loadRelated();selectTab('lessons');
+   }}
+  ]);
  }
- if(!state.courses.length)list.append(e('p','subtle','لم تُضف دورات بعد. ابدأ بالدورة الأولى.'));
- state.courseId=state.courses.some(c=>c.id===state.courseId)?state.courseId:(state.courses.find(c=>c.is_active)||state.courses[0]||{}).id||null;
+ if(!courses.length)list.append(e('p','subtle','لم تُضف دورات بعد. ابدأ بالدورة الأولى.'));
+ state.courseId=courses.some(c=>c.id===state.courseId)?state.courseId:(courses.find(c=>c.is_active)||courses[0]||{}).id||null;
  if(state.courseId)picker.value=state.courseId;
  await loadRelated();
 }
@@ -47,14 +65,39 @@ async function saveCourse(ev){ev.preventDefault();const id=$('courseId').value,t
  const row=id?await one(db.from('courses').update(data).eq('id',id).select('id').single()):await one(db.from('courses').insert(data).select('id').single());
  state.courseId=row.id;resetCourse();await loadCourses();alertMsg('تم حفظ الدورة بنجاح.');
 }
-async function loadLessons(){const list=$('lessonsList');list.replaceChildren();state.lessons=[];if(!state.courseId)return;
- state.lessons=await one(db.from('lessons').select('*').eq('course_id',state.courseId).order('position'));
- $('scheduleGenerator').hidden=state.lessons.length>0;
- for(const l of state.lessons){record(list,`المحاضرة ${l.position} — ${l.subject}`,`${l.lesson_date}${l.start_time?' • '+l.start_time.slice(0,5):''}${l.title?' • '+l.title:''} • ${l.is_published?'منشورة':'مخفية'}`, [
-  {label:'تعديل',action:async()=>{ $('lessonId').value=l.id;$('lessonPosition').value=l.position;$('lessonDate').value=l.lesson_date;$('lessonSubject').value=l.subject;$('lessonTitle').value=l.title||'';$('lessonTime').value=l.start_time?.slice(0,5)||'';$('lessonNotes').value=l.notes||'';$('lessonPublished').checked=l.is_published;$('lessonForm').hidden=false;$('lessonForm').scrollIntoView({behavior:'smooth',block:'start'});$('lessonDate').focus({preventScroll:true});}},
-  {label:'حذف',danger:true,action:async()=>{if(!confirm('هل تريد حذف المحاضرة نهائيًا؟'))return;await one(db.from('lessons').delete().eq('id',l.id));await loadLessons();alertMsg('تم حذف المحاضرة.');}}
- ]);}
- if(!state.lessons.length)list.append(e('p','subtle','لا توجد محاضرات مسجلة لهذه الدورة.'));
+let lessonsLoadVersion=0;
+async function loadLessons(){
+ const version=++lessonsLoadVersion,courseId=state.courseId;
+ const list=$('lessonsList');
+ if(!courseId){
+  state.lessons=[];list.replaceChildren();$('scheduleGenerator').hidden=false;return;
+ }
+ const lessons=await one(db.from('lessons').select('*').eq('course_id',courseId).order('position'));
+ if(version!==lessonsLoadVersion||state.courseId!==courseId)return;
+ state.lessons=lessons;
+ list.replaceChildren();
+ $('scheduleGenerator').hidden=lessons.length>0;
+ const seen=new Set();
+ for(const l of lessons){
+  if(seen.has(l.id))continue;seen.add(l.id);
+  record(list,`المحاضرة ${l.position} — ${l.subject}`,`${l.lesson_date}${l.start_time?' • '+l.start_time.slice(0,5):''}${l.title?' • '+l.title:''} • ${l.is_published?'منشورة':'مخفية'}`,[
+   {label:'تعديل',action:async()=>{
+    $('lessonId').value=l.id;$('lessonPosition').value=l.position;
+    $('lessonDate').value=l.lesson_date;$('lessonSubject').value=l.subject;
+    $('lessonTitle').value=l.title||'';$('lessonTime').value=l.start_time?.slice(0,5)||'';
+    $('lessonNotes').value=l.notes||'';$('lessonPublished').checked=l.is_published;
+    $('lessonForm').hidden=false;
+    $('lessonForm').scrollIntoView({behavior:'smooth',block:'start'});
+    $('lessonDate').focus({preventScroll:true});
+   }},
+   {label:'حذف',danger:true,action:async()=>{
+    if(!confirm('هل تريد حذف المحاضرة نهائيًا؟'))return;
+    await one(db.from('lessons').delete().eq('id',l.id));
+    await loadLessons();alertMsg('تم حذف المحاضرة.');
+   }}
+  ]);
+ }
+ if(!lessons.length)list.append(e('p','subtle','لا توجد محاضرات مسجلة لهذه الدورة.'));
 }
 async function saveLesson(ev){ev.preventDefault();let id=$('lessonId').value;const data={course_id:course(),position:n($('lessonPosition').value),lesson_date:$('lessonDate').value,subject:$('lessonSubject').value,title:$('lessonTitle').value.trim(),start_time:$('lessonTime').value||null,notes:$('lessonNotes').value.trim(),is_published:$('lessonPublished').checked};
  if(id)await one(db.from('lessons').update(data).eq('id',id));else await one(db.from('lessons').insert(data));resetLesson();await loadLessons();alertMsg('حُفظت المحاضرة.');}
@@ -183,22 +226,32 @@ function showPaymentForm(enrollmentId='',amount=0){
  $('paymentForm').scrollIntoView({behavior:'smooth',block:'start'});
  $('paymentAmount').focus({preventScroll:true});
 }
+let financeLoadVersion=0;
 async function loadFinance(){
+ const version=++financeLoadVersion,courseId=state.courseId;
  const summary=$('financeSummary'),history=$('paymentsList'),balances=$('studentBalances');
+ if(!courseId){
+  state.payments=[];state.fee=0;
+  summary.replaceChildren();history.replaceChildren();balances.replaceChildren();
+  $('paymentHistoryCount').textContent='0';return;
+ }
+ // Take an immutable snapshot, and reject results from an obsolete load.
+ const enrollments=[...state.enrollments];
+ const finance=await one(db.from('course_finances').select('total_fee').eq('course_id',courseId).maybeSingle());
+ const ids=enrollments.map(x=>x.id);
+ const payments=ids.length?await one(db.from('payments').select('*').in('enrollment_id',ids).order('paid_on',{ascending:false})):[];
+ if(version!==financeLoadVersion||state.courseId!==courseId)return;
+ const fee=n(finance?.total_fee);
+ state.payments=payments;state.fee=fee;
+ $('totalFee').value=fee;
  summary.replaceChildren();history.replaceChildren();balances.replaceChildren();
- state.payments=[];state.fee=0;
- if(!state.courseId)return;
- const data=await one(db.from('course_finances').select('total_fee').eq('course_id',state.courseId).maybeSingle());
- state.fee=n(data?.total_fee);$('totalFee').value=state.fee;
- const ids=state.enrollments.map(x=>x.id);
- if(ids.length)state.payments=await one(db.from('payments').select('*').in('enrollment_id',ids).order('paid_on',{ascending:false}));
- const active=state.enrollments.filter(x=>x.status==='نشط'&&!x.deleted_at);
- const totalCents=cents(state.fee);
+ const active=enrollments.filter(x=>x.status==='نشط'&&!x.deleted_at);
+ const totalCents=cents(fee);
  const base=active.length?Math.floor(totalCents/active.length):0;
  const remainder=active.length?totalCents%active.length:0;
  const shareFor=i=>base+(i<remainder?1:0);
- const paidFor=id=>state.payments.filter(p=>p.enrollment_id===id).reduce((v,p)=>v+cents(p.amount),0);
- const collected=state.payments.reduce((v,p)=>v+cents(p.amount),0);
+ const paidFor=id=>payments.filter(p=>p.enrollment_id===id).reduce((v,p)=>v+cents(p.amount),0);
+ const collected=payments.reduce((v,p)=>v+cents(p.amount),0);
  const outstanding=active.reduce((v,ent,i)=>v+Math.max(0,shareFor(i)-paidFor(ent.id)),0);
  const shareLabel=!active.length?'—':remainder?money(base/100)+' – '+money((base+1)/100):money(base/100);
  const stats=[
@@ -212,7 +265,7 @@ async function loadFinance(){
   card.append(e('span','',stat.label),e('strong','',stat.value));
   summary.append(card);
  }
- $('paymentHistoryCount').textContent=String(state.payments.length);
+ $('paymentHistoryCount').textContent=String(payments.length);
  if(!active.length)balances.append(e('p','balance-empty','لا يوجد طلاب نشطون في هذه الدورة.'));
  else{
   for(const [i,ent] of active.entries()){
@@ -240,11 +293,14 @@ async function loadFinance(){
    action.append(add,remove);row.append(person,details,action);balances.append(row);
   }
  }
- if(!state.payments.length)history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
- for(const p of state.payments){
-  const ent=state.enrollments.find(x=>x.id===p.enrollment_id);
+ if(!payments.length)history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
+ for(const p of payments){
+  const ent=enrollments.find(x=>x.id===p.enrollment_id);
   record(history,(ent?.students?.full_name||'طالب')+' — '+money(p.amount),p.paid_on+(p.notes?' • '+p.notes:''),[{
-   label:'حذف',danger:true,action:async()=>{if(!confirm('هل تريد حذف هذه الدفعة؟'))return;await one(db.from('payments').delete().eq('id',p.id));await loadFinance();}
+   label:'حذف',danger:true,action:async()=>{
+    if(!confirm('هل تريد حذف هذه الدفعة؟'))return;
+    await one(db.from('payments').delete().eq('id',p.id));await loadFinance();
+   }
   }]);
  }
 }
@@ -263,16 +319,45 @@ async function savePayment(ev){
  await loadFinance();alertMsg('تم حفظ الدفعة بنجاح.');
 }
 
-async function loadAnnouncements(){const list=$('announcementsList');list.replaceChildren();state.announcements=await one(db.from('announcements').select('*').order('created_at',{ascending:false}));
- for(const a of state.announcements)record(list,a.content,a.is_published?'منشور':'مخفي',[
- {label:'تعديل',action:async()=>{$('announcementId').value=a.id;$('announcementContent').value=a.content;$('announcementPublished').checked=a.is_published;$('announcementForm').hidden=false;$('announcementForm').scrollIntoView({behavior:'smooth',block:'start'});$('announcementContent').focus({preventScroll:true});}},
- {label:'حذف',danger:true,action:async()=>{if(!confirm('حذف الإعلان نهائيًا؟'))return;await one(db.from('announcements').delete().eq('id',a.id));await loadAnnouncements();}}
- ]);
- if(!state.announcements.length)list.append(e('p','subtle','لا توجد إعلانات بعد.'));
+let announcementsLoadVersion=0;
+async function loadAnnouncements(){
+ const version=++announcementsLoadVersion;
+ const rows=await one(db.from('announcements').select('*').order('created_at',{ascending:false}));
+ if(version!==announcementsLoadVersion)return;
+ state.announcements=rows;
+ const list=$('announcementsList');
+ list.replaceChildren();
+ const seen=new Set();
+ for(const a of rows){
+  if(seen.has(a.id))continue;seen.add(a.id);
+  record(list,a.content,a.is_published?'منشور':'مخفي',[
+   {label:'تعديل',action:async()=>{
+    $('announcementId').value=a.id;$('announcementContent').value=a.content;
+    $('announcementPublished').checked=a.is_published;
+    $('announcementForm').hidden=false;
+    $('announcementForm').scrollIntoView({behavior:'smooth',block:'start'});
+    $('announcementContent').focus({preventScroll:true});
+   }},
+   {label:'حذف',danger:true,action:async()=>{
+    if(!confirm('حذف الإعلان نهائيًا؟'))return;
+    await one(db.from('announcements').delete().eq('id',a.id));await loadAnnouncements();
+   }}
+  ]);
+ }
+ if(!rows.length)list.append(e('p','subtle','لا توجد إعلانات بعد.'));
 }
 async function saveAnnouncement(ev){ev.preventDefault();const id=$('announcementId').value,data={content:$('announcementContent').value.trim(),is_published:$('announcementPublished').checked};if(!data.content)throw new Error('اكتب الإعلان.');if(id)await one(db.from('announcements').update(data).eq('id',id));else await one(db.from('announcements').insert(data));resetAnnouncement();await loadAnnouncements();alertMsg('تم حفظ الإعلان.');}
 async function loadRelated(){await loadLessons();await loadStudents();await loadFinance();}
-async function enter(){
+let enteringPromise=null;
+function enter(){
+ // The sign-in callback and initial session check may fire together.
+ // Reuse one initialization rather than rendering all lists twice.
+ if(enteringPromise)return enteringPromise;
+ const pending=performEnter().finally(()=>{if(enteringPromise===pending)enteringPromise=null;});
+ enteringPromise=pending;
+ return pending;
+}
+async function performEnter(){
  const showLogin=()=>{
   $('bootPanel').hidden=true;
   $('authPanel').hidden=false;
