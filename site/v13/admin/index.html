@@ -6,11 +6,12 @@
 <script>
 (function(){
  const chosen=new URLSearchParams(window.location.search).get('theme');
- if(['warm','olive','graphite'].includes(chosen))document.documentElement.setAttribute('data-theme-preview',chosen);
+ const theme=['warm','olive','graphite'].includes(chosen)?chosen:'graphite';
+ document.documentElement.setAttribute('data-theme-preview',theme);
 })();
 </script>
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#f8f7f4">
+<meta name="theme-color" content="#dfe7eb">
 <title>إدارة المحاضرات | الدكتور عبد المنعم</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,6 +20,7 @@
 <link rel="stylesheet" href="../../admin/mobile.css?v=v16-student-archive-20261107">
 <link rel="stylesheet" href="../../admin/refine.css?v=v22-teacher-payments-20261107">
 <link rel="stylesheet" href="../../theme-preview.css?v=v23-theme-choice-20261107">
+<link rel="stylesheet" href="../../graphite-contrast.css?v=v24-graphite-contrast-20261107">
 </head>
 <body>
 <header class="topbar">
