@@ -426,23 +426,31 @@ function groupPaymentsByStudent(payments,enrollments){
 function renderGroupedStudentPayments(history,payments,enrollments){
  const groups=groupPaymentsByStudent(payments,enrollments);
  $('paymentHistoryCount').textContent=groups.length?
-  groups.length+' طالب • '+payments.length+' دفعة':'٠';
+  groups.length+' طلاب • '+payments.length+' دفعات':'٠';
  history.replaceChildren();
  if(!groups.length){
   history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
   return;
  }
+ const headerRow=e('div','student-payment-list-header');
+ for(const label of ['الطالب','الإجمالي المدفوع','عدد الدفعات','آخر دفعة',''])headerRow.append(e('span','',label));
+ history.append(headerRow);
  for(const group of groups){
   const ent=group.enrollment;
   const fullName=ent?.students?.full_name||'طالب (سجل سابق)';
+  const count=group.installments.length;
+  const countLabel=count===1?'دفعة واحدة':count===2?'دفعتان':count+' دفعات';
+  const lastDate=group.installments.reduce((v,p)=>p.paid_on&&p.paid_on>v?p.paid_on:v,'');
+  const lastLabel=lastDate?niceDate(lastDate):'غير محدد';
   const card=e('details','student-payment-group');
   const header=e('summary','student-payment-heading');
-  const person=e('div','student-payment-person');
-  person.append(e('strong','',fullName),
-   e('small','',group.installments.length===1?'دفعة واحدة':group.installments.length+' دفعات — اضغط لعرض التفاصيل'));
-  const right=e('div','student-payment-total');
-  right.append(e('span','','الإجمالي المدفوع'),e('strong','',money(group.totalCents/100)));
-  header.append(person,right);
+  const person=e('span','student-payment-person',fullName);
+  const total=e('strong','student-payment-total',money(group.totalCents/100));
+  const installments=e('span','student-payment-count',countLabel);
+  const latest=e('span','student-payment-date',lastLabel);
+  const more=e('span','student-payment-more','عرض الدفعات');
+  const mobileMeta=e('span','student-payment-meta',countLabel+' • آخر دفعة: '+lastLabel);
+  header.append(person,total,installments,latest,more,mobileMeta);
   const list=e('div','student-payment-installments');
   for(const p of group.installments){
    const line=e('div','student-payment-installment');
