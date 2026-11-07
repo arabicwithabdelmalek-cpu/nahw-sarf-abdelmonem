@@ -1,0 +1,53 @@
+/* Admin-only archival tools. Same graphite accents and spacing as month cards. */
+.backup-tools{
+ margin-top:26px;padding:19px;border:1px solid #d9e1e4;
+ border-radius:13px;background:#f5f6f6;
+}
+.backup-tools-header{display:flex;align-items:start;justify-content:space-between;gap:13px}
+.backup-tools-header h3{
+ margin:0;color:#2c3d46;font-size:16px;line-height:1.65;font-weight:800;
+}
+.backup-tools-header p{
+ margin:3px 0 0;color:#485c67;font-size:12px;line-height:1.9;
+}
+.backup-private-pill{
+ white-space:nowrap;padding:4px 10px;background:#dfeae4;
+ color:#385943;border-radius:8px;font-size:10.5px;font-weight:800;
+}
+.backup-tools-actions{
+ display:flex;align-items:stretch;gap:9px;flex-wrap:wrap;margin-top:16px;
+}
+.backup-tools-actions button,.backup-verify-file{
+ min-height:44px;border-radius:9px;padding:10px 14px;
+ font:inherit;font-size:12px;font-weight:800;line-height:1.65;
+}
+.backup-tools-actions button:disabled{opacity:.6;cursor:wait}
+.backup-verify-file{
+ position:relative;display:inline-flex;justify-content:center;align-items:center;
+ color:#334650;background:#fff;border:1px solid #bac8cf;cursor:pointer;
+}
+.backup-verify-file:focus-within{outline:3px solid #9d876d;outline-offset:2px}
+.backup-verify-file input{
+ position:absolute;width:1px;height:1px;opacity:0;
+ overflow:hidden;clip-path:inset(50%);pointer-events:none;
+}
+.backup-status{
+ margin:13px 0 7px;font-size:12px;line-height:1.8;color:#385e50;font-weight:700;
+ overflow-wrap:anywhere;
+}
+.backup-status.error{color:#903d39}
+.backup-warning{
+ border-top:1px solid #dce3e6;margin:11px 0 0;padding-top:10px;
+ color:#58636a;font-size:11px;line-height:1.85;
+}
+.backup-warning strong{color:#443b32}
+@media(max-width:620px){
+ .backup-tools{margin-top:23px;padding:14px 12px}
+ .backup-tools-header{display:flex;align-items:start;gap:9px}
+ .backup-tools-header h3{font-size:15px}
+ .backup-tools-header p{font-size:11.5px}
+ .backup-private-pill{font-size:10px;padding:4px 7px}
+ .backup-tools-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;margin-top:13px}
+ .backup-tools-actions button,.backup-verify-file{width:100%;min-width:0;min-height:46px;font-size:12px}
+ .backup-status,.backup-warning{font-size:11px}
+}
