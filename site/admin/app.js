@@ -498,7 +498,7 @@ function renderGroupedStudentPayments(history,payments,enrollments,active,shareF
  const search=e('input','payment-ledger-search');
  search.type='search';search.placeholder='ابحث باسم الطالب...';
  search.setAttribute('aria-label','البحث باسم الطالب في الحسابات');
- const hint=e('span','payment-ledger-hint','اضغط «سجل الدفعات» للتعديل أو الحذف');
+ const hint=e('span','payment-ledger-hint','يمكنك تعديل الدفعات أو حذفها من سجل الطالب');
  searchBox.append(search,hint);history.append(searchBox);
  const scroll=e('div','student-ledger-scroll');
  const table=e('table','student-ledger-table');
@@ -531,13 +531,13 @@ function renderGroupedStudentPayments(history,payments,enrollments,active,shareF
   dueCell.dataset.label='المتبقي';
   const actions=e('td','student-ledger-actions');
   actions.dataset.label='الإجراءات';
-  const recordBtn=e('button','outline ledger-history-btn',records.length?'سجل الدفعات ('+records.length+')':'السجل');
+  const recordBtn=e('button','outline ledger-history-btn','سجل الدفعات');
   recordBtn.type='button';recordBtn.addEventListener('click',()=>openPaymentDetails(ent,records,isActive));
   actions.append(recordBtn);
   if(isActive){
-   const add=e('button','primary ledger-add-btn','+ إضافة دفعة');
+   const add=e('button','primary ledger-add-btn','إضافة دفعة');
    add.type='button';add.addEventListener('click',()=>execute(async()=>showPaymentForm(ent.id)));
-   actions.append(add);
+   actions.insertBefore(add,recordBtn);
   }
   tr.append(person,expectedCell,paidCell,dueCell,actions);tbody.append(tr);
   rows.push({name:fullName,tr});
