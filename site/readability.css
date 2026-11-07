@@ -1,0 +1,175 @@
+/* Readability refinement. Scope: text size and text contrast only, graphite palette.
+   NO background/color-palette, layout positioning, animations, or data behavior changes. */
+
+/* Accessible text tones on the approved graphite light surfaces. */
+html[data-theme-preview="graphite"]{
+ --ink:#26353d;
+ --muted:#485862;
+}
+html[data-theme-preview="graphite"] body{color:var(--ink)}
+html[data-theme-preview="graphite"] .brand strong,
+html[data-theme-preview="graphite"] .section-heading h2,
+html[data-theme-preview="graphite"] .panel-heading h2,
+html[data-theme-preview="graphite"] .subheading h3,
+html[data-theme-preview="graphite"] .teacher-payout-head h3{color:#273740}
+html[data-theme-preview="graphite"] .brand span,
+html[data-theme-preview="graphite"] .brand small,
+html[data-theme-preview="graphite"] .hero-lead,
+html[data-theme-preview="graphite"] .hero-note,
+html[data-theme-preview="graphite"] .section-heading p,
+html[data-theme-preview="graphite"] .schedule-footnote,
+html[data-theme-preview="graphite"] .when small,
+html[data-theme-preview="graphite"] .lecture-notes,
+html[data-theme-preview="graphite"] .lecture .time,
+html[data-theme-preview="graphite"] .lecture .status,
+html[data-theme-preview="graphite"] .footer p,
+html[data-theme-preview="graphite"] .panel-heading p,
+html[data-theme-preview="graphite"] .subheading p,
+html[data-theme-preview="graphite"] .record small,
+html[data-theme-preview="graphite"] .balance-amounts,
+html[data-theme-preview="graphite"] .course-picker label,
+html[data-theme-preview="graphite"] .teacher-payout-head p,
+html[data-theme-preview="graphite"] .teacher-payout-status,
+html[data-theme-preview="graphite"] .finance-settings,
+html[data-theme-preview="graphite"] .hint,
+html[data-theme-preview="graphite"] .subtle{color:#485963}
+html[data-theme-preview="graphite"] .hero-copy .hero-lead,
+html[data-theme-preview="graphite"] .hero-copy .hero-note{
+ color:#eff1f1
+}
+/* Student-facing public page: legible hierarchy, without expanding table columns. */
+html[data-theme-preview="graphite"] .brand strong{font-size:20px}
+html[data-theme-preview="graphite"] .brand span{font-size:13px}
+html[data-theme-preview="graphite"] .header-links a{font-size:14px}
+html[data-theme-preview="graphite"] .hero h1{font-weight:800}
+html[data-theme-preview="graphite"] .hero-lead{font-size:17px}
+html[data-theme-preview="graphite"] .hero-note{font-size:14px}
+html[data-theme-preview="graphite"] .hero-cta{font-size:14px}
+html[data-theme-preview="graphite"] .upcoming-caption,
+html[data-theme-preview="graphite"] .upcoming-meta{font-size:14px}
+html[data-theme-preview="graphite"] .upcoming-date{font-weight:800}
+html[data-theme-preview="graphite"] .upcoming-bottom{font-size:13px}
+html[data-theme-preview="graphite"] .course-marker{font-size:13px}
+html[data-theme-preview="graphite"] .section-heading p{font-size:14px}
+html[data-theme-preview="graphite"] .schedule-head{font-size:12px}
+html[data-theme-preview="graphite"] .lecture .number{font-size:14px}
+html[data-theme-preview="graphite"] .lecture .when strong{font-size:16px;color:#293941}
+html[data-theme-preview="graphite"] .lecture .when small{font-size:12px}
+html[data-theme-preview="graphite"] .lecture .topic{font-size:14px;font-weight:800}
+html[data-theme-preview="graphite"] .lecture .time,
+html[data-theme-preview="graphite"] .lecture .status{font-size:13px}
+html[data-theme-preview="graphite"] .schedule-footnote{font-size:13px}
+html[data-theme-preview="graphite"] .footer p,
+html[data-theme-preview="graphite"] .footer a{font-size:13px}
+
+/* Administration: strengthen labels, list rows, payment figures and controls. */
+html[data-theme-preview="graphite"] .topbar .brand strong{font-size:19px}
+html[data-theme-preview="graphite"] .topbar .brand small{font-size:12px}
+html[data-theme-preview="graphite"] .top-actions .back-home,
+html[data-theme-preview="graphite"] .top-actions button{font-size:13px}
+html[data-theme-preview="graphite"] .sidebar-heading small{font-size:12px;color:#52616b}
+html[data-theme-preview="graphite"] .sidebar-heading strong{font-size:17px}
+html[data-theme-preview="graphite"] .tabs button{font-size:14px}
+html[data-theme-preview="graphite"] .panel-heading p{font-size:13px}
+html[data-theme-preview="graphite"] .panel-heading button{font-size:13px}
+html[data-theme-preview="graphite"] .form-grid label{font-size:13px;color:#35444d}
+html[data-theme-preview="graphite"] .form-grid input:not([type=checkbox]),
+html[data-theme-preview="graphite"] .form-grid select,
+html[data-theme-preview="graphite"] .form-grid textarea,
+html[data-theme-preview="graphite"] .course-picker select,
+html[data-theme-preview="graphite"] .generator-fields input{
+ font-size:15px;color:#293941
+}
+html[data-theme-preview="graphite"] .course-picker label{font-size:13px}
+html[data-theme-preview="graphite"] .record b,
+html[data-theme-preview="graphite"] .balance-person b{font-size:15px;color:#293941}
+html[data-theme-preview="graphite"] .record small{font-size:12.5px;line-height:1.85}
+html[data-theme-preview="graphite"] .record-actions button{font-size:12px}
+html[data-theme-preview="graphite"] .finance-card span,
+html[data-theme-preview="graphite"] .teacher-payout-metric span{font-size:12px;color:#4b5c65}
+html[data-theme-preview="graphite"] .finance-card strong{font-size:21px;color:#26343e}
+html[data-theme-preview="graphite"] .teacher-payout-metric strong{font-size:20px;color:#26343e}
+html[data-theme-preview="graphite"] .balance-status{font-size:12px}
+html[data-theme-preview="graphite"] .balance-amounts{font-size:12px}
+html[data-theme-preview="graphite"] .balance-amounts b{font-size:14px;color:#2d3b43}
+html[data-theme-preview="graphite"] .balance-action button{font-size:12px}
+html[data-theme-preview="graphite"] .teacher-payout-head p,
+html[data-theme-preview="graphite"] .teacher-payout-status{font-size:12px}
+html[data-theme-preview="graphite"] .teacher-payout-history-heading,
+html[data-theme-preview="graphite"] .history summary{font-size:14px}
+html[data-theme-preview="graphite"] .finance-settings,
+html[data-theme-preview="graphite"] .subheading p{font-size:12.5px}
+html[data-theme-preview="graphite"] .auth-card > .subtle{font-size:14px}
+
+@media(max-width:860px){
+ html[data-theme-preview="graphite"] .tabs button{font-size:clamp(10px,2.85vw,12px)}
+ html[data-theme-preview="graphite"] .course-picker label{font-size:12px}
+ html[data-theme-preview="graphite"] .record b,
+ html[data-theme-preview="graphite"] .balance-person b{font-size:14px}
+ html[data-theme-preview="graphite"] .panel-heading h2{font-size:20px}
+ html[data-theme-preview="graphite"] .record-actions button{font-size:12px}
+ html[data-theme-preview="graphite"] .balance-action button{font-size:12px}
+}
+@media(max-width:640px){
+ /* Keep all existing two-column/grid positioning as-is. */
+ html[data-theme-preview="graphite"] .brand strong{font-size:15px}
+ html[data-theme-preview="graphite"] .brand span{font-size:11px}
+ html[data-theme-preview="graphite"] .header-links .admin-link{font-size:12px}
+ html[data-theme-preview="graphite"] .hero h1{font-size:clamp(24px,6.4vw,30px)}
+ html[data-theme-preview="graphite"] .hero-lead{font-size:14px}
+ html[data-theme-preview="graphite"] .hero-note{font-size:13px;color:#4b5a62}
+ html[data-theme-preview="graphite"] .hero-cta{font-size:12px}
+ html[data-theme-preview="graphite"] .upcoming-caption{font-size:12px}
+ html[data-theme-preview="graphite"] .upcoming-date{font-size:clamp(22px,5.6vw,26px)}
+ html[data-theme-preview="graphite"] .upcoming-meta{font-size:12px}
+ html[data-theme-preview="graphite"] .upcoming-bottom{font-size:12px}
+ html[data-theme-preview="graphite"] .subject-pill{font-size:12px}
+ html[data-theme-preview="graphite"] .section-heading h2{font-size:22px}
+ html[data-theme-preview="graphite"] .section-heading p{font-size:12px}
+ html[data-theme-preview="graphite"] .course-marker{font-size:11px}
+ html[data-theme-preview="graphite"] .lecture .number{font-size:12px}
+ html[data-theme-preview="graphite"] .lecture .when .date-short{
+  font-size:14px;line-height:1.65;color:#293941
+ }
+ html[data-theme-preview="graphite"] .lecture .when small{font-size:11px}
+ html[data-theme-preview="graphite"] .lecture .topic{font-size:12px}
+ html[data-theme-preview="graphite"] .lecture .time{font-size:11px}
+ html[data-theme-preview="graphite"] .schedule-footnote{font-size:12px}
+ html[data-theme-preview="graphite"] .footer p,
+ html[data-theme-preview="graphite"] .footer a{font-size:11px}
+ html[data-theme-preview="graphite"] .topbar .brand strong{font-size:14px}
+ html[data-theme-preview="graphite"] .topbar .brand small{font-size:11px}
+ html[data-theme-preview="graphite"] .top-actions .back-home,
+ html[data-theme-preview="graphite"] .top-actions button{font-size:11px}
+ html[data-theme-preview="graphite"] .panel-heading h2{font-size:19px}
+ html[data-theme-preview="graphite"] .panel-heading p{font-size:12px}
+ html[data-theme-preview="graphite"] .panel-heading button{font-size:12px}
+ html[data-theme-preview="graphite"] .form-grid label{font-size:13px}
+ html[data-theme-preview="graphite"] .form-grid input:not([type=checkbox]),
+ html[data-theme-preview="graphite"] .form-grid select,
+ html[data-theme-preview="graphite"] .form-grid textarea{font-size:16px}
+ html[data-theme-preview="graphite"] .record b,
+ html[data-theme-preview="graphite"] .balance-person b{font-size:14px}
+ html[data-theme-preview="graphite"] .record small{font-size:12px}
+ html[data-theme-preview="graphite"] .record-actions button{font-size:11.5px}
+ html[data-theme-preview="graphite"] .balance-amounts{font-size:11px}
+ html[data-theme-preview="graphite"] .balance-amounts b{font-size:13px}
+ html[data-theme-preview="graphite"] .finance-card span,
+ html[data-theme-preview="graphite"] .teacher-payout-metric span{font-size:12px}
+ html[data-theme-preview="graphite"] .finance-card strong{font-size:clamp(16px,4.4vw,20px)}
+ html[data-theme-preview="graphite"] .teacher-payout-metric strong{font-size:clamp(15px,4.4vw,19px)}
+ html[data-theme-preview="graphite"] .teacher-payout-history-heading,
+ html[data-theme-preview="graphite"] .history summary{font-size:13px}
+ html[data-theme-preview="graphite"] .teacher-payout-head p,
+ html[data-theme-preview="graphite"] .teacher-payout-status{font-size:12px}
+}
+@media(max-width:365px){
+ html[data-theme-preview="graphite"] .brand strong{font-size:13px}
+ html[data-theme-preview="graphite"] .brand span{font-size:10px}
+ html[data-theme-preview="graphite"] .header-links .admin-link{font-size:11px}
+ html[data-theme-preview="graphite"] .lecture .when .date-short{font-size:12.5px}
+ html[data-theme-preview="graphite"] .lecture .topic{font-size:11px}
+ html[data-theme-preview="graphite"] .lecture .time{font-size:10.5px}
+ html[data-theme-preview="graphite"] .course-marker{font-size:10px}
+ html[data-theme-preview="graphite"] .tabs button{font-size:10px}
+}
