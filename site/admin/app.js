@@ -64,7 +64,7 @@ function updateMonthDraftHint(){
   'المدفوعات لا تنتقل بين الشهور، والشهر الحالي سيظل منشورًا حتى الاعتماد.';
 }
 function monthCard(c,overview){
- const current=Boolean(c.is_active),draft=!c.is_published;
+ const current=Boolean(c.is_active),draft=!c.is_published||(!c.is_active&&Number(overview?.published_count||0)===0);
  const wrap=e('article','month-card'+(current?' month-card-current':''));
  const heading=e('div','month-card-heading');
  const names=e('div','month-card-names');
@@ -179,7 +179,7 @@ async function loadCourses(){
   list.append(monthCard(c,summary));
  }
  const previous=courses.filter(c=>c.is_published&&!c.is_active).length;
- const drafts=courses.filter(c=>!c.is_published&&!c.is_active).length;
+ const drafts=courses.filter(c=>!c.is_active&&(!c.is_published||Number(mapping.get(c.id)?.published_count||0)===0)).length;
  $('monthIndexSummary').textContent=courses.length+' شهر/دورة • '+previous+' سابقة • '+drafts+' مسودة';
  if(!courses.length)list.append(e('p','subtle','لم تُنشأ شهور بعد.'));
  state.courseId=courses.some(c=>c.id===state.courseId)?state.courseId:(courses.find(c=>c.is_active)||courses[0]||{}).id||null;
