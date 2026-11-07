@@ -16,8 +16,9 @@ function record(parent,title,subtitle,actions=[]){let item=e('div','record'),lef
 function selectTab(tab){
  document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
  document.querySelectorAll('[data-tab]').forEach(p=>{p.classList.toggle('active',p.dataset.tab===tab);p.setAttribute('aria-current',p.dataset.tab===tab?'page':'false')});
- const names={lessons:'المحاضرات',students:'الطلاب',finance:'المدفوعات',courses:'الشهور',announcements:'الإعلانات'};
+ const names={lessons:'المحاضرات',students:'الطلاب',finance:'المدفوعات',reports:'التقارير المالية',courses:'الشهور',announcements:'الإعلانات'};
  document.querySelector('.page-title h1').textContent=names[tab]||'لوحة الإدارة';
+ if(tab==='reports'&&state.user&&$('reportMonth').value)execute(loadFinancialReport);
 }
 function resetCourse(){['courseId','courseTitle','courseStart','courseDescription'].forEach(k=>$(k).value='');$('coursePublished').checked=false;$('courseActive').checked=false;$('courseForm').hidden=true;}
 function resetLesson(){['lessonId','lessonDate','lessonTitle','lessonTime','lessonNotes'].forEach(k=>$(k).value='');$('lessonPosition').value=String(state.lessons.length+1);$('lessonSubject').value='غير محدد';$('lessonPublished').checked=false;$('lessonForm').hidden=true;}
@@ -184,6 +185,7 @@ async function loadCourses(){
  if(!courses.length)list.append(e('p','subtle','لم تُنشأ شهور بعد.'));
  state.courseId=courses.some(c=>c.id===state.courseId)?state.courseId:(courses.find(c=>c.is_active)||courses[0]||{}).id||null;
  if(state.courseId)picker.value=state.courseId;
+ syncReportMonthChoices();
  setMonthFormDefaults();
  await loadRelated();
 }
@@ -561,6 +563,225 @@ async function savePayment(ev){
  await loadFinance();alertMsg('تم حفظ الدفعة بنجاح.');
 }
 
+
+/* Read-only month financial reporting. Uses existing RLS-protected tables and
+   the same active-student share calculation as the finance tab. */
+let reportLoadVersion=0;
+let currentReport=null;
+function reportStatus(message,error=false){
+ const node=$('reportStatus');
+ node.textContent=message;node.classList.toggle('error',Boolean(error));
+}
+function syncReportMonthChoices(){
+ const picker=$('reportMonth');
+ const previous=picker.value;
+ picker.replaceChildren();
+ for(const c of state.courses){
+  const summary=monthsOverview.find(x=>x.course_id===c.id);
+  picker.append(new Option(monthName(c,summary)+(c.is_active?' — الحالي':''),c.id));
+ }
+ const valid=id=>state.courses.some(c=>c.id===id);
+ picker.value=valid(previous)?previous:(valid(state.courseId)?state.courseId:state.courses.find(c=>c.is_active)?.id||state.courses[0]?.id||'');
+ if(currentReport&&!valid(currentReport.courseId)){
+  currentReport=null;$('reportContent').hidden=true;
+  $('reportExportExcel').disabled=true;$('reportPrint').disabled=true;
+ }
+}
+function reportDataModel(courseRow,summary,enrollments,payments,teacher,fee){
+ const active=enrollments.filter(ent=>ent.status==='نشط'&&!ent.deleted_at);
+ const total=cents(fee);
+ const base=active.length?Math.floor(total/active.length):0;
+ const remainder=active.length?total%active.length:0;
+ const shareFor=i=>base+(i<remainder?1:0);
+ const activeOrder=new Map(active.map((ent,i)=>[ent.id,i]));
+ const byId=new Map(enrollments.map(ent=>[ent.id,ent]));
+ const paidByEnrollment=new Map();
+ for(const p of payments)paidByEnrollment.set(p.enrollment_id,(paidByEnrollment.get(p.enrollment_id)||0)+cents(p.amount));
+ const students=enrollments.map(ent=>{
+  const enabled=activeOrder.has(ent.id);
+  const expectedCents=enabled?shareFor(activeOrder.get(ent.id)):null;
+  const paidCents=paidByEnrollment.get(ent.id)||0;
+  const dueCents=expectedCents===null?null:Math.max(0,expectedCents-paidCents);
+  const enrollmentStatus=ent.deleted_at?'مؤرشف':ent.status==='نشط'?'نشط':'متوقف';
+  const paymentStatus=expectedCents===null?'خارج الحساب الحالي':
+   total===0?'بدون تكلفة محددة':paidCents>expectedCents?'دفع زيادة':
+   dueCents===0?'مدفوع بالكامل':paidCents>0?'مدفوع جزئيًا':'لم يدفع';
+  return {
+   name:ent.students?.full_name||'طالب',contact:ent.students?.contact||'—',
+   enrollmentStatus,paymentStatus,expected:expectedCents===null?null:expectedCents/100,
+   paid:paidCents/100,due:dueCents===null?null:dueCents/100
+  };
+ });
+ const collectedCents=payments.reduce((sum,p)=>sum+cents(p.amount),0);
+ const teacherPaidCents=teacher.reduce((sum,p)=>sum+cents(p.amount),0);
+ const studentOutstandingCents=students.reduce((sum,x)=>sum+cents(x.due),0);
+ const label=monthName(courseRow,summary);
+ const from=summary?.first_date||courseRow.start_date;
+ const to=summary?.last_date;
+ const range=from?(to?'من '+niceDate(from)+' إلى '+niceDate(to):'بدءًا من '+niceDate(from)):'غير محددة';
+ const paymentRows=payments.map(p=>{
+  const ent=byId.get(p.enrollment_id);
+  return {
+   date:p.paid_on||'',student:ent?.students?.full_name||'طالب (سجل سابق)',
+   amount:Number(p.amount)||0,notes:p.notes||'—'
+  };
+ });
+ const teacherRows=teacher.map(p=>({date:p.paid_on||'',amount:Number(p.amount)||0,notes:p.notes||'—'}));
+ return{
+  courseId:courseRow.id,courseTitle:label,range,
+  fee:total/100,activeCount:active.length,
+  shareLabel:active.length?(remainder?money(base/100)+' – '+money((base+1)/100):money(base/100)):'—',
+  collected:collectedCents/100,studentOutstanding:studentOutstandingCents/100,
+  teacherPaid:teacherPaidCents/100,
+  teacherRemaining:Math.max(0,total-teacherPaidCents)/100,
+  teacherOverpaid:Math.max(0,teacherPaidCents-total)/100,
+  cashBalance:(collectedCents-teacherPaidCents)/100,
+  students,payments:paymentRows,teacherPayouts:teacherRows
+ };
+}
+function reportTableBody(id,rows,format){
+ const body=$(id);body.replaceChildren();
+ if(!rows.length){
+  const tr=e('tr'),cell=e('td','report-empty','لا توجد بيانات مسجلة لهذا الشهر.');
+  cell.colSpan=id==='reportStudentRows'?5:id==='reportPaymentRows'?4:3;
+  tr.append(cell);body.append(tr);return;
+ }
+ for(const row of rows){
+  const tr=e('tr');
+  for(const [value,cls] of format(row)){
+   tr.append(e('td',cls||'',value===undefined||value===null?'—':String(value)));
+  }
+  body.append(tr);
+ }
+}
+function renderFinancialReport(report){
+ $('reportTitle').textContent='التقرير المالي — '+report.courseTitle;
+ $('reportRange').textContent=report.range;
+ const summary=$('reportSummary');summary.replaceChildren();
+ const metrics=[
+  {title:'إجمالي تكلفة الشهر',value:money(report.fee)},
+  {title:'الطلاب النشطون / نصيب الطالب',value:report.activeCount+' • '+report.shareLabel},
+  {title:'المحصّل من الطلاب',value:money(report.collected),kind:'paid'},
+  {title:'المتبقي على الطلاب',value:money(report.studentOutstanding),kind:'due'},
+  {title:'المدفوع للدكتور',value:money(report.teacherPaid),kind:'paid'},
+  {title:report.teacherOverpaid?'دُفع للدكتور زيادة':'المتبقي للدكتور',
+   value:money(report.teacherOverpaid||report.teacherRemaining),kind:'due'}
+ ];
+ for(const x of metrics){
+  const card=e('div','report-metric '+(x.kind||''));
+  card.append(e('small','',x.title),e('strong','',x.value));
+  summary.append(card);
+ }
+ $('reportStudentCount').textContent=report.students.length+' طالب';
+ $('reportPaymentCount').textContent=report.payments.length+' دفعة';
+ $('reportTeacherCount').textContent=report.teacherPayouts.length+' دفعة';
+ reportTableBody('reportStudentRows',report.students,row=>[
+  [row.name,'report-name'],
+  [row.enrollmentStatus,''],
+  [row.expected===null?'—':money(row.expected),'money'],
+  [money(row.paid),'money'],
+  [row.due===null?'—':money(row.due),'money']
+ ]);
+ reportTableBody('reportPaymentRows',report.payments,row=>[
+  [row.date,''],[row.student,'report-name'],[money(row.amount),'money'],[row.notes,'']
+ ]);
+ reportTableBody('reportTeacherRows',report.teacherPayouts,row=>[
+  [row.date,''],[money(row.amount),'money'],[row.notes,'']
+ ]);
+ $('reportContent').hidden=false;
+ $('reportExportExcel').disabled=false;$('reportPrint').disabled=false;
+ reportStatus('تقرير '+report.courseTitle+' جاهز — البيانات للعرض والتصدير فقط.');
+}
+async function loadFinancialReport(){
+ if(!state.user)throw new Error('سجّل الدخول إلى لوحة الإدارة أولًا.');
+ const version=++reportLoadVersion;
+ const courseId=$('reportMonth').value;
+ currentReport=null;$('reportContent').hidden=true;
+ $('reportExportExcel').disabled=true;$('reportPrint').disabled=true;
+ if(!courseId){reportStatus('لا توجد شهور مسجلة.');return;}
+ const courseRow=state.courses.find(c=>c.id===courseId);
+ if(!courseRow){reportStatus('اختر شهرًا صحيحًا.',true);return;}
+ reportStatus('جارٍ تحميل الحسابات وسجلات الدفعات…');
+ try{
+  const [enrollments,fin,teacher]=await Promise.all([
+   one(db.from('enrollments').select('id,student_id,status,deleted_at,students(id,full_name,contact)')
+     .eq('course_id',courseId).order('created_at')),
+   one(db.from('course_finances').select('total_fee').eq('course_id',courseId).maybeSingle()),
+   one(db.from('teacher_payouts').select('id,amount,paid_on,notes')
+     .eq('course_id',courseId).order('paid_on',{ascending:false}).order('created_at',{ascending:false}))
+  ]);
+  if(version!==reportLoadVersion||$('reportMonth').value!==courseId)return;
+  const ids=enrollments.map(row=>row.id);
+  const payments=ids.length?
+   await one(db.from('payments').select('id,enrollment_id,amount,paid_on,notes')
+     .in('enrollment_id',ids).order('paid_on',{ascending:false}).order('created_at',{ascending:false})):[];
+  if(version!==reportLoadVersion||$('reportMonth').value!==courseId)return;
+  const overview=monthsOverview.find(x=>x.course_id===courseId);
+  currentReport=reportDataModel(courseRow,overview,enrollments,payments,teacher,n(fin?.total_fee));
+  renderFinancialReport(currentReport);
+ }catch(err){
+  if(version!==reportLoadVersion)return;
+  currentReport=null;$('reportContent').hidden=true;
+  reportStatus('تعذّر تجهيز التقرير: '+errorText(err),true);
+  throw err;
+ }
+}
+function ensureReport(){if(!currentReport||currentReport.courseId!==$('reportMonth').value)throw new Error('حدّث التقرير أولًا.');return currentReport;}
+function exportFinancialExcel(){
+ const report=ensureReport();
+ if(!window.NAHW_REPORT_XLSX?.download)throw new Error('تعذّر تحميل أداة إنشاء Excel. حدّث الصفحة وحاول مرة أخرى.');
+ window.NAHW_REPORT_XLSX.download(report);
+}
+function printFinancialReport(){
+ const report=ensureReport();
+ const sheet=$('reportPrintSheet');sheet.replaceChildren();
+ const heading=e('div','print-heading');
+ heading.append(e('h1','','التقرير المالي — '+report.courseTitle),
+  e('p','',report.range+' • التقرير محفوظ في تاريخ '+niceDate(today())));
+ sheet.append(heading);
+ const metrics=e('div','print-metrics');
+ const boxes=[
+  ['إجمالي الشهر',money(report.fee)],['المحصّل من الطلاب',money(report.collected)],
+  ['المتبقي على الطلاب',money(report.studentOutstanding)],
+  ['المدفوع للدكتور',money(report.teacherPaid)],
+  [report.teacherOverpaid?'المدفوع زيادة':'المتبقي للدكتور',money(report.teacherOverpaid||report.teacherRemaining)]
+ ];
+ for(const [label,value] of boxes){
+  const box=e('div','print-metric');box.append(e('span','',label),e('strong','',value));metrics.append(box);
+ }
+ sheet.append(metrics);
+ const makeTable=(title,headers,rows)=>{
+  sheet.append(e('h2','',title));
+  const table=e('table'),head=e('thead'),hr=e('tr');
+  headers.forEach(h=>hr.append(e('th','',h)));head.append(hr);table.append(head);
+  const body=e('tbody');
+  if(!rows.length){
+   const tr=e('tr'),td=e('td','','لا توجد دفعات أو سجلات في هذا القسم.');
+   td.colSpan=headers.length;tr.append(td);body.append(tr);
+  }else for(const values of rows){
+   const tr=e('tr');for(const value of values)tr.append(e('td','',value===null||value===undefined?'—':String(value)));body.append(tr);
+  }
+  table.append(body);sheet.append(table);
+ };
+ makeTable('كشف حساب الطلاب', ['الطالب','الحالة','المطلوب','المدفوع','المتبقي'],
+  report.students.map(s=>[s.name,s.enrollmentStatus+' — '+s.paymentStatus,
+   s.expected===null?'—':money(s.expected),money(s.paid),s.due===null?'—':money(s.due)]));
+ makeTable('سجل مدفوعات الطلاب',['التاريخ','الطالب','المبلغ','ملاحظة'],
+  report.payments.map(p=>[p.date,p.student,money(p.amount),p.notes]));
+ makeTable('مدفوعات الدكتور عبد المنعم',['التاريخ','المبلغ','ملاحظة'],
+  report.teacherPayouts.map(p=>[p.date,money(p.amount),p.notes]));
+ sheet.append(e('p','print-note','حصة الطالب تحتسب على الطلاب النشطين فقط؛ والمدفوعات القديمة تظل محفوظة في سجلها. الرصيد بعد التحويلات: '+money(report.cashBalance)+'.'));
+ sheet.append(e('div','print-footer','محاضرات النحو والصرف — الدكتور عبد المنعم • التقرير للمتابعة المالية الداخلية'));
+ document.body.classList.add('report-print-mode');
+ sheet.hidden=false;
+ const cleanup=()=>{
+  document.body.classList.remove('report-print-mode');sheet.hidden=true;
+  window.removeEventListener('afterprint',cleanup);
+ };
+ window.addEventListener('afterprint',cleanup);
+ try{window.print();}catch(err){cleanup();throw err;}
+}
+
 let announcementsLoadVersion=0;
 async function loadAnnouncements(){
  const version=++announcementsLoadVersion;
@@ -644,6 +865,10 @@ function init(){
  $('newMonthForm').addEventListener('submit',ev=>execute(()=>createNewMonth(ev)));
  $('newMonthStart').addEventListener('change',updateMonthDraftHint);
  $('newMonthCopyStudents').addEventListener('change',updateMonthDraftHint);
+ $('reportMonth').addEventListener('change',()=>execute(loadFinancialReport));
+ $('reportRefresh').addEventListener('click',()=>execute(loadFinancialReport));
+ $('reportExportExcel').addEventListener('click',()=>execute(async()=>exportFinancialExcel()));
+ $('reportPrint').addEventListener('click',()=>execute(async()=>printFinancialReport()));
  $('generateLessons').addEventListener('click',()=>execute(generateLessons));
  $('openPayment').addEventListener('click',()=>execute(async()=>showPaymentForm()));
  $('cancelPayment').addEventListener('click',()=>{$('paymentForm').hidden=true;});
