@@ -49,7 +49,6 @@
 #paymentHistory .student-payment-heading::after{content:none!important;display:none!important}
 #paymentHistory .student-payment-heading span{
  background:transparent!important;padding:0!important;border:0!important;
- font-weight:inherit;
 }
 .payment-ledger .student-payment-heading:hover{background:#f7f9f9}
 .payment-ledger .student-payment-heading:focus-visible{
