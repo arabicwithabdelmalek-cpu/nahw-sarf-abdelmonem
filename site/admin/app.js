@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);
 const cfg=window.NAHW_SARF_CONFIG||{};
 const db=(cfg.supabaseUrl&&cfg.supabasePublishableKey&&window.supabase)?window.supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:{detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}}):null;
-const state={user:null,courses:[],courseId:null,lessons:[],enrollments:[],payments:[],fee:0,announcements:[]};
+const state={user:null,courses:[],courseId:null,lessons:[],enrollments:[],payments:[],teacherPayouts:[],fee:0,announcements:[]};
 const e=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n};
 const n=v=>Number(v)||0;const money=v=>new Intl.NumberFormat('ar-EG',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n(v))+' ج.م';
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
@@ -231,8 +231,10 @@ async function loadFinance(){
  const version=++financeLoadVersion,courseId=state.courseId;
  const summary=$('financeSummary'),history=$('paymentsList'),balances=$('studentBalances');
  if(!courseId){
-  state.payments=[];state.fee=0;
+  state.payments=[];state.teacherPayouts=[];state.fee=0;
   summary.replaceChildren();history.replaceChildren();balances.replaceChildren();
+  $('teacherPayoutSummary').replaceChildren();$('teacherPayoutList').replaceChildren();
+  $('teacherPayoutStatus').textContent='';$('teacherPayoutCount').textContent='٠';
   $('paymentHistoryCount').textContent='0';return;
  }
  // Take an immutable snapshot, and reject results from an obsolete load.
@@ -240,9 +242,10 @@ async function loadFinance(){
  const finance=await one(db.from('course_finances').select('total_fee').eq('course_id',courseId).maybeSingle());
  const ids=enrollments.map(x=>x.id);
  const payments=ids.length?await one(db.from('payments').select('*').in('enrollment_id',ids).order('paid_on',{ascending:false})):[];
+ const teacherPayouts=await one(db.from('teacher_payouts').select('id,course_id,amount,paid_on,notes,created_at').eq('course_id',courseId).order('paid_on',{ascending:false}).order('created_at',{ascending:false}));
  if(version!==financeLoadVersion||state.courseId!==courseId)return;
  const fee=n(finance?.total_fee);
- state.payments=payments;state.fee=fee;
+ state.payments=payments;state.teacherPayouts=teacherPayouts;state.fee=fee;
  $('totalFee').value=fee;
  summary.replaceChildren();history.replaceChildren();balances.replaceChildren();
  const active=enrollments.filter(x=>x.status==='نشط'&&!x.deleted_at);
@@ -303,6 +306,7 @@ async function loadFinance(){
    }
   }]);
  }
+ renderTeacherPayouts(teacherPayouts,fee);
 }
 async function saveFee(ev){
  ev.preventDefault();
