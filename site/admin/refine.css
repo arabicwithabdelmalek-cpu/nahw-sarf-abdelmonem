@@ -54,3 +54,64 @@ button:focus-visible,.tabs button:focus-visible{outline-offset:3px}
   .panel{padding:14px 11px 17px}
   .panel-heading button{max-width:55%;padding:6px 8px}
 }
+
+
+/* Instructor disbursements: a self-contained ledger, never mixed with student receipts. */
+.teacher-payouts{
+ margin-top:29px;padding-top:27px;border-top:1px solid #e5e1da;
+}
+.teacher-payout-head{
+ display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;
+}
+.teacher-payout-head h3{font-size:17px;font-weight:800;line-height:1.65;color:var(--deep);margin:0 0 4px}
+.teacher-payout-head p{margin:0;color:var(--muted);font-size:11px;line-height:1.9}
+.teacher-payout-head button{min-height:42px;white-space:nowrap;padding:9px 15px}
+.teacher-payout-metrics{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 8px;
+}
+.teacher-payout-metric{
+ min-width:0;min-height:93px;padding:15px 14px;
+ border:1px solid #e5e0d8;background:#fcfbf8;border-radius:12px;
+}
+.teacher-payout-metric span{display:block;font-size:11px;font-weight:700;color:#817970;line-height:1.7}
+.teacher-payout-metric strong{
+ display:block;font-size:18px;font-weight:800;color:#373a38;line-height:1.55;
+ margin-top:7px;overflow-wrap:anywhere;
+}
+.teacher-payout-metric.paid{background:#f2f6f0;border-color:#dce8db}
+.teacher-payout-metric.paid strong{color:#476e5f}
+.teacher-payout-metric.due{background:#f8f5ef;border-color:#eae1d5}
+.teacher-payout-metric.due strong{color:#7a6553}
+.teacher-payout-status{font-size:11px;color:#898076;line-height:1.85;margin:8px 0 17px}
+.teacher-payout-form{margin-top:17px;margin-bottom:21px}
+.teacher-payout-history-heading{
+ display:flex;justify-content:space-between;align-items:center;gap:10px;
+ border-top:1px solid #eeeae4;padding:15px 0 11px;
+ font-weight:800;font-size:12px;color:#4d4b47;
+}
+.teacher-payout-history-heading span{
+ padding:2px 9px;border-radius:8px;background:#eeebe5;color:#756d63;font-size:11px;
+}
+.teacher-payouts .records{margin:0}
+.teacher-payouts .record-actions{gap:8px}
+.teacher-payouts .record small{overflow-wrap:anywhere}
+@media(max-width:860px){
+ .teacher-payout-head{align-items:flex-start}
+ .teacher-payout-metric{padding:13px 12px;min-height:90px}
+ .teacher-payout-metric strong{font-size:16px}
+}
+@media(max-width:620px){
+ .teacher-payouts{margin-top:24px;padding-top:21px}
+ .teacher-payout-head{display:grid;gap:11px;margin-bottom:15px}
+ .teacher-payout-head h3{font-size:16px}
+ .teacher-payout-head p{font-size:11px}
+ .teacher-payout-head button{width:100%;min-height:44px}
+ .teacher-payout-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .teacher-payout-metric{min-height:82px;padding:11px 12px}
+ .teacher-payout-metric strong{font-size:clamp(14px,4.2vw,18px)}
+ .teacher-payout-metric:last-child{grid-column:1/-1;min-height:75px}
+ .teacher-payout-status{font-size:10px;margin:7px 0 16px}
+ .teacher-payout-form{margin:14px 0 18px}
+ .teacher-payout-history-heading{font-size:12px}
+ .teacher-payouts .record-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
