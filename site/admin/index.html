@@ -56,6 +56,7 @@
      <button type="button" class="tab active" data-tab="lessons">المحاضرات</button>
      <button type="button" class="tab" data-tab="students">الطلاب</button>
      <button type="button" class="tab" data-tab="finance">المدفوعات</button>
+     <button type="button" class="tab" data-tab="reports">التقارير</button>
      <button type="button" class="tab" data-tab="courses">الشهور</button>
      <button type="button" class="tab" data-tab="announcements">الإعلانات</button>
     </nav>
@@ -174,6 +175,41 @@
      </form>
      <div id="coursesList" class="month-cards" aria-live="polite"></div>
     </section>
+    <section class="panel report-panel" data-panel="reports" hidden>
+     <div class="panel-heading">
+      <div><h2>التقارير المالية</h2><p>كشف كامل لكل شهر، للعرض والتنزيل فقط دون تعديل السجلات.</p></div>
+     </div>
+     <div class="report-toolbar">
+      <label for="reportMonth">اختر الشهر
+       <select id="reportMonth" aria-label="اختر الشهر الذي تريد إصدار تقرير عنه"></select>
+      </label>
+      <button type="button" id="reportRefresh" class="outline">تحديث البيانات</button>
+      <button type="button" id="reportExportExcel" class="outline" disabled>تنزيل Excel</button>
+      <button type="button" id="reportPrint" class="primary" disabled>طباعة / حفظ PDF</button>
+     </div>
+     <p class="report-status" id="reportStatus" role="status" aria-live="polite">اختر شهرًا لعرض تقريره.</p>
+     <div id="reportContent" hidden>
+      <div class="report-title-line"><div><h3 id="reportTitle">التقرير المالي</h3><p id="reportRange"></p></div><span class="report-tag">بيانات من سجلات الموقع</span></div>
+      <div class="report-summary" id="reportSummary" aria-label="ملخص التقرير المالي"></div>
+      <div class="report-section-heading"><h3>كشف حساب الطلاب</h3><span id="reportStudentCount"></span></div>
+      <div class="report-scroll"><table class="report-table" aria-label="كشف حساب الطلاب">
+       <thead><tr><th scope="col">الطالب</th><th scope="col">الحالة</th><th scope="col">المطلوب</th><th scope="col">المدفوع</th><th scope="col">المتبقي</th></tr></thead>
+       <tbody id="reportStudentRows"></tbody>
+      </table></div>
+      <p class="report-explain">تُحسب حصة الطالب على الطلاب النشطين فقط. وتبقى دفعات الطلاب المتوقفين أو المؤرشفين ظاهرة في سجلاتها التاريخية.</p>
+      <div class="report-section-heading"><h3>سجل مدفوعات الطلاب</h3><span id="reportPaymentCount"></span></div>
+      <div class="report-scroll"><table class="report-table" aria-label="سجل مدفوعات الطلاب">
+       <thead><tr><th scope="col">التاريخ</th><th scope="col">اسم الطالب</th><th scope="col">المبلغ</th><th scope="col">الملاحظة</th></tr></thead>
+       <tbody id="reportPaymentRows"></tbody>
+      </table></div>
+      <div class="report-section-heading"><h3>سجل ما دُفع للدكتور عبد المنعم</h3><span id="reportTeacherCount"></span></div>
+      <div class="report-scroll"><table class="report-table" aria-label="مدفوعات الدكتور">
+       <thead><tr><th scope="col">التاريخ</th><th scope="col">المبلغ</th><th scope="col">الملاحظة</th></tr></thead>
+       <tbody id="reportTeacherRows"></tbody>
+      </table></div>
+      <p class="report-explain">المتبقي على الطلاب مختلف عن المتبقي للدكتور. التقرير يعرض الأرقام المسجلة حتى تاريخ إنشائه.</p>
+     </div>
+    </section>
     <section class="panel" data-panel="announcements" hidden>
      <div class="panel-heading"><div><h2>الإعلانات</h2><p>تنبيهات تظهر للطلاب في الصفحة الرئيسية</p></div><button type="button" class="outline" id="newAnnouncement">إضافة إعلان</button></div>
      <form id="announcementForm" class="form-grid editor-form" hidden>
@@ -189,6 +225,7 @@
   </div>
  </section>
 </main>
+<section id="reportPrintSheet" aria-hidden="true" hidden></section>
 <script src="../config.js?v=v12-refresh-20261106"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
 <script src="./app.js?v=v27-months-safe-20261107" defer></script>
