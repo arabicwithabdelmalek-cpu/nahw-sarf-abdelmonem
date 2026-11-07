@@ -16,7 +16,7 @@ function record(parent,title,subtitle,actions=[]){let item=e('div','record'),lef
 function selectTab(tab){
  document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
  document.querySelectorAll('[data-tab]').forEach(p=>{p.classList.toggle('active',p.dataset.tab===tab);p.setAttribute('aria-current',p.dataset.tab===tab?'page':'false')});
- const names={lessons:'المحاضرات',students:'الطلاب',finance:'المدفوعات',courses:'الدورات',announcements:'الإعلانات'};
+ const names={lessons:'المحاضرات',students:'الطلاب',finance:'المدفوعات',courses:'الشهور',announcements:'الإعلانات'};
  document.querySelector('.page-title h1').textContent=names[tab]||'لوحة الإدارة';
 }
 function resetCourse(){['courseId','courseTitle','courseStart','courseDescription'].forEach(k=>$(k).value='');$('coursePublished').checked=false;$('courseActive').checked=false;$('courseForm').hidden=true;}
@@ -641,6 +641,9 @@ function init(){
  $('newTeacherPayout').addEventListener('click',()=>execute(async()=>openTeacherPayoutForm()));
  $('teacherPayoutCancel').addEventListener('click',resetTeacherPayoutForm);
  $('generateStart').value=today();
+ $('newMonthForm').addEventListener('submit',ev=>execute(()=>createNewMonth(ev)));
+ $('newMonthStart').addEventListener('change',updateMonthDraftHint);
+ $('newMonthCopyStudents').addEventListener('change',updateMonthDraftHint);
  $('generateLessons').addEventListener('click',()=>execute(generateLessons));
  $('openPayment').addEventListener('click',()=>execute(async()=>showPaymentForm()));
  $('cancelPayment').addEventListener('click',()=>{$('paymentForm').hidden=true;});
@@ -656,7 +659,10 @@ function init(){
    window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
  }));
- $('activeCourseSelect').addEventListener('change',()=>execute(async()=>{state.courseId=$('activeCourseSelect').value;await loadRelated();}));
+ $('activeCourseSelect').addEventListener('change',()=>execute(async()=>{
+  const tab=document.querySelector('[data-tab].active')?.dataset.tab||'lessons';
+  await openMonth($('activeCourseSelect').value,tab);
+ }));
  [['courseForm',saveCourse],['lessonForm',saveLesson],['studentForm',saveStudent],['feeForm',saveFee],['paymentForm',savePayment],['teacherPayoutForm',saveTeacherPayout],['announcementForm',saveAnnouncement]].forEach(([id,fn])=>$(id).addEventListener('submit',ev=>execute(()=>fn(ev))));
  $('resetCourse').addEventListener('click',resetCourse);$('resetLesson').addEventListener('click',resetLesson);$('resetAnnouncement').addEventListener('click',resetAnnouncement);$('studentCancelButton').addEventListener('click',resetStudent);
  $('logout').addEventListener('click',()=>execute(async()=>{await db.auth.signOut();location.reload();}));
