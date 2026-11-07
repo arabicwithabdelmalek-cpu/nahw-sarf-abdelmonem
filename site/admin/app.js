@@ -857,6 +857,7 @@ async function performEnter(){
 }
 
 function init(){
+ window.NAHW_BACKUP?.setup(db);
  $('paymentDate').value=today();
  $('teacherPayoutDate').value=today();
  $('newTeacherPayout').addEventListener('click',()=>execute(async()=>openTeacherPayoutForm()));
