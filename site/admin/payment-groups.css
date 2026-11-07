@@ -423,3 +423,66 @@
  #paymentHistory .student-ledger-table tbody tr{padding:11px 9px}
  #paymentHistory .student-ledger-actions button{font-size:10.5px}
 }
+
+
+/* v36: true column alignment and fixed action slots.
+   The absence of prior payments should not create a pointless "سجل" button. */
+@media(min-width:741px){
+ #paymentHistory .student-ledger-table thead th:nth-child(2),
+ #paymentHistory .student-ledger-table thead th:nth-child(3),
+ #paymentHistory .student-ledger-table thead th:nth-child(4),
+ #paymentHistory .student-ledger-table tbody td:nth-child(2),
+ #paymentHistory .student-ledger-table tbody td:nth-child(3),
+ #paymentHistory .student-ledger-table tbody td:nth-child(4){
+  text-align:center;
+ }
+ #paymentHistory .student-ledger-table thead th:nth-child(5){
+  text-align:right;
+ }
+ #paymentHistory .student-ledger-table tbody .student-ledger-actions{
+  display:grid;
+  grid-template-columns:118px 120px;
+  justify-content:start;
+  align-content:center;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  padding-block:10px;
+  white-space:nowrap;
+ }
+ #paymentHistory .student-ledger-actions button{
+  width:100%;
+  min-width:0;
+  max-width:none;
+  min-height:40px;
+  margin:0;
+  padding:7px 9px;
+  font-size:11.5px;
+  line-height:1.5;
+  white-space:nowrap;
+ }
+ #paymentHistory .student-ledger-action-placeholder{
+  display:block;
+  width:118px;
+  height:1px;
+ }
+}
+@media(min-width:741px) and (max-width:1060px){
+ #paymentHistory .student-ledger-table{
+  min-width:755px;
+ }
+ #paymentHistory .student-ledger-table tbody .student-ledger-actions{
+  grid-template-columns:108px 110px;
+  gap:6px;
+ }
+ #paymentHistory .student-ledger-actions button{font-size:11px;padding-inline:6px}
+}
+@media(max-width:740px){
+ #paymentHistory .student-ledger-action-placeholder{display:none}
+ #paymentHistory .student-ledger-actions{
+  display:flex;
+  flex-wrap:nowrap;
+  justify-content:stretch;
+ }
+ #paymentHistory .student-ledger-actions button{flex:1 1 0;max-width:none}
+}
