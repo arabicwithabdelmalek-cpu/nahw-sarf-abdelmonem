@@ -24,47 +24,194 @@ function resetLesson(){['lessonId','lessonDate','lessonTitle','lessonTime','less
 function resetAnnouncement(){ $('announcementId').value='';$('announcementContent').value='';$('announcementPublished').checked=false;$('announcementForm').hidden=true;}
 function resetStudent(){ $('studentId').value='';$('studentName').value='';$('studentContact').value='';$('studentSaveButton').textContent='حفظ الطالب';$('studentCancelButton').hidden=true;$('studentForm').hidden=true;}
 
+
+const monthDateLabel=value=>{
+ if(!value)return'شهر دراسي';
+ const date=new Date(value+'T12:00:00');
+ return Number.isNaN(date.getTime())?'شهر دراسي':
+  'شهر '+new Intl.DateTimeFormat('ar-EG',{month:'long',year:'numeric',timeZone:'UTC'}).format(date);
+};
+const niceDate=value=>{
+ if(!value)return'لم يُحدّد';
+ const date=new Date(value+'T12:00:00');
+ return Number.isNaN(date.getTime())?'لم يُحدّد':
+  new Intl.DateTimeFormat('ar-EG',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);
+};
+const nextSaturdayAfter=value=>{
+ const d=new Date((value||today())+'T12:00:00');
+ if(Number.isNaN(d.getTime()))return today();
+ do{d.setDate(d.getDate()+1)}while(d.getDay()!==6);
+ return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+};
+const monthName=(c,overview)=>monthDateLabel(overview?.first_date||c.start_date)||c.title;
+let monthsOverview=[];
 let coursesLoadVersion=0;
+function setMonthFormDefaults(){
+ const summaries=monthsOverview.filter(x=>x.last_date).sort((a,b)=>b.last_date.localeCompare(a.last_date));
+ const last=summaries[0]?.last_date||state.courses.find(x=>x.is_active)?.start_date||today();
+ if(!$('newMonthStart').value)$('newMonthStart').value=nextSaturdayAfter(last);
+ updateMonthDraftHint();
+}
+function updateMonthDraftHint(){
+ const chosen=$('newMonthStart').value;
+ const day=chosen?new Date(chosen+'T12:00:00').getDay():-1;
+ const copy=$('newMonthCopyStudents').checked;
+ const note=chosen&&[3,6].includes(day)?
+  'المسودة: '+monthDateLabel(chosen)+'؛ أول محاضرة '+niceDate(chosen)+'. ':
+  'اختر يوم السبت أو الأربعاء لأول محاضرة. ';
+ $('monthCreationNote').textContent=note+
+  (copy?'سيُنقل الطلاب النشطون فقط. ':'لن يُنسخ الطلاب. ')+
+  'المدفوعات لا تنتقل بين الشهور، والشهر الحالي سيظل منشورًا حتى الاعتماد.';
+}
+function monthCard(c,overview){
+ const current=Boolean(c.is_active),draft=!c.is_published;
+ const wrap=e('article','month-card'+(current?' month-card-current':''));
+ const heading=e('div','month-card-heading');
+ const names=e('div','month-card-names');
+ names.append(e('h4','',monthName(c,overview)));
+ if(c.title&&!c.title.startsWith('شهر '))names.append(e('p','',c.title));
+ const status=e('span','month-status'+(current?' current':draft?' draft':' past'),current?'الشهر الحالي':draft?'مسودة':'شهر سابق');
+ heading.append(names,status);
+ wrap.append(heading);
+ const dates=e('p','month-card-dates',
+   'من '+niceDate(overview?.first_date||c.start_date)+
+   (overview?.last_date?' إلى '+niceDate(overview.last_date):''));
+ wrap.append(dates);
+ const stats=e('div','month-card-stats');
+ const metric=(label,value)=>{
+  const box=e('div','month-card-stat');
+  box.append(e('small','',label),e('strong','',value));
+  stats.append(box);
+ };
+ metric('المحاضرات',String(overview?.lesson_count||0)+' من ٨');
+ metric('الطلاب النشطون',String(overview?.active_students||0));
+ metric('المحصل من الطلاب',money(overview?.collected||0));
+ metric('المدفوع للدكتور',money(overview?.paid_to_teacher||0));
+ wrap.append(stats);
+ const actions=e('div','month-card-actions');
+ const act=(label,fn,extra='')=>{
+  const btn=e('button',extra||'outline',label);
+  btn.type='button';
+  btn.addEventListener('click',()=>execute(fn));
+  actions.append(btn);
+ };
+ act('فتح المحاضرات',()=>openMonth(c.id,'lessons'));
+ act('عرض المدفوعات',()=>openMonth(c.id,'finance'));
+ if(!current)act('اعتماد كالشهر الحالي',()=>activateMonth(c.id),'month-activate');
+ const edit=e('button','month-edit','إعدادات');
+ edit.type='button';edit.addEventListener('click',()=>execute(async()=>{
+  await openMonth(c.id,'courses');
+  $('courseId').value=c.id;$('courseTitle').value=c.title;
+  $('courseStart').value=c.start_date||'';$('courseDescription').value=c.description||'';
+  $('coursePublished').checked=c.is_published;$('courseActive').checked=c.is_active;
+  $('courseForm').hidden=false;$('courseForm').scrollIntoView({behavior:'smooth',block:'start'});
+ }));
+ actions.append(edit);
+ wrap.append(actions);
+ return wrap;
+}
+function closeCourseForms(){
+ resetCourse();resetLesson();resetStudent();
+ ['feeForm','paymentForm','teacherPayoutForm','announcementForm'].forEach(id=>{if($(id))$(id).hidden=true});
+ if($('teacherPayoutId'))$('teacherPayoutId').value='';
+}
+async function openMonth(id,tab='lessons'){
+ if(state.courseId!==id){
+  closeCourseForms();state.courseId=id;
+  $('activeCourseSelect').value=id;
+  await loadRelated();
+ }
+ selectTab(tab);
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+async function activateMonth(id){
+ const chosen=state.courses.find(c=>c.id===id);
+ if(!chosen)throw new Error('الشهر غير موجود');
+ if(chosen.is_active)return;
+ const existing=state.courses.find(c=>c.is_active);
+ const label=monthName(chosen,monthsOverview.find(x=>x.course_id===id));
+ const prev=existing?monthName(existing,monthsOverview.find(x=>x.course_id===existing.id)):'لا يوجد';
+ if(!window.confirm('اعتماد '+label+' كشهر حالي؟\n\nسيُعرض جدوله للطلاب بدل '+prev+'، وسيبقى الشهر السابق وسجلاته محفوظين.'))return;
+ await one(db.rpc('activate_monthly_course',{p_course_id:id}));
+ closeCourseForms();state.courseId=id;
+ await loadCourses();selectTab('lessons');
+ alertMsg('تم اعتماد '+label+'، والجدول الجديد أصبح ظاهرًا للطلاب. جميع سجلات الشهور السابقة محفوظة.');
+}
+let creatingMonth=false;
+async function createNewMonth(ev){
+ ev.preventDefault();
+ if(creatingMonth)return;
+ const start=$('newMonthStart').value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||![3,6].includes(new Date(start+'T12:00:00').getDay()))
+  throw new Error('حدد يوم السبت أو الأربعاء لأول محاضرة.');
+ if(!state.courses.length)throw new Error('أنشئ الدورة الأولى أولًا.');
+ creatingMonth=true;$('createMonthButton').disabled=true;
+ try{
+  const id=await one(db.rpc('create_monthly_course',{
+   p_start_date:start,p_copy_students:$('newMonthCopyStudents').checked
+  }));
+  if(!id)throw new Error('لم يتم إنشاء الشهر.');
+  closeCourseForms();state.courseId=id;
+  $('newMonthStart').value='';
+  await loadCourses();
+  selectTab('lessons');
+  alertMsg('تم تجهيز '+monthDateLabel(start)+' كمسودة بثماني محاضرات. راجع مواد الدروس ومواعيدها، ثم اعتمد الشهر من قسم «الشهور» عندما تصبح جاهزًا. لم تُنقل أي مدفوعات.');
+ }finally{
+  creatingMonth=false;$('createMonthButton').disabled=false;
+ }
+}
 async function loadCourses(){
  const version=++coursesLoadVersion;
- const courses=await one(db.from('courses').select('*').order('created_at',{ascending:false}));
+ const [courses,overview]=await Promise.all([
+  one(db.from('courses').select('*').order('start_date',{ascending:false})),
+  one(db.rpc('get_monthly_overview'))
+ ]);
  if(version!==coursesLoadVersion)return;
  state.courses=courses;
+ monthsOverview=overview||[];
+ const mapping=new Map(monthsOverview.map(x=>[x.course_id,x]));
  const list=$('coursesList'),picker=$('activeCourseSelect');
- // Replace the rendered list after the request resolves, never append to an old render.
- list.replaceChildren();
- picker.replaceChildren();
+ list.replaceChildren();picker.replaceChildren();
  for(const c of courses){
-  picker.append(new Option(c.title,c.id));
-  record(list,c.title,[c.is_active?'الحالية':'غير نشطة',c.is_published?'منشورة':'غير منشورة',c.start_date||''].filter(Boolean).join(' • '),[
-   {label:'تعديل',action:async()=>{
-    $('courseId').value=c.id;$('courseTitle').value=c.title;
-    $('courseStart').value=c.start_date||'';
-    $('courseDescription').value=c.description||'';
-    $('coursePublished').checked=c.is_published;
-    $('courseActive').checked=c.is_active;
-    selectTab('courses');$('courseForm').hidden=false;
-    $('courseForm').scrollIntoView({behavior:'smooth',block:'start'});
-    $('courseTitle').focus({preventScroll:true});
-   }},
-   {label:'إدارة المحاضرات',action:async()=>{
-    state.courseId=c.id;picker.value=c.id;
-    await loadRelated();selectTab('lessons');
-   }}
-  ]);
+  const summary=mapping.get(c.id);
+  const label=monthName(c,summary);
+  picker.append(new Option(label+(c.is_active?' — الحالي':!c.is_published?' — مسودة':' — سابق'),c.id));
+  list.append(monthCard(c,summary));
  }
- if(!courses.length)list.append(e('p','subtle','لم تُضف دورات بعد. ابدأ بالدورة الأولى.'));
+ const previous=courses.filter(c=>c.is_published&&!c.is_active).length;
+ const drafts=courses.filter(c=>!c.is_published&&!c.is_active).length;
+ $('monthIndexSummary').textContent=courses.length+' شهر/دورة • '+previous+' سابقة • '+drafts+' مسودة';
+ if(!courses.length)list.append(e('p','subtle','لم تُنشأ شهور بعد.'));
  state.courseId=courses.some(c=>c.id===state.courseId)?state.courseId:(courses.find(c=>c.is_active)||courses[0]||{}).id||null;
  if(state.courseId)picker.value=state.courseId;
+ setMonthFormDefaults();
  await loadRelated();
 }
-async function saveCourse(ev){ev.preventDefault();const id=$('courseId').value,title=$('courseTitle').value.trim();if(!title)throw new Error('اكتب اسم الدورة.');
- const data={title,start_date:$('courseStart').value||null,description:$('courseDescription').value.trim(),is_published:$('coursePublished').checked,is_active:$('courseActive').checked};
- // Only one course may be current. Move the previous one out of active state first.
- if(data.is_active)await one(id?db.from('courses').update({is_active:false}).neq('id',id):db.from('courses').update({is_active:false}).eq('is_active',true));
- const row=id?await one(db.from('courses').update(data).eq('id',id).select('id').single()):await one(db.from('courses').insert(data).select('id').single());
- state.courseId=row.id;resetCourse();await loadCourses();alertMsg('تم حفظ الدورة بنجاح.');
+async function saveCourse(ev){
+ ev.preventDefault();
+ const id=$('courseId').value,title=$('courseTitle').value.trim();
+ if(!title)throw new Error('اكتب اسم الدورة.');
+ const was=state.courses.find(c=>c.id===id);
+ const wantsActive=$('courseActive').checked;
+ const published=$('coursePublished').checked;
+ if(!id&&wantsActive)throw new Error('أنشئ الدورة أولًا ثم جهّز محاضراتها قبل اعتمادها.');
+ if(was?.is_active&&!wantsActive)throw new Error('لا يمكن إيقاف الشهر الحالي مباشرة. اعتمد شهرًا آخر أولًا.');
+ if(was?.is_active&&!published)throw new Error('لا يمكن إخفاء الشهر الحالي قبل اعتماد شهر آخر.');
+ const data={
+  title,start_date:$('courseStart').value||null,
+  description:$('courseDescription').value.trim(),is_published:published
+ };
+ const row=id?
+  await one(db.from('courses').update(data).eq('id',id).select('id').single()):
+  await one(db.from('courses').insert({...data,is_active:false}).select('id').single());
+ if(wantsActive&&!was?.is_active){
+  await one(db.rpc('activate_monthly_course',{p_course_id:row.id}));
+ }
+ state.courseId=row.id;
+ resetCourse();await loadCourses();selectTab('courses');
+ alertMsg('تم حفظ بيانات الدورة دون تغيير سجلات الشهور السابقة.');
 }
+
 let lessonsLoadVersion=0;
 async function loadLessons(){
  const version=++lessonsLoadVersion,courseId=state.courseId;
