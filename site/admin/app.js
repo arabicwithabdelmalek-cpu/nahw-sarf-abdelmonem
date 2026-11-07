@@ -115,6 +115,7 @@ function closeCourseForms(){
  resetCourse();resetLesson();resetStudent();
  ['feeForm','paymentForm','teacherPayoutForm','announcementForm'].forEach(id=>{if($(id))$(id).hidden=true});
  if($('teacherPayoutId'))$('teacherPayoutId').value='';
+ if($('paymentId'))closePaymentForm();
 }
 async function openMonth(id,tab='lessons'){
  if(state.courseId!==id){
@@ -361,17 +362,42 @@ async function saveStudent(ev){ev.preventDefault();const name=$('studentName').v
  resetStudent();await loadRelated();alertMsg('تم حفظ بيانات الطالب.');
 }
 const cents=v=>Math.round(n(v)*100);
-function showPaymentForm(enrollmentId='',amount=0){
+let paymentFormCourseId=null;
+function closePaymentForm(){
+ $('paymentForm').hidden=true;
+ $('paymentId').value='';
+ $('paymentFormTitle').textContent='تسجيل دفعة';
+ $('paymentSaveButton').textContent='حفظ الدفعة';
+ paymentFormCourseId=null;
+}
+function showPaymentForm(enrollmentId='',amount=0,payment=null){
  if(!state.courseId)throw new Error('اختر دورة أولًا.');
  const picker=$('paymentStudent');
- if(!picker.options.length)throw new Error('أضف طالبًا نشطًا إلى الدورة أولًا.');
+ if(!payment&&!picker.options.length)throw new Error('أضف طالبًا نشطًا إلى الدورة أولًا.');
+ closePaymentForm();
+ paymentFormCourseId=state.courseId;
  $('paymentForm').hidden=false;
- $('paymentFormTitle').textContent='تسجيل دفعة';
- if(enrollmentId && [...picker.options].some(o=>o.value===enrollmentId))picker.value=enrollmentId;
- else picker.selectedIndex=0;
- $('paymentAmount').value=amount>0?Number((amount/100).toFixed(2)).toFixed(2):'';
- $('paymentDate').value=today();
- $('paymentNotes').value='';
+ if(payment){
+  // The original student may now be stopped/archived: still allow correcting the historical receipt.
+  const ent=state.enrollments.find(x=>x.id===payment.enrollment_id);
+  if(!ent)throw new Error('دفعة تخص اشتراكًا غير موجود في الشهر الحالي.');
+  if(![...picker.options].some(x=>x.value===payment.enrollment_id)){
+   picker.append(new Option((ent.students?.full_name||'طالب')+' — اشتراك سابق',payment.enrollment_id));
+  }
+  picker.value=payment.enrollment_id;
+  $('paymentId').value=payment.id;
+  $('paymentFormTitle').textContent='تعديل دفعة سابقة';
+  $('paymentSaveButton').textContent='حفظ التعديل';
+  $('paymentAmount').value=Number(payment.amount).toFixed(2);
+  $('paymentDate').value=payment.paid_on||today();
+  $('paymentNotes').value=payment.notes||'';
+ }else{
+  if(enrollmentId&&[...picker.options].some(x=>x.value===enrollmentId))picker.value=enrollmentId;
+  else picker.selectedIndex=0;
+  $('paymentAmount').value=amount>0?Number((amount/100).toFixed(2)).toFixed(2):'';
+  $('paymentDate').value=today();
+  $('paymentNotes').value='';
+ }
  $('paymentForm').scrollIntoView({behavior:'smooth',block:'start'});
  $('paymentAmount').focus({preventScroll:true});
 }
@@ -553,14 +579,41 @@ async function saveFee(ev){
  await one(db.from('course_finances').upsert({course_id:course(),total_fee:n($('totalFee').value)},{onConflict:'course_id'}));
  $('feeForm').hidden=true;await loadFinance();alertMsg('تم تحديث تكلفة الدورة.');
 }
+let studentPaymentSaving=false;
 async function savePayment(ev){
  ev.preventDefault();
- if(!$('paymentStudent').value)throw new Error('اختر طالبًا نشطًا أولًا.');
- const amount=n($('paymentAmount').value);
- if(amount<=0)throw new Error('أدخل مبلغًا أكبر من صفر.');
- await one(db.from('payments').insert({enrollment_id:$('paymentStudent').value,amount,paid_on:$('paymentDate').value,notes:$('paymentNotes').value.trim()}));
- $('paymentForm').hidden=true;$('paymentAmount').value='';$('paymentNotes').value='';
- await loadFinance();alertMsg('تم حفظ الدفعة بنجاح.');
+ if(studentPaymentSaving)return;
+ const courseId=course();
+ if(!paymentFormCourseId||paymentFormCourseId!==courseId)
+  throw new Error('تغير الشهر أثناء تعديل الدفعة. افتح النموذج مرة أخرى.');
+ const enrollmentId=$('paymentStudent').value;
+ const ent=state.enrollments.find(x=>x.id===enrollmentId);
+ if(!ent)throw new Error('اختر طالبًا مسجلًا في هذا الشهر.');
+ const amount=Number($('paymentAmount').value);
+ if(!Number.isFinite(amount)||amount<=0||Math.abs(Math.round(amount*100)/100-amount)>1e-8)
+  throw new Error('أدخل مبلغًا أكبر من صفر وبحد أقصى خانتين عشريتين.');
+ const date=$('paymentDate').value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(new Date(date+'T12:00:00').getTime()))
+  throw new Error('حدّد تاريخًا صحيحًا للدفعة.');
+ const editId=$('paymentId').value;
+ const old=editId?state.payments.find(x=>x.id===editId):null;
+ if(editId&&!old)throw new Error('تعذّر العثور على الدفعة الأصلية في هذا الشهر. حدّث الصفحة.');
+ if((ent.deleted_at||ent.status!=='نشط')&&(!old||enrollmentId!==old.enrollment_id))
+  throw new Error('يمكن تصحيح دفعة الطالب السابق، ولكن لا يمكن إضافة دفعة جديدة لاشتراك متوقف أو مؤرشف.');
+ const data={enrollment_id:enrollmentId,amount,paid_on:date,notes:$('paymentNotes').value.trim()};
+ studentPaymentSaving=true;
+ $('paymentSaveButton').disabled=true;
+ try{
+  const rows=old?
+   await one(db.from('payments').update(data).eq('id',old.id).eq('enrollment_id',old.enrollment_id).select('id')):
+   await one(db.from('payments').insert(data).select('id'));
+  if(!rows?.length)throw new Error('لم تُحفظ الدفعة. ربما جرى تعديلها من جهاز آخر.');
+  closePaymentForm();$('paymentAmount').value='';$('paymentNotes').value='';
+  await loadFinance();
+  alertMsg(old?'تم تعديل الدفعة وحساب الإجماليات تلقائيًا.':'تم تسجيل الدفعة وإضافتها إلى إجمالي مدفوعات الطالب.');
+ }finally{
+  studentPaymentSaving=false;$('paymentSaveButton').disabled=false;
+ }
 }
 
 
@@ -872,7 +925,7 @@ function init(){
  $('reportPrint').addEventListener('click',()=>execute(async()=>printFinancialReport()));
  $('generateLessons').addEventListener('click',()=>execute(generateLessons));
  $('openPayment').addEventListener('click',()=>execute(async()=>showPaymentForm()));
- $('cancelPayment').addEventListener('click',()=>{$('paymentForm').hidden=true;});
+ $('cancelPayment').addEventListener('click',closePaymentForm);
  $('openFee').addEventListener('click',()=>{$('feeForm').hidden=false;$('totalFee').focus();});
  $('cancelFee').addEventListener('click',()=>{$('feeForm').hidden=true;});
  $('newCourse').addEventListener('click',()=>{resetCourse();$('courseForm').hidden=false;$('courseTitle').focus();});
