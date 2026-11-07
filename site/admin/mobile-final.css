@@ -1,0 +1,66 @@
+/* Final mobile usability pass. Keeps the approved graphite palette and data layouts.
+   Focus: six-tab navigation touch targets, readable report tables, safe-area spacing. */
+
+@media(min-width:621px) and (max-width:860px){
+  .sidebar .tabs{
+    display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:5px;overflow:visible
+  }
+  html[data-theme-preview] .sidebar .tabs button,
+  html[data-theme-preview] .sidebar .tabs button.active{
+    font-size:12px;line-height:1.45;min-height:49px;
+    padding:8px 3px;min-width:0;overflow-wrap:normal
+  }
+}
+
+/* Three buttons per row, with readable labels even on narrow phones. */
+@media(max-width:620px){
+  .sidebar{
+    padding-top:9px;padding-bottom:calc(9px + env(safe-area-inset-bottom,0px));
+    padding-inline:max(9px,env(safe-area-inset-right,0px)) max(9px,env(safe-area-inset-left,0px))
+  }
+  .sidebar .tabs{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,auto);
+    gap:6px;overflow:visible;min-width:0;padding:0;margin:0
+  }
+  html[data-theme-preview] .sidebar .tabs button,
+  html[data-theme-preview] .sidebar .tabs button.active{
+    width:100%;min-width:0;min-height:46px;
+    white-space:normal;overflow-wrap:normal;word-break:normal;
+    font-size:12px;line-height:1.45;font-weight:800;
+    padding:9px 5px;text-align:center;justify-content:center
+  }
+  #workspace{padding-bottom:calc(158px + env(safe-area-inset-bottom,0px))}
+  .editor-form{scroll-margin-bottom:calc(158px + env(safe-area-inset-bottom,0px))}
+  .report-toolbar{min-width:0}
+  .report-toolbar button{min-width:0;overflow-wrap:anywhere}
+  .report-panel .report-section-heading{gap:7px}
+  .report-panel .report-section-heading h3{min-width:0}
+  .report-panel .report-scroll{
+    min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain
+  }
+  .report-mobile-hint{
+    display:block;margin:0 0 8px;color:#4b5d67;
+    font-size:11px;font-weight:700;line-height:1.8
+  }
+  .teacher-payout-form,.month-create,.report-panel{max-width:100%;min-width:0}
+}
+@media(min-width:621px){
+  .report-mobile-hint{display:none}
+}
+@media(max-width:340px){
+  .sidebar .tabs{gap:5px}
+  html[data-theme-preview] .sidebar .tabs button,
+  html[data-theme-preview] .sidebar .tabs button.active{
+    font-size:11.5px;min-height:45px;padding:7px 2px;
+  }
+  .report-summary{grid-template-columns:minmax(0,1fr)}
+  .report-metric{min-height:0;padding:11px 12px}
+  .report-metric strong{font-size:17px}
+  .report-toolbar{gap:7px}
+  .report-toolbar button{font-size:11px}
+}
+@media print{
+  .report-mobile-hint{display:none!important}
+}
