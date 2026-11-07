@@ -1,0 +1,56 @@
+/* Small UX refinements: retain the approved charcoal and linen palette. */
+:root{--refine-line:#e5e2dc;--refine-surface:#fcfbf8;--refine-taupe:#a58c72}
+.topbar{border-bottom-color:var(--refine-line)}
+.sidebar{border-color:var(--refine-line)}
+.tabs button.active{box-shadow:inset -3px 0 0 var(--refine-taupe)}
+.panel{border-color:var(--refine-line)}
+.panel-heading h2{letter-spacing:0}
+.record,.balance-row{border-color:#e7e3dd}
+.record b,.balance-person b{line-height:1.6}
+.finance-card{border-color:#e8e3dc}
+.course-picker{border-color:#e7e3dd}
+button:focus-visible,.tabs button:focus-visible{outline-offset:3px}
+@media(max-width:860px){
+  .sidebar{border-top:1px solid #e2ddd5;box-shadow:0 -6px 20px rgba(47,43,40,.065)}
+  .tabs{gap:4px}
+  .tabs button,.tabs button.active{min-height:52px;line-height:1.5}
+  .tabs button.active{box-shadow:none;background:#46433f;color:#fff}
+  .course-picker{background:#fff;border-radius:12px}
+  .panel{border-radius:13px;background:#fff;padding:18px 15px}
+  .panel-heading{padding-bottom:14px;margin-bottom:17px;border-bottom:1px solid #eeeae4}
+  .panel-heading h2{color:#383b39;font-size:19px}
+  .panel-heading p{font-size:11px;color:#858079}
+  .record{border-radius:11px;background:#fff;padding:13px 14px}
+  .record-actions{gap:7px}
+  .record-actions button{min-height:43px}
+  .form-grid label{line-height:1.6}
+  .finance-card{border-radius:11px}
+  .balance-row{border-radius:12px}
+  .balance-person b{font-size:13px}
+  .balance-amounts b{font-variant-numeric:tabular-nums}
+  .deleted-students summary{min-height:46px}
+}
+@media(max-width:620px){
+  .shell{width:calc(100% - 26px)}
+  .topbar-inner{min-height:67px}
+  .topbar .brand strong{font-size:14px}
+  .topbar .brand small{font-size:10px}
+  #workspace{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+  .course-picker{padding:12px 13px}
+  .course-picker label{font-size:11px;font-weight:800}
+  .panel{padding:16px 13px 18px}
+  .panel-heading{align-items:center;gap:8px}
+  .panel-heading h2{font-size:18px}
+  .panel-heading button{max-width:52%;min-height:42px;padding:7px 11px}
+  .editor-form{border-color:#e9e5df;border-radius:11px}
+  .record-actions button.danger:last-child:nth-child(3){grid-column:1/-1}
+  .finance-card{padding:13px 12px}
+  .finance-card span{font-size:11px}
+  .balance-row{padding:14px 13px}
+}
+@media(max-width:375px){
+  .tabs button,.tabs button.active{font-size:10px;min-height:51px}
+  .shell{width:calc(100% - 22px)}
+  .panel{padding:14px 11px 17px}
+  .panel-heading button{max-width:55%;padding:6px 8px}
+}
