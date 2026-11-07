@@ -115,6 +115,27 @@
       <summary>سجل الدفعات <span id="paymentHistoryCount">٠</span></summary>
       <div class="records" id="paymentsList"></div>
      </details>
+     <section class="teacher-payouts" aria-labelledby="teacherPayoutTitle">
+      <div class="teacher-payout-head">
+       <div>
+        <h3 id="teacherPayoutTitle">مستحقات الدكتور عبد المنعم</h3>
+        <p>سجّل ما تم دفعه للدكتور خلال الشهر، مثل دفعة منتصف الشهر أو نهايته.</p>
+       </div>
+       <button type="button" id="newTeacherPayout" class="outline">تسجيل دفعة للدكتور</button>
+      </div>
+      <div class="teacher-payout-metrics" id="teacherPayoutSummary" aria-label="ملخص مستحقات الدكتور"></div>
+      <p class="teacher-payout-status" id="teacherPayoutStatus"></p>
+      <form id="teacherPayoutForm" class="form-grid editor-form teacher-payout-form" hidden>
+       <input type="hidden" id="teacherPayoutId">
+       <h4 class="form-heading" id="teacherPayoutFormTitle">تسجيل دفعة للدكتور</h4>
+       <label>المبلغ المدفوع بالجنيه<input id="teacherPayoutAmount" type="number" inputmode="decimal" min="0.01" step="0.01" required></label>
+       <label>تاريخ الدفع<input id="teacherPayoutDate" type="date" required></label>
+       <label class="wide">ملاحظة (اختياري)<input id="teacherPayoutNotes" maxlength="500" placeholder="مثال: دفعة منتصف الشهر"></label>
+       <div class="actions wide"><button type="submit" id="teacherPayoutSave">حفظ الدفعة</button><button type="button" id="teacherPayoutCancel" class="outline">إلغاء</button></div>
+      </form>
+      <div class="teacher-payout-history-heading">سجل الدفعات للدكتور <span id="teacherPayoutCount">٠</span></div>
+      <div class="records" id="teacherPayoutList"></div>
+     </section>
     </section>
     <section class="panel" data-panel="courses" hidden>
      <div class="panel-heading"><div><h2>الدورات</h2><p>الدورات الدراسية المسجلة</p></div><button type="button" class="outline" id="newCourse">إضافة دورة</button></div>
