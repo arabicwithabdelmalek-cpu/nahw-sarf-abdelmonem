@@ -176,6 +176,24 @@
       <div class="actions wide"><button type="submit">حفظ الدورة</button><button id="resetCourse" type="button" class="outline">إلغاء</button></div>
      </form>
      <div id="coursesList" class="month-cards" aria-live="polite"></div>
+     <section class="backup-tools" aria-labelledby="backupToolsTitle">
+      <div class="backup-tools-header">
+       <div>
+        <h3 id="backupToolsTitle">النسخ الاحتياطي وحماية البيانات</h3>
+        <p>احتفظ بنسخة من جميع الشهور والمحاضرات والطلاب والمدفوعات. هذا القسم لا يغيّر أي سجلات.</p>
+       </div>
+       <span class="backup-private-pill">للمسؤول فقط</span>
+      </div>
+      <div class="backup-tools-actions">
+       <button type="button" class="primary" id="downloadSiteBackup">تنزيل نسخة احتياطية كاملة</button>
+       <label class="backup-verify-file" for="verifySiteBackup">
+        فحص ملف نسخة احتياطية
+        <input id="verifySiteBackup" type="file" accept=".json,application/json">
+       </label>
+      </div>
+      <p class="backup-status" id="siteBackupStatus" role="status" aria-live="polite">النسخة بصيغة JSON، قابلة للحفظ على جهازك. لم يُنشأ أي ملف تلقائيًا.</p>
+      <p class="backup-warning"><strong>مهم:</strong> الملف يحتوي على أسماء الطلاب ووسائل التواصل والمدفوعات؛ احتفظ به في مكان خاص وآمن، ولا تشاركه في مجموعات أو روابط عامة. فحص الملف يتم على جهازك فقط ولا يستعيد أو يعدّل بيانات الموقع.</p>
+     </section>
     </section>
     <section class="panel report-panel" data-panel="reports" hidden>
      <div class="panel-heading">
