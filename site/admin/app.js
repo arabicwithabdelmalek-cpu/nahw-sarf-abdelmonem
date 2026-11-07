@@ -308,6 +308,97 @@ async function loadFinance(){
  }
  renderTeacherPayouts(teacherPayouts,fee);
 }
+function renderTeacherPayouts(payouts,fee){
+ const summary=$('teacherPayoutSummary'),history=$('teacherPayoutList');
+ summary.replaceChildren();history.replaceChildren();
+ const paidCents=payouts.reduce((total,p)=>total+cents(p.amount),0);
+ const expectedCents=cents(fee);
+ const dueCents=Math.max(0,expectedCents-paidCents);
+ const extraCents=Math.max(0,paidCents-expectedCents);
+ const metrics=[
+  {label:'إجمالي مستحقات الدكتور',value:money(expectedCents/100)},
+  {label:'دُفع للدكتور',value:money(paidCents/100)},
+  {label:extraCents>0?'المدفوع زيادة':'المتبقي للدكتور',value:money((extraCents||dueCents)/100)}
+ ];
+ metrics.forEach((item,i)=>{
+  const card=e('div','teacher-payout-metric'+(i===1?' paid':i===2?' due':''));
+  card.append(e('span','',item.label),e('strong','',item.value));
+  summary.append(card);
+ });
+ $('teacherPayoutCount').textContent=String(payouts.length);
+ $('teacherPayoutStatus').textContent=!payouts.length?
+  'لم تُسجّل أي دفعة للدكتور في هذه الدورة بعد.':
+  extraCents>0?'تنبيه: المبلغ المدفوع للدكتور يتجاوز إجمالي تكلفة الدورة.':
+  dueCents===0?'تم تسجيل سداد إجمالي مستحقات الدكتور.':
+  'هذا السجل خاص بما دُفع للدكتور، وهو مستقل عن مدفوعات الطلاب.';
+ if(!payouts.length){
+  history.append(e('p','subtle','لا توجد دفعات للدكتور بعد.'));
+  return;
+ }
+ for(const payout of payouts){
+  record(history,money(payout.amount),payout.paid_on+(payout.notes?' • '+payout.notes:''),[
+   {label:'تعديل',action:async()=>openTeacherPayoutForm(payout)},
+   {label:'حذف',danger:true,action:async()=>deleteTeacherPayout(payout)}
+  ]);
+ }
+}
+function resetTeacherPayoutForm(){
+ $('teacherPayoutForm').reset();
+ $('teacherPayoutId').value='';
+ $('teacherPayoutDate').value=today();
+ $('teacherPayoutFormTitle').textContent='تسجيل دفعة للدكتور';
+ $('teacherPayoutSave').textContent='حفظ الدفعة';
+ $('teacherPayoutForm').hidden=true;
+}
+function openTeacherPayoutForm(payout=null){
+ if(!state.courseId)throw new Error('اختر دورة أولًا.');
+ resetTeacherPayoutForm();
+ if(payout){
+  $('teacherPayoutId').value=payout.id;
+  $('teacherPayoutAmount').value=Number(payout.amount).toFixed(2);
+  $('teacherPayoutDate').value=payout.paid_on;
+  $('teacherPayoutNotes').value=payout.notes||'';
+  $('teacherPayoutFormTitle').textContent='تعديل دفعة للدكتور';
+  $('teacherPayoutSave').textContent='حفظ التعديل';
+ }
+ $('teacherPayoutForm').hidden=false;
+ $('teacherPayoutForm').scrollIntoView({behavior:'smooth',block:'start'});
+ $('teacherPayoutAmount').focus({preventScroll:true});
+}
+let teacherPayoutSaving=false;
+async function saveTeacherPayout(ev){
+ ev.preventDefault();
+ if(teacherPayoutSaving)return;
+ const courseId=course();
+ const amount=Number($('teacherPayoutAmount').value);
+ if(!Number.isFinite(amount)||amount<=0||Math.abs(Math.round(amount*100)/100-amount)>1e-8)
+  throw new Error('أدخل مبلغًا صحيحًا بالجنيه، أكبر من صفر وبحد أقصى خانتين عشريتين.');
+ const paidOn=$('teacherPayoutDate').value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(paidOn))throw new Error('حدّد تاريخ الدفع.');
+ const oldId=$('teacherPayoutId').value;
+ const data={course_id:courseId,amount,paid_on:paidOn,notes:$('teacherPayoutNotes').value.trim()};
+ teacherPayoutSaving=true;
+ $('teacherPayoutSave').disabled=true;
+ try{
+  const result=oldId?
+   await one(db.from('teacher_payouts').update(data).eq('id',oldId).eq('course_id',courseId).select('id')):
+   await one(db.from('teacher_payouts').insert(data).select('id'));
+  if(!result?.length)throw new Error('تعذّر حفظ الدفعة. أعد تحميل القسم وحاول مرة أخرى.');
+  resetTeacherPayoutForm();
+  await loadFinance();
+  alertMsg(oldId?'تم تعديل دفعة الدكتور.':'تم تسجيل ما دُفع للدكتور بنجاح.');
+ }finally{
+  teacherPayoutSaving=false;
+  $('teacherPayoutSave').disabled=false;
+ }
+}
+async function deleteTeacherPayout(payout){
+ if(!window.confirm('هل تريد حذف دفعة '+money(payout.amount)+' للدكتور بتاريخ '+payout.paid_on+'؟\nلن يؤثر هذا على دفعات الطلاب.'))return;
+ const rows=await one(db.from('teacher_payouts').delete().eq('id',payout.id).eq('course_id',course()).select('id'));
+ if(!rows?.length)throw new Error('لم يتم حذف الدفعة. ربما حُذفت بالفعل.');
+ await loadFinance();alertMsg('تم حذف دفعة الدكتور من سجله.');
+}
+
 async function saveFee(ev){
  ev.preventDefault();
  await one(db.from('course_finances').upsert({course_id:course(),total_fee:n($('totalFee').value)},{onConflict:'course_id'}));
