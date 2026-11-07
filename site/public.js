@@ -12,18 +12,16 @@ const cairoToday=()=>{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Afr
 const el=(tag,cls,text)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=text;return x;};
 const mark=(value,classes)=>el('span',classes,value);
 const displayedSubject=s=>s==='غير محدد'||!s?'لم تُحدّد':s;
-const current={lessons:[],firstPaint:true};
+const current={lessons:[]};
 function render(items){
  const lessons=[...items].sort((a,b)=>a.position-b.position);
- const initialPaint=current.firstPaint;
- current.firstPaint=false;
  current.lessons=lessons;
  const today=cairoToday();
  const next=lessons.find(l=>l.lesson_date>=today);
  const board=$('publicDates');board.replaceChildren();
  if(!lessons.length)board.append(el('p','no-lessons','لم تُعلن مواعيد المحاضرات بعد.'));
  lessons.forEach((l,i)=>{
-  const row=el('article','lecture'+(l===next?' is-next':'')+(initialPaint?' intro-row':''));
+  const row=el('article','lecture'+(l===next?' is-next':''));
   const number=el('span','number',ar(l.position||i+1));
   const when=el('div','when');
   when.append(el('strong','',day(l.lesson_date)+'، '+fmt(l.lesson_date)));
