@@ -401,6 +401,74 @@ function showPaymentForm(enrollmentId='',amount=0,payment=null){
  $('paymentForm').scrollIntoView({behavior:'smooth',block:'start'});
  $('paymentAmount').focus({preventScroll:true});
 }
+
+/* Presentation-only grouping: every installment remains a separate database receipt. */
+function groupPaymentsByStudent(payments,enrollments){
+ const enrollmentsById=new Map(enrollments.map(ent=>[ent.id,ent]));
+ const groups=new Map();
+ for(const payment of payments){
+  const key=payment.enrollment_id;
+  if(!groups.has(key)){
+   groups.set(key,{enrollmentId:key,enrollment:enrollmentsById.get(key)||null,
+      totalCents:0,installments:[]});
+  }
+  const group=groups.get(key);
+  group.totalCents+=cents(payment.amount);
+  group.installments.push(payment);
+ }
+ return [...groups.values()];
+}
+function renderGroupedStudentPayments(history,payments,enrollments){
+ const groups=groupPaymentsByStudent(payments,enrollments);
+ $('paymentHistoryCount').textContent=groups.length?
+  groups.length+' طالب • '+payments.length+' دفعة':'٠';
+ history.replaceChildren();
+ if(!groups.length){
+  history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
+  return;
+ }
+ for(const group of groups){
+  const ent=group.enrollment;
+  const fullName=ent?.students?.full_name||'طالب (سجل سابق)';
+  const card=e('details','student-payment-group');
+  const header=e('summary','student-payment-heading');
+  const person=e('div','student-payment-person');
+  person.append(e('strong','',fullName),
+   e('small','',group.installments.length===1?'دفعة واحدة':group.installments.length+' دفعات — اضغط لعرض التفاصيل'));
+  const right=e('div','student-payment-total');
+  right.append(e('span','','الإجمالي المدفوع'),e('strong','',money(group.totalCents/100)));
+  header.append(person,right);
+  const list=e('div','student-payment-installments');
+  for(const p of group.installments){
+   const line=e('div','student-payment-installment');
+   const info=e('div','student-payment-installment-info');
+   info.append(e('b','',money(p.amount)),e('time','',p.paid_on||'بدون تاريخ'));
+   if(p.notes)info.append(e('small','',p.notes));
+   const controls=e('div','student-payment-installment-actions');
+   const edit=e('button','outline','تعديل');
+   edit.type='button';edit.addEventListener('click',()=>execute(async()=>{
+    showPaymentForm(p.enrollment_id,0,p);
+   }));
+   const remove=e('button','danger','حذف');
+   remove.type='button';remove.addEventListener('click',()=>execute(async()=>{
+    if(!window.confirm('هل تريد حذف دفعة '+money(p.amount)+' الخاصة بـ'+fullName+' بتاريخ '+p.paid_on+'؟\nسيُعاد حساب إجمالي الطالب والمتبقي تلقائيًا.'))return;
+    const rows=await one(db.from('payments').delete().eq('id',p.id).eq('enrollment_id',p.enrollment_id).select('id'));
+    if(!rows?.length)throw new Error('تعذّر حذف الدفعة. حدّث الصفحة وحاول مرة أخرى.');
+    await loadFinance();alertMsg('تم حذف الدفعة وإعادة حساب إجمالي الطالب.');
+   }));
+   controls.append(edit,remove);line.append(info,controls);list.append(line);
+  }
+  if(ent&&!ent.deleted_at&&ent.status==='نشط'){
+   const newPay=e('button','outline student-payment-add','+ تسجيل دفعة جديدة لهذا الطالب');
+   newPay.type='button';
+   newPay.addEventListener('click',()=>execute(async()=>showPaymentForm(ent.id)));
+   list.append(newPay);
+  }
+  card.append(header,list);
+  history.append(card);
+ }
+}
+
 let financeLoadVersion=0;
 async function loadFinance(){
  const version=++financeLoadVersion,courseId=state.courseId;
@@ -443,7 +511,6 @@ async function loadFinance(){
   card.append(e('span','',stat.label),e('strong','',stat.value));
   summary.append(card);
  }
- $('paymentHistoryCount').textContent=String(payments.length);
  if(!active.length)balances.append(e('p','balance-empty','لا يوجد طلاب نشطون في هذه الدورة.'));
  else{
   for(const [i,ent] of active.entries()){
@@ -471,16 +538,7 @@ async function loadFinance(){
    action.append(add,remove);row.append(person,details,action);balances.append(row);
   }
  }
- if(!payments.length)history.append(e('p','subtle','لا توجد دفعات مسجلة بعد.'));
- for(const p of payments){
-  const ent=enrollments.find(x=>x.id===p.enrollment_id);
-  record(history,(ent?.students?.full_name||'طالب')+' — '+money(p.amount),p.paid_on+(p.notes?' • '+p.notes:''),[{
-   label:'حذف',danger:true,action:async()=>{
-    if(!confirm('هل تريد حذف هذه الدفعة؟'))return;
-    await one(db.from('payments').delete().eq('id',p.id));await loadFinance();
-   }
-  }]);
- }
+ renderGroupedStudentPayments(history,payments,enrollments);
  renderTeacherPayouts(teacherPayouts,fee);
 }
 function renderTeacherPayouts(payouts,fee){
