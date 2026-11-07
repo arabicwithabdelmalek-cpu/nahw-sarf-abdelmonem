@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+(function(){
+ const chosen=new URLSearchParams(window.location.search).get('theme');
+ if(['warm','olive','graphite'].includes(chosen))document.documentElement.setAttribute('data-theme-preview',chosen);
+})();
+</script>
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#f8f7f4">
 <title>إدارة المحاضرات | الدكتور عبد المنعم</title>
@@ -12,6 +18,7 @@
 <link rel="stylesheet" href="./style.css?v=v16-student-archive-20261107">
 <link rel="stylesheet" href="./mobile.css?v=v16-student-archive-20261107">
 <link rel="stylesheet" href="../admin/refine.css?v=v22-teacher-payments-20261107">
+<link rel="stylesheet" href="../theme-preview.css?v=v23-theme-choice-20261107">
 </head>
 <body>
 <header class="topbar">
