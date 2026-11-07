@@ -1,200 +1,190 @@
-/* Compact student payment ledger: one row per student, original receipts retained. */
+/* Student payment ledger v34: one student = one clear row; receipts live in a separate dialog. */
+#studentBalances[hidden]{display:none!important}
 .payment-ledger.history{
- margin-top:27px;padding-top:18px;border-top:1px solid #dde4e7;
+ margin-top:24px;padding:0;border:0;background:transparent;
 }
 .payment-ledger-heading{
- display:flex;align-items:center;justify-content:space-between;gap:15px;
- margin:0 0 15px;
+ display:flex;align-items:center;justify-content:space-between;gap:16px;
+ margin:0 0 13px;
 }
 .payment-ledger-heading h3{
- font-size:17px;font-weight:800;color:#293b44;line-height:1.7;
- margin:0;
+ color:#263a44;font-size:19px;font-weight:850;line-height:1.5;margin:0;
 }
 .payment-ledger-heading p{
- font-size:12px;color:#53646c;line-height:1.85;margin:2px 0 0;
+ font-size:13px;line-height:1.75;color:#50616a;margin:3px 0 0;
 }
 .payment-ledger-count{
- padding:6px 11px;border-radius:8px;white-space:nowrap;
- background:#edf1f2;color:#41545f;font-size:12px;font-weight:800;
+ background:#e8edf0;color:#334852;padding:6px 12px;border-radius:9px;
+ font-weight:800;font-size:12px;white-space:nowrap;
 }
 .payment-group-list{
- display:block;min-width:0;background:#fff;overflow:hidden;
- border:1px solid #dce4e7;border-radius:12px;
+ border:1px solid #d4dee3;border-radius:13px;overflow:hidden;
+ background:#fff;min-width:0;
 }
-/* Shared desktop columns keep values visually aligned without empty card bodies. */
-.student-payment-list-header,
-.payment-ledger .student-payment-heading{
- display:grid;grid-template-columns:minmax(0,2fr) minmax(125px,1fr) minmax(85px,.7fr) minmax(110px,1.05fr) minmax(105px,.8fr);
- gap:13px;align-items:center;text-align:right;
+.payment-ledger-toolbar{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:12px;padding:14px 16px;background:#f7f9fa;border-bottom:1px solid #dce5e8;
 }
-.student-payment-list-header{
- background:#f2f5f6;padding:11px 16px;
- border-bottom:1px solid #dfe6e9;
- color:#50616b;font-size:11.5px;font-weight:800;
+#paymentHistory .payment-ledger-search{
+ display:block;width:min(100%,310px);height:43px;min-height:43px;
+ border:1px solid #bbcbd2;border-radius:9px;padding:8px 13px;
+ background:#fff;color:#253a44;font-size:13px;outline:none;
 }
-.student-payment-group{
- border:0!important;border-radius:0!important;background:#fff!important;
- overflow:visible;min-width:0;
+#paymentHistory .payment-ledger-search:focus-visible{
+ border-color:#557987;box-shadow:0 0 0 3px #c9dade;
 }
-.student-payment-group+.student-payment-group{border-top:1px solid #e7ecee}
-.payment-ledger .student-payment-heading{
- list-style:none;cursor:pointer;
- padding:13px 16px;min-height:67px;
- color:#293c45;touch-action:manipulation;
+.payment-ledger-hint{font-size:11.5px;line-height:1.6;color:#4e626d;font-weight:700}
+.student-ledger-scroll{width:100%;overflow-x:auto}
+.student-ledger-table{
+ border-collapse:separate;border-spacing:0;width:100%;text-align:right;
+ color:#243a44;font-size:13px;min-width:660px;
 }
-.payment-ledger .student-payment-heading::-webkit-details-marker{display:none}
-.payment-ledger .student-payment-heading::marker{content:""}
-/* The generic .history summary styling must not inject an arrow or badge
-   inside each row: that was the cause of the previous misplaced chevrons. */
-#paymentHistory .student-payment-heading::after{content:none!important;display:none!important}
-#paymentHistory .student-payment-heading span{
- background:transparent!important;padding:0!important;border:0!important;
+.student-ledger-table thead th{
+ background:#edf2f4;color:#344e5a;font-size:12px;font-weight:850;
+ padding:12px 14px;text-align:right;border-bottom:1px solid #dae3e7;
+ white-space:nowrap;
 }
-.payment-ledger .student-payment-heading:hover{background:#f7f9f9}
-.payment-ledger .student-payment-heading:focus-visible{
- outline:3px solid #b79d77;outline-offset:-3px;
+.student-ledger-table th:first-child{width:27%}
+.student-ledger-table th:last-child{width:27%}
+.student-ledger-table td{
+ padding:15px 14px;vertical-align:middle;
+ border-bottom:1px solid #e3eaed;font-weight:750;
 }
-.student-payment-group[open]>.student-payment-heading{
- background:#f5f8f8;border-bottom:1px solid #dfe7e9;
+.student-ledger-table tbody tr:last-child td{border-bottom:0}
+.student-ledger-table tbody tr:nth-child(even){background:#fafcfc}
+.student-ledger-table tbody tr:hover{background:#f2f7f8}
+.student-ledger-table tbody tr[hidden]{display:none!important}
+.student-ledger-name strong{
+ display:block;color:#233740;font-size:14px;font-weight:850;
+ line-height:1.6;overflow-wrap:anywhere;
 }
-#paymentHistory .student-payment-person{
- min-width:0;color:#253943;font-size:14px;font-weight:800;
- line-height:1.65;overflow-wrap:anywhere;
+.student-ledger-name small{
+ display:block;color:#63747c;font-size:11px;font-weight:650;margin-top:3px;
 }
-#paymentHistory .student-payment-total{
- min-width:0;color:#32634f;font-size:17px;font-weight:800;
- line-height:1.6;white-space:nowrap;
+.student-ledger-expected{white-space:nowrap;color:#3e5260}
+#paymentHistory .student-ledger-paid{
+ color:#24634c;font-size:16px;font-weight:900;white-space:nowrap;
  font-variant-numeric:tabular-nums;
 }
-#paymentHistory .student-payment-count,
-#paymentHistory .student-payment-date{
- min-width:0;color:#4a5e68;font-size:12px;font-weight:700;line-height:1.6;
+#paymentHistory .student-ledger-due{
+ color:#a24738;font-size:15px;font-weight:850;white-space:nowrap;
+ font-variant-numeric:tabular-nums;
 }
-#paymentHistory .student-payment-more{
- display:inline-flex;gap:7px;align-items:center;justify-content:flex-start;
- font-size:12px;font-weight:800;color:#3d606f;white-space:nowrap;
+#paymentHistory .student-ledger-due.is-zero{color:#35725e}
+.student-ledger-row.is-archived{background:#f7f7f6!important}
+.student-ledger-row.is-archived .student-ledger-name strong{color:#566772}
+.student-ledger-actions{white-space:nowrap}
+.student-ledger-actions button{
+ min-height:38px;padding:7px 11px;border-radius:8px;
+ font-size:11.5px;font-weight:800;margin:2px 0 2px 6px;
 }
-#paymentHistory .student-payment-more::before{
- content:"⌄";font-family:Arial,sans-serif;font-size:19px;line-height:1;
- color:#61737d;transition:transform .17s ease;
+.student-ledger-actions button:last-child{margin-inline-start:0}
+.payment-ledger-empty,.payment-ledger-no-results{
+ padding:19px;text-align:center;color:#53656e;font-size:13px;
 }
-#paymentHistory .student-payment-group[open] .student-payment-more::before{
- transform:rotate(180deg);
+.payment-ledger-no-results[hidden]{display:none!important}
+
+/* Receipt details are deliberately separate from the students table. */
+.payment-detail-dialog{
+ position:fixed;inset:0;margin:auto;width:min(620px,calc(100% - 26px));
+ max-width:620px;max-height:min(85vh,800px);padding:0;
+ color:#263b45;background:#fff;border:1px solid #cbd6dc;border-radius:15px;
+ box-shadow:0 18px 55px #172e3c40;font-family:inherit;overflow:auto;
 }
-#paymentHistory .student-payment-meta{display:none}
-.student-payment-installments{
- background:#f5f7f8;padding:11px 15px 14px;display:flex;
- flex-direction:column;gap:8px;
+.payment-detail-dialog::backdrop{background:rgba(20,34,42,.57)}
+.payment-detail-shell{padding:22px}
+.payment-detail-head{
+ display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+ padding-bottom:16px;border-bottom:1px solid #e0e8eb;
 }
-.student-payment-installment{
- display:flex;align-items:center;justify-content:space-between;gap:12px;
- border:1px solid #e0e7e9;background:#fff;border-radius:9px;
- padding:10px 12px;min-width:0;
+.payment-detail-eyebrow{
+ display:block;color:#59737f;font-weight:800;font-size:12px;margin-bottom:5px;
 }
-.student-payment-installment-info{
- display:flex;flex-direction:column;gap:2px;min-width:0;
+.payment-detail-title h3{
+ color:#243a45;font-weight:850;font-size:20px;line-height:1.5;margin:0;
 }
-.student-payment-installment-info b{
- color:#293e47;font-size:14px;font-weight:800;
+.payment-detail-title p{color:#536971;font-size:13px;margin:6px 0 0}
+.payment-detail-close{min-height:38px;flex:none;padding:7px 12px;font-size:12px}
+.payment-detail-records{padding:12px 0;display:flex;flex-direction:column;gap:9px}
+.payment-detail-record{
+ display:flex;align-items:center;justify-content:space-between;gap:15px;
+ border:1px solid #dbe5e9;border-radius:11px;background:#f8fafb;
+ padding:13px 14px;
 }
-.student-payment-installment-info time{
- color:#5d6b72;font-size:11px;line-height:1.55;
+.payment-detail-record-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.payment-detail-record-info strong{color:#2f6953;font-size:17px;font-weight:850}
+.payment-detail-record-info time{
+ color:#556b76;font-size:12px;font-weight:700;
 }
-.student-payment-installment-info small{
- color:#53636c;font-size:11px;line-height:1.65;overflow-wrap:anywhere;
+.payment-detail-record-info small{
+ color:#53636c;font-size:12px;line-height:1.7;overflow-wrap:anywhere;
 }
-.student-payment-installment-actions{
- display:flex;gap:8px;align-items:center;flex:none;
+.payment-detail-record-actions{display:flex;align-items:center;gap:8px;flex:none}
+.payment-detail-record-actions button{
+ font-size:12px;min-height:38px;padding:7px 13px;border-radius:8px;
 }
-.student-payment-installment-actions button{
- min-height:39px;border-radius:8px;font-size:11.5px;
- padding:7px 12px;white-space:nowrap;
+.payment-detail-empty{text-align:center;color:#5b6b74;padding:20px 10px}
+.payment-detail-footer{
+ display:flex;justify-content:flex-start;gap:9px;flex-wrap:wrap;
+ padding-top:15px;border-top:1px solid #e0e8eb;
 }
-.student-payment-add{
- align-self:flex-start;width:fit-content;max-width:100%;
- min-height:40px;padding:8px 13px;border-radius:8px;
- font-size:12px;white-space:normal;
-}
-.payment-ledger-jump{margin:10px 0 15px;line-height:1.7}
-.payment-ledger-jump a{
- display:inline-flex;align-items:center;min-height:42px;
- padding:8px 12px;border:1px solid #cbd7dc;border-radius:8px;
- background:#f3f6f7;color:#304954;font-size:12px;font-weight:800;text-decoration:none;
-}
-.payment-ledger-jump a:hover{background:#e8eff1}
-.payment-ledger-jump a:focus-visible{outline:3px solid #af9676;outline-offset:2px}
+.payment-detail-footer button{min-height:42px;padding:9px 15px;border-radius:8px}
 #paymentHistory{scroll-margin-top:85px}
 
-@media(max-width:1080px){
- .student-payment-list-header,
- .payment-ledger .student-payment-heading{
-  grid-template-columns:minmax(0,1.8fr) minmax(115px,1fr) minmax(75px,.7fr) minmax(100px,1fr) minmax(85px,.8fr);
-  gap:9px;
- }
- .student-payment-list-header{padding-inline:12px;font-size:11px}
- .payment-ledger .student-payment-heading{padding-inline:12px}
- #paymentHistory .student-payment-person{font-size:13px}
- #paymentHistory .student-payment-total{font-size:15px}
- #paymentHistory .student-payment-date{font-size:11px}
- #paymentHistory .student-payment-more{font-size:11px}
+@media(max-width:920px){
+ .student-ledger-table{min-width:600px}
+ .student-ledger-table td,.student-ledger-table thead th{padding-inline:10px}
+ .student-ledger-actions button{padding-inline:8px;font-size:11px}
 }
-@media(max-width:900px){
- /* The desktop admin sidebar can reduce available space; omit duplicate columns. */
- .student-payment-list-header,
- .payment-ledger .student-payment-heading{
-  grid-template-columns:minmax(0,1.4fr) minmax(95px,1fr) minmax(75px,.8fr) minmax(85px,.8fr);
-  gap:10px;
+@media(max-width:740px){
+ .payment-ledger-heading h3{font-size:17px}
+ .payment-ledger-heading p{font-size:12px}
+ .payment-ledger-toolbar{padding:11px}
+ .payment-ledger-hint{font-size:11px}
+ .student-ledger-scroll{overflow:visible}
+ .student-ledger-table,.student-ledger-table tbody,.student-ledger-table tr,.student-ledger-table td{
+  display:block;min-width:0;width:100%;
  }
- .student-payment-list-header>span:nth-child(4),
- #paymentHistory .student-payment-date{display:none}
- #paymentHistory .student-payment-meta{display:none}
+ .student-ledger-table thead{display:none}
+ .student-ledger-table tbody{padding:5px 10px}
+ .student-ledger-table tbody tr{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-areas:"name name name" "expected paid due" "actions actions actions";
+  gap:11px 8px;padding:14px 10px;margin:7px 0;
+  border:1px solid #d9e3e8;border-radius:10px;background:#fff!important;
+ }
+ .student-ledger-table tbody tr:hover{background:#f7fafb!important}
+ .student-ledger-table td{padding:0;border:0;min-width:0}
+ .student-ledger-table td::before{
+  content:attr(data-label);display:block;color:#60737d;
+  font-size:10.5px;font-weight:750;line-height:1.5;margin-bottom:3px;
+ }
+ .student-ledger-name{grid-area:name;padding-bottom:8px!important;border-bottom:1px solid #e4e9ec!important}
+ .student-ledger-name::before,.student-ledger-actions::before{display:none!important}
+ .student-ledger-name strong{font-size:14px}
+ .student-ledger-expected{grid-area:expected;white-space:normal}
+ .student-ledger-paid{grid-area:paid;white-space:normal!important}
+ .student-ledger-due{grid-area:due;white-space:normal!important}
+ .student-ledger-actions{
+  grid-area:actions;display:flex;gap:8px;white-space:normal;margin-top:2px;
+ }
+ .student-ledger-actions button{margin:0;min-width:0;flex:1;min-height:42px;font-size:11px}
+ #paymentHistory .student-ledger-paid,#paymentHistory .student-ledger-due{font-size:14px}
 }
-@media(max-width:680px){
- .payment-ledger.history{margin-top:22px;padding-top:15px}
- .payment-ledger-heading{align-items:flex-start;gap:8px;margin-bottom:12px}
- .payment-ledger-heading h3{font-size:15px}
- .payment-ledger-heading p{font-size:11px}
- .payment-ledger-count{font-size:10px;padding:5px 7px}
- .student-payment-list-header{display:none}
- .payment-group-list{border-radius:10px}
- .payment-ledger .student-payment-heading{
-  display:grid;grid-template-columns:minmax(0,1fr) auto;
-  grid-template-areas:"person amount" "meta action";
-  column-gap:11px;row-gap:7px;
-  min-height:79px;padding:12px 11px;
- }
- #paymentHistory .student-payment-person{grid-area:person;font-size:13px}
- #paymentHistory .student-payment-total{
-  grid-area:amount;font-size:15px;text-align:left;
- }
- #paymentHistory .student-payment-total::before{
-  content:"المدفوع";display:block;font-size:10px;
-  font-weight:700;color:#667780;line-height:1.35;
- }
- #paymentHistory .student-payment-count,
- #paymentHistory .student-payment-date{display:none}
- #paymentHistory .student-payment-meta{
-  display:block;grid-area:meta;font-size:10.5px;
-  color:#556975;line-height:1.7;min-width:0;
- }
- #paymentHistory .student-payment-more{grid-area:action;font-size:11px}
- .student-payment-installments{padding:9px}
- .student-payment-installment{gap:8px;padding:9px}
- .student-payment-installment-info b{font-size:13px}
- .student-payment-installment-actions button{min-height:42px;padding:7px 10px;font-size:11px}
- .student-payment-add{width:100%;min-height:44px;font-size:11.5px;text-align:center}
- .payment-ledger-jump a{width:100%;justify-content:center;text-align:center;min-height:44px;font-size:11.5px}
- #paymentHistory{scroll-margin-top:70px}
-}
-@media(max-width:360px){
- .payment-ledger-heading{flex-wrap:wrap}
- .student-payment-installment{flex-wrap:wrap}
- .student-payment-installment-actions{display:grid;width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}
- .student-payment-installment-actions button{width:100%}
- #paymentHistory .student-payment-total{font-size:14px}
- #paymentHistory .student-payment-more{font-size:10.5px}
- #paymentHistory .student-payment-meta{font-size:10px}
+@media(max-width:500px){
+ .payment-ledger-heading{align-items:flex-start;flex-wrap:wrap}
+ .payment-ledger-toolbar{gap:8px}
+ #paymentHistory .payment-ledger-search{width:100%;font-size:12px}
+ .student-ledger-table tbody{padding:4px 6px}
+ .student-ledger-table tbody tr{padding:12px 10px}
+ .payment-detail-shell{padding:14px}
+ .payment-detail-title h3{font-size:17px}
+ .payment-detail-title p{font-size:11.5px}
+ .payment-detail-record{align-items:flex-start;flex-wrap:wrap}
+ .payment-detail-record-actions{width:100%}
+ .payment-detail-record-actions button{flex:1}
+ .payment-detail-footer button{flex:1}
 }
 @media(prefers-reduced-motion:reduce){
- #paymentHistory .student-payment-more::before{transition:none}
+ .payment-detail-dialog{scroll-behavior:auto}
 }
