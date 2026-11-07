@@ -61,3 +61,11 @@
  .student-payment-installment-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
  .student-payment-installment-actions button{width:100%;}
 }
+
+/* Quick path to grouped receipts, visible immediately beneath finance totals. */
+.payment-ledger-jump{margin:9px 0 14px;line-height:1.7}
+.payment-ledger-jump a{display:inline-flex;align-items:center;min-height:42px;padding:9px 13px;border:1px solid #c5d2d7;border-radius:9px;background:#f2f6f7;color:#2e4550;font-size:12px;font-weight:800;text-decoration:none}
+.payment-ledger-jump a:hover{background:#e7eff1;color:#253a44}
+.payment-ledger-jump a:focus-visible{outline:3px solid #ad9473;outline-offset:2px}
+#paymentHistory{scroll-margin-top:85px}
+@media(max-width:620px){.payment-ledger-jump a{width:100%;justify-content:center;text-align:center;font-size:11.5px;min-height:44px}#paymentHistory{scroll-margin-top:70px}}
