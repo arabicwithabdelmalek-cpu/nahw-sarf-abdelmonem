@@ -55,7 +55,7 @@
      <button type="button" class="tab active" data-tab="lessons">المحاضرات</button>
      <button type="button" class="tab" data-tab="students">الطلاب</button>
      <button type="button" class="tab" data-tab="finance">المدفوعات</button>
-     <button type="button" class="tab" data-tab="courses">الدورات</button>
+     <button type="button" class="tab" data-tab="courses">الشهور</button>
      <button type="button" class="tab" data-tab="announcements">الإعلانات</button>
     </nav>
     <div class="sidebar-footer">التعديلات المحفوظة تظهر للطلاب عند نشرها.</div>
@@ -66,7 +66,7 @@
      <span class="user-badge" id="userBadge"></span>
     </div>
     <div class="course-picker">
-     <label for="activeCourseSelect">الدورة المعروضة</label>
+     <label for="activeCourseSelect">الشهر المعروض</label>
      <select id="activeCourseSelect" aria-label="اختر الدورة"></select>
     </div>
     <section class="panel" data-panel="lessons" hidden>
@@ -147,7 +147,20 @@
      </section>
     </section>
     <section class="panel" data-panel="courses" hidden>
-     <div class="panel-heading"><div><h2>الدورات</h2><p>الدورات الدراسية المسجلة</p></div><button type="button" class="outline" id="newCourse">إضافة دورة</button></div>
+     <div class="panel-heading"><div><h2>إدارة الشهور</h2><p>أنشئ شهرًا جديدًا وتابع الشهور السابقة دون فقدان المدفوعات.</p></div><button type="button" class="outline" id="newCourse">إضافة دورة يدويًا</button></div>
+     <form id="newMonthForm" class="month-create" aria-label="إنشاء شهر جديد">
+       <div class="month-create-intro">
+        <strong>شهر دراسي جديد</strong>
+        <p>٨ محاضرات يومي السبت والأربعاء، مع نسخ مواعيد ومواد الدروس من الشهر الحالي.</p>
+       </div>
+       <div class="month-create-fields">
+        <label for="newMonthStart">تاريخ أول محاضرة<input type="date" id="newMonthStart" required></label>
+        <label class="month-copy" for="newMonthCopyStudents"><input type="checkbox" id="newMonthCopyStudents" checked> نقل الطلاب النشطين للشهر الجديد</label>
+        <button type="submit" id="createMonthButton" class="primary">إنشاء الشهر كمسودة</button>
+       </div>
+       <p class="month-create-note" id="monthCreationNote">سيتبقى الشهر الحالي منشورًا حتى تعتمد الشهر الجديد بنفسك. لن تُنسخ مدفوعات الطلاب أو الدكتور.</p>
+      </form>
+      <div class="month-list-heading"><h3>الشهور المسجلة</h3><p id="monthIndexSummary">جارٍ تحميل الشهور…</p></div>
      <form id="courseForm" class="form-grid editor-form" hidden>
       <input type="hidden" id="courseId">
       <h3 class="form-heading">بيانات الدورة</h3>
@@ -158,7 +171,7 @@
       <label class="check"><input type="checkbox" id="courseActive"> الدورة الحالية</label>
       <div class="actions wide"><button type="submit">حفظ الدورة</button><button id="resetCourse" type="button" class="outline">إلغاء</button></div>
      </form>
-     <div id="coursesList" class="records"></div>
+     <div id="coursesList" class="month-cards" aria-live="polite"></div>
     </section>
     <section class="panel" data-panel="announcements" hidden>
      <div class="panel-heading"><div><h2>الإعلانات</h2><p>تنبيهات تظهر للطلاب في الصفحة الرئيسية</p></div><button type="button" class="outline" id="newAnnouncement">إضافة إعلان</button></div>
