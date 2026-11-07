@@ -1,0 +1,110 @@
+/* Financial reports: only new tab components, matching the approved graphite palette. */
+.report-panel{min-width:0}
+.report-toolbar{
+ display:grid;grid-template-columns:minmax(185px,1fr) repeat(3,minmax(0,auto));
+ align-items:end;gap:9px;margin-bottom:14px;
+ background:#f4f5f5;border:1px solid #e1e5e6;
+ padding:14px;border-radius:12px;
+}
+.report-toolbar label{min-width:0;font-size:12px;font-weight:800;color:#354650;display:flex;flex-direction:column;gap:6px}
+.report-toolbar select{background:#fff;border:1px solid #d0d8dc;border-radius:9px;min-height:45px;padding:8px 12px;min-width:0;width:100%;font:inherit;color:#2b3a43;font-size:13px}
+.report-toolbar button{min-height:45px;padding:8px 12px;white-space:normal;font-size:12px}
+.report-toolbar button:disabled{opacity:.43}
+.report-status{margin:0 0 12px;font-size:12px;color:#4c5b63;line-height:1.9}
+.report-status.error{color:#923a36}
+.report-title-line{display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:1px solid #dce3e6;padding:10px 0 13px;margin-bottom:15px}
+.report-title-line h3{font-size:18px;line-height:1.6;color:#283941;margin:0}
+.report-title-line p{font-size:12px;color:#55636b;margin:2px 0 0}
+.report-tag{flex:none;font-size:10px;font-weight:800;padding:6px 9px;color:#5e5548;background:#f0ece6;border-radius:8px}
+.report-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 22px}
+.report-metric{border:1px solid #dce3e6;background:#f5f6f5;min-width:0;padding:15px 13px;border-radius:11px}
+.report-metric small{display:block;color:#50616a;font-size:12px;line-height:1.55}
+.report-metric strong{display:block;color:#293941;font-size:19px;line-height:1.6;margin-top:6px;font-weight:800;overflow-wrap:anywhere}
+.report-metric.paid{background:#f1f6f2;border-color:#d7e4d8}
+.report-metric.paid strong{color:#32614b}
+.report-metric.due{background:#f9f5ee;border-color:#e9dfd1}
+.report-metric.due strong{color:#76583b}
+.report-section-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 10px}
+.report-section-heading h3{font-size:16px;color:#2e4049;margin:0;font-weight:800}
+.report-section-heading span{font-size:11px;color:#576670;background:#eceff0;border-radius:8px;padding:3px 9px}
+.report-scroll{width:100%;overflow-x:auto;scrollbar-width:thin;border:1px solid #dbe2e4;border-radius:11px;background:#fff}
+.report-table{width:100%;border-collapse:collapse;text-align:right;min-width:500px;line-height:1.65}
+.report-table th{background:#e9eef0;color:#334650;text-align:right;font-size:12px;font-weight:800;padding:12px;white-space:nowrap}
+.report-table td{padding:12px;font-size:12px;color:#303f48;border-top:1px solid #edf0f1;vertical-align:middle;overflow-wrap:anywhere;max-width:270px}
+.report-table tbody tr:nth-child(even){background:#fafbfb}
+.report-table td.money{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:13px;font-weight:800}
+.report-table .report-name{font-weight:800}
+.report-table .report-empty{font-weight:600;color:#6c7980;text-align:center;padding:17px 11px}
+.report-state{display:inline-block;border-radius:7px;padding:4px 8px;font-size:11px;background:#edf0f1;color:#50616b;white-space:nowrap}
+.report-state.paid{color:#35664e;background:#e6f1e8}
+.report-state.part{color:#81613c;background:#f7f1e7}
+.report-state.archived{color:#6e6565;background:#f1eced}
+.report-explain{color:#55666e;font-size:11px;line-height:1.9;margin:9px 0 14px}
+#reportPrintSheet{display:none}
+@media(max-width:1180px){
+ .report-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .report-toolbar{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .report-toolbar label{grid-column:1/-1}
+}
+@media(max-width:860px){
+ /* Six compact nav buttons, retaining the existing single-row mobile dock. */
+ .sidebar .tabs{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
+ .sidebar .tabs button{padding-inline:1px;min-width:0;white-space:normal;font-size:clamp(9px,2.5vw,11px);line-height:1.5}
+ .report-toolbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .report-toolbar label{grid-column:1/-1}
+ .report-toolbar #reportRefresh{grid-column:1/-1}
+ .report-toolbar button{min-height:44px;font-size:11px}
+}
+@media(max-width:620px){
+ .report-toolbar{padding:12px;gap:8px}
+ .report-title-line{align-items:flex-start;gap:8px}
+ .report-title-line h3{font-size:16px}
+ .report-title-line p{font-size:11px}
+ .report-tag{font-size:9px;padding:4px 7px;max-width:120px;text-align:center}
+ .report-summary{gap:8px;margin:12px 0 19px}
+ .report-metric{padding:12px 10px;min-height:91px}
+ .report-metric small{font-size:11px}
+ .report-metric strong{font-size:clamp(14px,4.4vw,18px)}
+ .report-section-heading{margin-top:19px}
+ .report-section-heading h3{font-size:14px}
+ .report-scroll{border-radius:9px}
+ .report-table{min-width:470px}
+ .report-table th,.report-table td{font-size:11px;padding:10px}
+ .report-explain{font-size:11px}
+ .report-panel .panel-heading h2{font-size:19px}
+ .report-panel .panel-heading p{font-size:12px}
+}
+@media(max-width:385px){
+ .sidebar .tabs{gap:2px}
+ .sidebar .tabs button{font-size:9px;padding-inline:0}
+ .report-toolbar button{font-size:10px;padding-inline:5px}
+ .report-metric{padding:10px 8px}
+ .report-metric strong{font-size:14px}
+}
+@media print{
+ @page{size:A4 portrait;margin:13mm}
+ body.report-print-mode{background:#fff!important;color:#222!important}
+ body.report-print-mode>header,
+ body.report-print-mode>main,
+ body.report-print-mode>script{display:none!important}
+ body.report-print-mode #reportPrintSheet{
+  display:block!important;position:static!important;direction:rtl;text-align:right;
+  width:100%;max-width:none;background:#fff;color:#222;padding:0;
+  font:11px/1.65 "Cairo",Tahoma,Arial,sans-serif;
+ }
+ #reportPrintSheet .print-heading{border-bottom:2px solid #343e45;padding-bottom:10px;margin-bottom:12px}
+ #reportPrintSheet .print-heading h1{font-size:19px;margin:0 0 3px;color:#222}
+ #reportPrintSheet .print-heading p{font-size:10px;margin:0;color:#555}
+ #reportPrintSheet .print-metrics{display:table;width:100%;border-spacing:5px;margin:8px 0 15px}
+ #reportPrintSheet .print-metric{display:table-cell;border:1px solid #bbb;padding:7px;vertical-align:top}
+ #reportPrintSheet .print-metric span{font-size:9px;color:#555;display:block}
+ #reportPrintSheet .print-metric strong{font-size:12px;color:#222;display:block}
+ #reportPrintSheet h2{font-size:13px;padding-top:10px;margin:10px 0 7px;break-after:avoid}
+ #reportPrintSheet table{width:100%;border-collapse:collapse;table-layout:auto;direction:rtl}
+ #reportPrintSheet th{font-weight:800;background:#eee!important}
+ #reportPrintSheet th,#reportPrintSheet td{border:1px solid #bbb;padding:6px;font-size:10px;text-align:right;vertical-align:top;word-wrap:break-word}
+ #reportPrintSheet tr{break-inside:avoid}
+ #reportPrintSheet thead{display:table-header-group}
+ #reportPrintSheet p.print-note{font-size:9px;color:#555;line-height:1.6}
+ #reportPrintSheet .print-footer{border-top:1px solid #ccc;margin-top:15px;padding-top:8px;font-size:9px;color:#666}
+}
