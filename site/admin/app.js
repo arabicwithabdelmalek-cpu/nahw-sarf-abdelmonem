@@ -677,7 +677,7 @@ function renderFinancialReport(report){
  $('reportTeacherCount').textContent=report.teacherPayouts.length+' دفعة';
  reportTableBody('reportStudentRows',report.students,row=>[
   [row.name,'report-name'],
-  [row.enrollmentStatus,''],
+  [row.enrollmentStatus+' — '+row.paymentStatus,''],
   [row.expected===null?'—':money(row.expected),'money'],
   [money(row.paid),'money'],
   [row.due===null?'—':money(row.due),'money']
