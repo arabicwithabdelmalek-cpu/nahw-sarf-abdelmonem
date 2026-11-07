@@ -8,6 +8,7 @@ const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[+d]);
 const parse=s=>new Date(s+'T12:00:00');
 const fmt=s=>{const d=parse(s);return ar(d.getDate())+' '+months[d.getMonth()]+' '+ar(d.getFullYear())};
 const day=s=>weekdays[parse(s).getDay()];
+const shortDate=s=>{const d=parse(s);return day(s)+'، '+ar(d.getDate())+' '+months[d.getMonth()]};
 const cairoToday=()=>{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const pick=t=>parts.find(p=>p.type===t).value;return pick('year')+'-'+pick('month')+'-'+pick('day');};
 const el=(tag,cls,text)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=text;return x;};
 const mark=(value,classes)=>el('span',classes,value);
@@ -24,7 +25,8 @@ function render(items){
   const row=el('article','lecture'+(l===next?' is-next':''));
   const number=el('span','number',ar(l.position||i+1));
   const when=el('div','when');
-  when.append(el('strong','',day(l.lesson_date)+'، '+fmt(l.lesson_date)));
+  when.append(el('strong','date-full',day(l.lesson_date)+'، '+fmt(l.lesson_date)));
+  when.append(el('strong','date-short',shortDate(l.lesson_date)));
   if(l.title)when.append(el('small','',l.title));
   if(l.notes)when.append(el('small','lecture-notes',l.notes));
   const subject=el('span','topic '+(l.subject==='نحو'?'nahw':l.subject==='صرف'?'sarf':'undefined'),displayedSubject(l.subject));
