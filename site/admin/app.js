@@ -373,6 +373,11 @@ function closePaymentForm(){
 function showPaymentForm(enrollmentId='',amount=0,payment=null){
  if(!state.courseId)throw new Error('اختر دورة أولًا.');
  const picker=$('paymentStudent');
+ // Rebuild choices so archived students inserted for editing never remain in a new-payment form.
+ picker.replaceChildren();
+ for(const ent of state.enrollments.filter(x=>!x.deleted_at&&x.status==='نشط')){
+  picker.append(new Option(ent.students?.full_name||'طالب',ent.id));
+ }
  if(!payment&&!picker.options.length)throw new Error('أضف طالبًا نشطًا إلى الدورة أولًا.');
  closePaymentForm();
  paymentFormCourseId=state.courseId;
