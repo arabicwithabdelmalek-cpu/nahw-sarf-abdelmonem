@@ -110,7 +110,7 @@
     <section class="panel" data-panel="finance" hidden>
      <div class="panel-heading"><div><h2>المدفوعات</h2><p>ملخص الاشتراكات والمبالغ المستحقة</p></div><button type="button" id="openPayment" class="primary">تسجيل دفعة</button></div>
      <div class="financial-summary" id="financeSummary" aria-label="الملخص المالي"></div>
-     <p class="payment-ledger-jump"><a href="#paymentHistory">عرض إجمالي مدفوعات كل طالب وتعديل الدفعات المسجلة</a></p>
+     <p class="payment-ledger-jump"><a href="#paymentHistory">مراجعة مدفوعات الطلاب وتعديل الدفعات</a></p>
      <div class="finance-settings"><span>يُقسم إجمالي تكلفة الدورة على الطلاب النشطين.</span><button type="button" id="openFee" class="text-button">تعديل تكلفة الدورة</button></div>
      <form id="feeForm" class="form-grid editor-form" hidden>
       <h3 class="form-heading">تكلفة الدورة</h3>
@@ -128,11 +128,16 @@
       <label>ملاحظة (اختياري)<input id="paymentNotes" maxlength="500"></label>
       <div class="actions wide"><button id="paymentSaveButton" type="submit">حفظ الدفعة</button><button type="button" id="cancelPayment" class="outline">إلغاء</button></div>
      </form>
-     <details class="history" id="paymentHistory" open>
-      <summary>سجل الدفعات حسب الطالب <span id="paymentHistoryCount">٠</span></summary>
-      <p class="payment-ledger-hint">يظهر كل طالب مرة واحدة بإجمالي مدفوعاته. افتح تفاصيل الطالب لتعديل أي دفعة أو مراجعة تاريخها.</p>
+     <section class="history payment-ledger" id="paymentHistory" aria-labelledby="paymentLedgerTitle">
+      <div class="payment-ledger-heading">
+       <div>
+        <h3 id="paymentLedgerTitle">مدفوعات الطلاب</h3>
+        <p>إجمالي كل طالب في سطر واحد، مع إمكانية مراجعة وتعديل كل دفعة.</p>
+       </div>
+       <span id="paymentHistoryCount" class="payment-ledger-count">٠</span>
+      </div>
       <div class="payment-group-list" id="paymentsList"></div>
-     </details>
+     </section>
      <section class="teacher-payouts" aria-labelledby="teacherPayoutTitle">
       <div class="teacher-payout-head">
        <div>
