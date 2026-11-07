@@ -1,0 +1,63 @@
+/* Student payment installments: one student card, total at a glance, original receipts kept. */
+.payment-ledger-hint{
+ font-size:12px;line-height:1.9;color:#4c5d66;
+ margin:2px 0 14px;
+}
+.payment-group-list{display:flex;flex-direction:column;gap:11px;min-width:0;}
+.student-payment-group{
+ background:#fff;border:1px solid #dce3e6;border-radius:12px;
+ min-width:0;overflow:hidden;
+}
+.student-payment-group[open]{border-color:#bccbd3;}
+.student-payment-heading{
+ list-style:none;cursor:pointer;display:flex;align-items:center;
+ justify-content:space-between;gap:12px;padding:15px 16px;
+ min-width:0;touch-action:manipulation;
+}
+.student-payment-heading::-webkit-details-marker{display:none;}
+.student-payment-heading::marker{content:'';}
+.student-payment-heading:hover{background:#f6f8f9;}
+.student-payment-heading:focus-visible{outline:3px solid #a38c70;outline-offset:-3px;}
+.student-payment-person{min-width:0;display:flex;flex-direction:column;gap:3px;}
+.student-payment-person strong{font-size:14px;line-height:1.7;color:#283a44;overflow-wrap:anywhere;}
+.student-payment-person small{font-size:11.5px;line-height:1.8;color:#53646e;}
+.student-payment-total{display:flex;flex-direction:column;gap:2px;align-items:flex-end;min-width:0;flex:none;}
+.student-payment-total span{font-size:11px;color:#4a5d67;}
+.student-payment-total strong{font-size:17px;line-height:1.65;color:#2c5846;font-weight:800;white-space:nowrap;}
+.student-payment-installments{background:#f5f7f8;border-top:1px solid #dce4e8;padding:10px 13px 13px;display:flex;flex-direction:column;gap:8px;}
+.student-payment-installment{
+ border:1px solid #dce4e7;background:#fff;border-radius:9px;padding:10px 12px;
+ display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;
+}
+.student-payment-installment-info{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.student-payment-installment-info b{font-weight:800;color:#2d3d46;font-size:13.5px;}
+.student-payment-installment-info time{font-size:11px;color:#566772;}
+.student-payment-installment-info small{font-size:11px;line-height:1.7;color:#526570;overflow-wrap:anywhere;max-width:100%;}
+.student-payment-installment-actions{display:flex;gap:7px;flex:none;align-items:center;}
+.student-payment-installment-actions button{min-height:38px;border-radius:8px;font-size:11px;padding:6px 12px;white-space:nowrap;}
+.student-payment-add{
+ width:fit-content;max-width:100%;min-height:38px;align-self:flex-start;
+ font-size:11.5px;padding:8px 12px;white-space:normal;border-radius:8px;
+}
+@media(max-width:620px){
+ .payment-ledger-hint{font-size:11.5px;line-height:1.75;}
+ .payment-group-list{gap:9px;}
+ .student-payment-heading{padding:12px 11px;gap:8px;}
+ .student-payment-person strong{font-size:13px;}
+ .student-payment-person small{font-size:11px;}
+ .student-payment-total span{font-size:10px;}
+ .student-payment-total strong{font-size:14px;}
+ .student-payment-installments{padding:9px;gap:8px;}
+ .student-payment-installment{padding:10px 9px;gap:7px;}
+ .student-payment-installment-info b{font-size:13px;}
+ .student-payment-installment-info time{font-size:11px;}
+ .student-payment-installment-actions button{min-height:41px;padding:7px 10px;font-size:11px;}
+ .student-payment-add{min-height:44px;width:100%;font-size:12px;justify-content:center;}
+}
+@media(max-width:350px){
+ .student-payment-heading{flex-wrap:wrap;}
+ .student-payment-total{align-items:flex-start;}
+ .student-payment-installment{flex-wrap:wrap;}
+ .student-payment-installment-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+ .student-payment-installment-actions button{width:100%;}
+}
