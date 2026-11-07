@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="../../admin/reports.css?v=v28-financial-reports-20261107">
 <link rel="stylesheet" href="../../admin/mobile-final.css?v=v29-mobile-final-20261107">
 <link rel="stylesheet" href="../../admin/backup.css?v=v30-security-backup-20261107">
-<link rel="stylesheet" href="../../admin/payment-groups.css?v=v33-compact-payment-ledger-20261107">
+<link rel="stylesheet" href="../../admin/payment-groups.css?v=v34-one-student-one-row-20261107">
 </head>
 <body>
 <header class="topbar">
@@ -110,15 +110,13 @@
     <section class="panel" data-panel="finance" hidden>
      <div class="panel-heading"><div><h2>المدفوعات</h2><p>ملخص الاشتراكات والمبالغ المستحقة</p></div><button type="button" id="openPayment" class="primary">تسجيل دفعة</button></div>
      <div class="financial-summary" id="financeSummary" aria-label="الملخص المالي"></div>
-     <p class="payment-ledger-jump"><a href="#paymentHistory">مراجعة مدفوعات الطلاب وتعديل الدفعات</a></p>
      <div class="finance-settings"><span>يُقسم إجمالي تكلفة الدورة على الطلاب النشطين.</span><button type="button" id="openFee" class="text-button">تعديل تكلفة الدورة</button></div>
      <form id="feeForm" class="form-grid editor-form" hidden>
       <h3 class="form-heading">تكلفة الدورة</h3>
       <label class="wide">إجمالي تكلفة الدورة بالجنيه<input type="number" id="totalFee" step="0.01" min="0" required value="0"></label>
       <div class="actions wide"><button type="submit">حفظ التكلفة</button><button type="button" id="cancelFee" class="outline">إلغاء</button></div>
      </form>
-     <div class="subheading"><h3>حالة الطلاب</h3><p>اضغط «تسجيل دفعة» أمام الطالب لإضافة ما دفعه.</p></div>
-     <div id="studentBalances" class="balances"></div>
+     <div id="studentBalances" class="balances" hidden></div>
      <form id="paymentForm" class="form-grid editor-form payment-form" hidden>
       <input type="hidden" id="paymentId">
       <h3 class="form-heading" id="paymentFormTitle">تسجيل دفعة</h3>
@@ -131,8 +129,8 @@
      <section class="history payment-ledger" id="paymentHistory" aria-labelledby="paymentLedgerTitle">
       <div class="payment-ledger-heading">
        <div>
-        <h3 id="paymentLedgerTitle">مدفوعات الطلاب</h3>
-        <p>إجمالي كل طالب في سطر واحد، مع إمكانية مراجعة وتعديل كل دفعة.</p>
+        <h3 id="paymentLedgerTitle">حسابات الطلاب</h3>
+        <p>المطلوب والمدفوع والمتبقي لكل طالب، وتفاصيل الدفعات في سجل مستقل.</p>
        </div>
        <span id="paymentHistoryCount" class="payment-ledger-count">٠</span>
       </div>
@@ -261,6 +259,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
 <script src="../../admin/report-xlsx.js?v=v28-financial-reports-20261107" defer></script>
 <script src="../../admin/backup.js?v=v30-security-backup-20261107" defer></script>
-<script src="../../admin/app.js?v=v33-compact-payment-ledger-20261107" defer></script>
+<script src="../../admin/app.js?v=v34-one-student-one-row-20261107" defer></script>
 </body>
 </html>
